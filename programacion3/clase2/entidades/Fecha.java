@@ -66,4 +66,8 @@ public class Fecha {
     anio += mes / 12;
     mes = mes % 12;
   }
+
+  public int restarAnio(Fecha f) {
+    return anio -= f.getAnio();
+  }
 }

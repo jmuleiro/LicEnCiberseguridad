@@ -16,4 +16,23 @@ public class Empleado {
   public String toString() {
     return "Nombre: " + this.nombre + "\n" + "Legajo: " + this.legajo + "\n" + "Fecha: " + this.fechaIngreso;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    
+    if (!(obj instanceof Empleado))
+      return false;
+    
+    return this.legajo == ((Empleado) obj).legajo;
+  }
+  
+  public double antiguedad(Fecha comp) {
+    return comp.restarAnio(fechaIngreso);
+  }
+
+  public double calcularSueldo() {
+    return 0.00;
+  }
 }
