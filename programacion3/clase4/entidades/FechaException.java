@@ -10,6 +10,8 @@ public class FechaException extends Exception {
     super(mensaje);
   }
 
+  //* Métodos
+
   public String toString() {
     return "Exception " + this.getClass().getName() + ": " + this.getMessage();
   }
