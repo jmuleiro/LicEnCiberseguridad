@@ -1,6 +1,6 @@
 package programacion3.clase2.entidades;
 
-import java.time.DateTimeException;
+import programacion3.clase4.entidades.FechaException;
 
 public class Fecha {
   private int dia;
@@ -28,9 +28,9 @@ public class Fecha {
   }
 
   // Getters & Setters
-  public void setDia(int d) {
+  public void setDia(int d) throws FechaException {
     if (d < 1 || d > 31)
-      throw new DateTimeException("El dia no es valido, debe estar entre 1 y 31");
+      throw new FechaException("El dia no es valido, debe estar entre 1 y 31");
     dia = d;
   }
 
