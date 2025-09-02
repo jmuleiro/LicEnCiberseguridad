@@ -1,13 +1,15 @@
 package programacion3.practica2.entidades;
 
+import java.util.Objects;
+
 import programacion3.practica2.entidades.exceptions.SaldoException;
 
-public abstract class Cuenta {
+public abstract class Cuenta implements Comparable<Cuenta> {
   //* Atributos
   private String titular;
   private int idCuenta;
   private static int ultimoIdCuenta = 1000;
-  private double saldo = 0.00;
+  private Double saldo = 0.00;
 
   //* Constructor
   public Cuenta(String titular) {
@@ -40,11 +42,21 @@ public abstract class Cuenta {
     return idCuenta;
   }
 
-  public double getSaldo () {
+  public Double getSaldo () {
     return saldo;
   }
 
   protected void setSaldo(double cantidad) {
     this.saldo = cantidad; 
+  }
+
+  @Override
+  public int compareTo(Cuenta o) {
+    return this.saldo.compareTo(o.getSaldo());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(idCuenta, titular);
   }
 }

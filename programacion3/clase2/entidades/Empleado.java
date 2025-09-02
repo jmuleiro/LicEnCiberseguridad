@@ -1,5 +1,7 @@
 package programacion3.clase2.entidades;
 
+import java.util.Objects;
+
 public class Empleado implements Comparable<Empleado> {
   private String nombre;
   private Integer legajo;
@@ -39,5 +41,10 @@ public class Empleado implements Comparable<Empleado> {
   @Override
   public int compareTo(Empleado o) {
     return this.legajo.compareTo(o.legajo);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nombre, legajo, fechaIngreso);
   }
 }

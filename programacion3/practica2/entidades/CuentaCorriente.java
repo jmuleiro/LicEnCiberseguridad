@@ -24,6 +24,27 @@ public class CuentaCorriente extends Cuenta {
     this.setSaldo(this.getSaldo() - cantidad);
   }
 
+  public Double limiteRestante() {
+    if (this.getSaldo() < 0)
+      return this.getLimiteGiro() + this.getSaldo();
+    return this.getLimiteGiro();
+  }
+
+  @Override
+  public int compareTo(Cuenta o) {
+    if (o instanceof CuentaCorriente) {
+      Double saldoMasLimite1 = this.getSaldo() + this.limiteRestante();
+      Double saldoMasLimite2 = o.getSaldo() + ((CuentaCorriente) o).limiteRestante();
+      return saldoMasLimite1.compareTo(saldoMasLimite2);
+    }
+    return super.compareTo(o);
+  }
+
+  @Override
+  public String toString() {
+    return "Titular: " + this.getTitular() + ", saldo: " + this.getSaldo() + ", ID cuenta: " + this.getIdCuenta() + ", limite rest.: " + this.limiteRestante();
+  }
+
   // Getters & Setters
   public double getLimiteGiro() {
     return this.limiteGiro;
