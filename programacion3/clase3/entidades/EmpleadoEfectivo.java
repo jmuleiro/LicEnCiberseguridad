@@ -4,11 +4,15 @@ import programacion3.clase2.entidades.Empleado;
 
 public class EmpleadoEfectivo extends Empleado {
   //* Atributos
-  private double sueldoBasico;
-  private double descuento;
+  private double sueldoBasico = 10000.00;
+  private double descuento = 0.05;
   private double porcentajeBonoAntiguedad = 0.05;
 
   //* Constructor(es)
+  public EmpleadoEfectivo(String nombre, Fecha fechaIngreso) {
+    super(nombre, fechaIngreso);
+  }
+  
   public EmpleadoEfectivo(String nombre, Fecha fechaIngreso, double sueldoBasico, double porcentajeDescuento) {
     super(nombre, fechaIngreso);
     this.sueldoBasico = sueldoBasico;

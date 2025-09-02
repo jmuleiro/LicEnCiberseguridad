@@ -1,8 +1,8 @@
 package programacion3.clase2.entidades;
 
-public class Empleado {
+public class Empleado implements Comparable<Empleado> {
   private String nombre;
-  private int legajo;
+  private Integer legajo;
   private Fecha fechaIngreso;
   private static Integer proxLegajo = 1000;
 
@@ -34,5 +34,10 @@ public class Empleado {
 
   public double calcularSueldo() {
     return 0.00;
+  }
+
+  @Override
+  public int compareTo(Empleado o) {
+    return this.legajo.compareTo(o.legajo);
   }
 }
