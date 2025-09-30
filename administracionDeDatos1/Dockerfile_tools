@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/mssql-tools:latest
+
+COPY CreacionBDFacturacion2025.sql /tmp/CreacionDBFacturacion2025.sql
+COPY load_db.sh /tmp/load_db.sh
+RUN chmod +x /tmp/load_db.sh
+CMD ["/tmp/load_db.sh"]

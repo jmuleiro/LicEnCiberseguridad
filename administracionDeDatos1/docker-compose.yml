@@ -1,0 +1,36 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Root1234!
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - mssql
+  
+  mssql_tools:
+    build:
+      context: .
+      dockerfile: Dockerfile_tools
+    image: mssql_tools:latest
+    restart: no
+    container_name: tools
+    depends_on:
+      - mssql
+    entrypoint: /bin/bash
+    tty: true
+    networks:
+      - mssql
+
+networks:
+  mssql:
+    driver: bridge
+
+volumes:
+  mssql_data:
+    driver: local
