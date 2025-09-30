@@ -1,0 +1,21 @@
+services:
+  database:
+    image: mysql:8.0-bookworm
+    container_name: mysql-prog3
+    environment:
+      - MYSQL_ROOT_PASSWORD=Root1234!
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mysql
+
+networks:
+  mysql:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
