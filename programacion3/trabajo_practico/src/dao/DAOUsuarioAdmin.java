@@ -1,0 +1,118 @@
+package programacion3.trabajo_practico.src.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
+
+public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
+  private String DB_URL = "jdbc:mysql://localhost:3306/prog3";
+  private String DB_USER = "root";
+  private String DB_PASSWORD = "Root1234!";
+
+  @Override
+  public void insertar(UsuarioAdmin elemento) throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+      preparedStatement = connection.prepareStatement("INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
+      "VALUES (\"ADM\", ?, ?)");
+      preparedStatement.setString(1, elemento.getNombre());
+      preparedStatement.setString(2, elemento.getApellido());
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al insertar: " + elemento.getClass().getName());
+    }
+  }
+
+  @Override
+  public UsuarioAdmin consultar(int id) throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+      preparedStatement = connection.prepareStatement("SELECT T.nombre_tipo, U.nombre, U.apellido " + 
+      "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario" + 
+      "WHERE U.usuario_id = ?");
+      preparedStatement.setInt(1, id);
+      ResultSet rs = preparedStatement.executeQuery();
+      if (rs.next()) {
+        return new UsuarioAdmin(
+          rs.getString("U.nombre"),
+          rs.getString("U.apellido"),
+          rs.getString("T.nombre_tipo"),
+          id
+        );
+      }
+
+      throw new SQLException("No se encontro el UsuarioAdmin");
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al consultar: UsuarioAdmin");
+    }
+  }
+  
+  @Override
+  public List<UsuarioAdmin> consultarTodos() throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+      preparedStatement = connection.prepareStatement("SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido " + 
+      "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario");
+      ResultSet rs = preparedStatement.executeQuery();
+      List<UsuarioAdmin> usuarioAdmins = new ArrayList<>();
+      while (rs.next()) {
+        usuarioAdmins.add(new UsuarioAdmin(
+          rs.getString("U.nombre"),
+          rs.getString("U.apellido"),
+          rs.getString("T.nombre_tipo"),
+          rs.getInt("U.usuario_id")
+        ));
+      }
+      return usuarioAdmins;
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al consultar: UsuarioAdmin");
+    }
+  }
+
+  @Override
+  public void eliminar(int id) throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+      preparedStatement = connection.prepareStatement("DELETE FROM Usuario WHERE usuario_id = ?");
+      preparedStatement.setInt(1, id);
+      preparedStatement.executeQuery();
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al eliminar: UsuarioAdmin");
+    }
+  }
+
+  @Override
+  public void modificar(UsuarioAdmin elemento) throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+      preparedStatement = connection.prepareStatement("UPDATE Usuario" + 
+      "SET nombre = ?, apellido = ?" +
+      "WHERE usuario_id = ?");
+      preparedStatement.setString(1, elemento.getNombre());
+      preparedStatement.setString(2, elemento.getApellido());
+      preparedStatement.setInt(3, elemento.getId());
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al modificar: " + elemento.getClass().getName());
+    }
+  }
+}
