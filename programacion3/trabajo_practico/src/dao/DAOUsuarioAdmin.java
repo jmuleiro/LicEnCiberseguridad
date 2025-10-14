@@ -13,22 +13,31 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
   private String DB_URL = "jdbc:mysql://localhost:3306/prog3";
   private String DB_USER = "root";
   private String DB_PASSWORD = "Root1234!";
+  private DAOBase daoBase;
+
+  public DAOUsuarioAdmin() throws DAOException {
+    try {
+      this.daoBase = new DAOBase();
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al iniciar: " + this.getClass().getName());
+    } catch (ClassNotFoundException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo de drivers en: " + this.getClass().getName());
+    }
+  }
 
   @Override
   public void insertar(UsuarioAdmin elemento) throws DAOException {
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-    try {
-      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-      preparedStatement = connection.prepareStatement("INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
-      "VALUES (\"ADM\", ?, ?)");
-      preparedStatement.setString(1, elemento.getNombre());
-      preparedStatement.setString(2, elemento.getApellido());
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      System.out.println("Exception: " + e.getMessage());
-      throw new DAOException("Fallo al insertar: " + elemento.getClass().getName());
-    }
+    DAOTemplate.execute(elemento.getClass().getName(), () -> {
+      PreparedStatement preparedStatement = daoBase.prepare(
+        "INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
+        "VALUES (\"ADM\", ?, ?)"
+        );
+        preparedStatement.setString(1, elemento.getNombre());
+        preparedStatement.setString(2, elemento.getApellido());
+        preparedStatement.executeUpdate();
+    });
   }
 
   @Override
