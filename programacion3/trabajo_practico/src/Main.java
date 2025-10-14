@@ -6,11 +6,12 @@ import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
 public class Main {
   public static void main(String[] args) {
     UsuarioAdmin usuarioAdmin = new UsuarioAdmin("Jose", "Suarez", "Bancario");
-    ServiceUsuarioAdmin serviceUsuarioAdmin = new ServiceUsuarioAdmin();
     try {
+      ServiceUsuarioAdmin serviceUsuarioAdmin = new ServiceUsuarioAdmin();
       serviceUsuarioAdmin.insertar(usuarioAdmin);
     } catch (Exception e) {
       System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 }

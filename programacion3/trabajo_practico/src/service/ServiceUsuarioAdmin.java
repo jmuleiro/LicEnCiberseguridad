@@ -7,15 +7,21 @@ import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 public class ServiceUsuarioAdmin {
   private DAOUsuarioAdmin daoUsuarioAdmin;
 
-  public ServiceUsuarioAdmin() {
-    daoUsuarioAdmin = new DAOUsuarioAdmin();
+  public ServiceUsuarioAdmin() throws ServiceException {
+    try {
+      daoUsuarioAdmin = new DAOUsuarioAdmin();
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al iniciar DAO");
+    }
   }
 
   public void insertar(UsuarioAdmin usuarioAdmin) throws ServiceException {
     try {
       daoUsuarioAdmin.insertar(usuarioAdmin);
     } catch (DAOException e) {
-      throw new ServiceException("Fallo al insertar");
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al insertar, DAO: " + daoUsuarioAdmin.getClass().getName());
     }
   }
 }
