@@ -14,6 +14,7 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
   private String DB_USER = "root";
   private String DB_PASSWORD = "Root1234!";
   private DAOBase daoBase;
+  private String entityName;
 
   public DAOUsuarioAdmin() throws DAOException {
     try {
@@ -25,11 +26,12 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
       System.out.println("Exception: " + e.getMessage());
       throw new DAOException("Fallo de drivers en: " + this.getClass().getName());
     }
+    this.entityName = this.getClass().getSimpleName().substring(3);
   }
 
   @Override
   public void insertar(UsuarioAdmin elemento) throws DAOException {
-    DAOTemplate.execute(elemento.getClass().getName(), () -> {
+    new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = daoBase.prepare(
         "INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
         "VALUES (\"ADM\", ?, ?)"
@@ -37,18 +39,18 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
         preparedStatement.setString(1, elemento.getNombre());
         preparedStatement.setString(2, elemento.getApellido());
         preparedStatement.executeUpdate();
+        return null; // Necesario para que no tire error for el tipo Void
     });
   }
 
   @Override
   public UsuarioAdmin consultar(int id) throws DAOException {
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-    try {
-      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT T.nombre_tipo, U.nombre, U.apellido " + 
-      "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario" + 
-      "WHERE U.usuario_id = ?");
+    return new DAOTemplate<UsuarioAdmin>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = daoBase.prepare(
+        "SELECT T.nombre_tipo, U.nombre, U.apellido " + 
+        "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
+        "WHERE U.usuario_id = ?"
+      );
       preparedStatement.setInt(1, id);
       ResultSet rs = preparedStatement.executeQuery();
       if (rs.next()) {
@@ -59,22 +61,17 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
           id
         );
       }
-
-      throw new SQLException("No se encontro el UsuarioAdmin");
-    } catch (SQLException e) {
-      System.out.println("Exception: " + e.getMessage());
-      throw new DAOException("Fallo al consultar: UsuarioAdmin");
-    }
+      return null; // No hubo resultados
+    });
   }
   
   @Override
   public List<UsuarioAdmin> consultarTodos() throws DAOException {
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-    try {
-      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido " + 
-      "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario");
+    return new DAOTemplate<List<UsuarioAdmin>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = daoBase.prepare(
+        "SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido " + 
+        "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario"
+      );
       ResultSet rs = preparedStatement.executeQuery();
       List<UsuarioAdmin> usuarioAdmins = new ArrayList<>();
       while (rs.next()) {
@@ -86,10 +83,7 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
         ));
       }
       return usuarioAdmins;
-    } catch (SQLException e) {
-      System.out.println("Exception: " + e.getMessage());
-      throw new DAOException("Fallo al consultar: UsuarioAdmin");
-    }
+    });
   }
 
   @Override
