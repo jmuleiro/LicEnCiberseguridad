@@ -9,6 +9,9 @@ public class Main {
     try {
       ServiceUsuarioAdmin serviceUsuarioAdmin = new ServiceUsuarioAdmin();
       serviceUsuarioAdmin.insertar(usuarioAdmin);
+      
+      System.out.println(serviceUsuarioAdmin.consultar(1));
+      serviceUsuarioAdmin.consultarTodos().forEach(System.out::println);
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
