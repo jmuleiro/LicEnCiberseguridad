@@ -1,12 +1,7 @@
 package programacion3.trabajo_practico.src.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
-
-import java.sql.DriverManager;
 
 public class DAOBase {
   //* Atributos
