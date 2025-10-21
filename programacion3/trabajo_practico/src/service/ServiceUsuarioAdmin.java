@@ -43,4 +43,22 @@ public class ServiceUsuarioAdmin {
       throw new ServiceException("Fallo al consultar todos, DAO: " + dao.getClass().getName());
     }
   }
+
+  public void eliminar(int id) throws ServiceException {
+    try {
+      dao.eliminar(id);
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al eliminar, DAO: " + dao.getClass().getName());
+    }
+  }
+
+  public void modificar(UsuarioAdmin usuarioAdmin) throws ServiceException {
+    try {
+      dao.modificar(usuarioAdmin);
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al modificar, DAO: " + dao.getClass().getName());
+    }
+  }
 }

@@ -88,34 +88,29 @@ public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
 
   @Override
   public void eliminar(int id) throws DAOException {
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-    try {
-      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-      preparedStatement = connection.prepareStatement("DELETE FROM Usuario WHERE usuario_id = ?");
+    new DAOTemplate<Void>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = daoBase.prepare(
+        "DELETE FROM Usuario WHERE usuario_id = ?"
+      );
       preparedStatement.setInt(1, id);
-      preparedStatement.executeQuery();
-    } catch (SQLException e) {
-      System.out.println("Exception: " + e.getMessage());
-      throw new DAOException("Fallo al eliminar: UsuarioAdmin");
-    }
+      preparedStatement.executeUpdate();
+      return null;
+    });
   }
 
   @Override
   public void modificar(UsuarioAdmin elemento) throws DAOException {
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-    try {
-      connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-      preparedStatement = connection.prepareStatement("UPDATE Usuario" + 
-      "SET nombre = ?, apellido = ?" +
-      "WHERE usuario_id = ?");
+    new DAOTemplate<Void>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = daoBase.prepare(
+        "UPDATE Usuario " +
+        "SET nombre = ?, apellido = ? " +
+        "WHERE usuario_id = ?"
+      );
       preparedStatement.setString(1, elemento.getNombre());
       preparedStatement.setString(2, elemento.getApellido());
       preparedStatement.setInt(3, elemento.getId());
-    } catch (SQLException e) {
-      System.out.println("Exception: " + e.getMessage());
-      throw new DAOException("Fallo al modificar: " + elemento.getClass().getName());
-    }
+      preparedStatement.executeUpdate();
+      return null;
+    });
   }
 }
