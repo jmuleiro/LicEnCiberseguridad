@@ -2,17 +2,12 @@ package programacion3.trabajo_practico.src.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
 public class DAOUsuarioAdmin implements IDAO<UsuarioAdmin> {
-  private String DB_URL = "jdbc:mysql://localhost:3306/prog3";
-  private String DB_USER = "root";
-  private String DB_PASSWORD = "Root1234!";
   private DAOBase daoBase;
   private String entityName;
 
