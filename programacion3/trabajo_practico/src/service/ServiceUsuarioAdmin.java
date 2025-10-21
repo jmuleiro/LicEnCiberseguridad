@@ -5,7 +5,7 @@ import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.dao.DAOUsuarioAdmin;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
-public class ServiceUsuarioAdmin {
+public class ServiceUsuarioAdmin implements IService<UsuarioAdmin, Integer>{
   private DAOUsuarioAdmin dao;
 
   public ServiceUsuarioAdmin() throws ServiceException {
@@ -13,7 +13,7 @@ public class ServiceUsuarioAdmin {
       dao = new DAOUsuarioAdmin();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO");
+      throw new ServiceException("Fallo al iniciar DAO: " + dao.getClass().getName());
     }
   }
 
@@ -26,7 +26,7 @@ public class ServiceUsuarioAdmin {
     }
   }
 
-  public UsuarioAdmin consultar(int id) throws ServiceException {
+  public UsuarioAdmin consultar(Integer id) throws ServiceException {
     try {
       return dao.consultar(id);
     } catch (DAOException e) {
@@ -44,7 +44,7 @@ public class ServiceUsuarioAdmin {
     }
   }
 
-  public void eliminar(int id) throws ServiceException {
+  public void eliminar(Integer id) throws ServiceException {
     try {
       dao.eliminar(id);
     } catch (DAOException e) {
