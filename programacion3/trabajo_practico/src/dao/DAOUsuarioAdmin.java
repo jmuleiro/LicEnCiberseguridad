@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
 
-public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin> {
+public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integer> {
   public DAOUsuarioAdmin() throws DAOException {
     super();
   }
@@ -28,7 +28,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin> {
   }
 
   @Override
-  public UsuarioAdmin consultar(int id) throws DAOException {
+  public UsuarioAdmin consultar(Integer id) throws DAOException {
     return new DAOTemplate<UsuarioAdmin>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
         "SELECT T.nombre_tipo, U.nombre, U.apellido " + 
@@ -71,7 +71,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin> {
   }
 
   @Override
-  public void eliminar(int id) throws DAOException {
+  public void eliminar(Integer id) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
         "DELETE FROM Usuario WHERE usuario_id = ?"
