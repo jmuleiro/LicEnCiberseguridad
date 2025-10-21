@@ -13,6 +13,17 @@ CREATE TABLE Tipo_Usuario (
 INSERT INTO Tipo_Usuario VALUES ('ADM', 'Administrador');
 INSERT INTO Tipo_Usuario VALUES ('CLI', 'Cliente');
 
+/* Moneda */
+CREATE TABLE Moneda (
+    cod_moneda CHAR(3) NOT NULL,
+    nombre_moneda CHAR(50) NOT NULL,
+    PRIMARY KEY (cod_moneda)
+);
+
+-- Cargar Monedas
+INSERT INTO Moneda VALUES ('ARS', 'Pesos Argentinos');
+INSERT INTO Moneda VALUES ('USD', 'Dolares');
+
 /* Usuario */
 CREATE TABLE Usuario (
     usuario_id INT NOT NULL AUTO_INCREMENT,
