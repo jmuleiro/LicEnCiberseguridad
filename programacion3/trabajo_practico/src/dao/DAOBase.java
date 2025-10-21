@@ -3,29 +3,27 @@ package programacion3.trabajo_practico.src.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
+
 import java.sql.DriverManager;
 
 public class DAOBase {
-  //* String de conexión
-  private String DB_URL = "jdbc:mysql://localhost:3306/prog3";
-  private String DB_USER = "root";
-  private String DB_PASSWORD = "Root1234!";
-  private String DB_JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-  private Connection conn;
+  //* Atributos
+  protected ConnectionHelper conn;
+  protected String entityName;
 
-  public DAOBase() throws SQLException, ClassNotFoundException{
-    Class.forName(DB_JDBC_DRIVER);
-    conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+  //* Constructor
+  public DAOBase() throws DAOException {
+    try {
+      this.conn = new ConnectionHelper();
+    } catch (SQLException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo al iniciar DAO: " + this.getClass().getName());
+    } catch (ClassNotFoundException e) {
+      System.out.println("Exception: " + e.getMessage());
+      throw new DAOException("Fallo de drivers en: " + this.getClass().getName());
+    }
+    this.entityName = this.getClass().getSimpleName().substring(3);
   }
-
-  //* Helper de DB
-  public PreparedStatement prepare(String statement) throws SQLException {
-    return conn.prepareStatement(statement);
-  }
-
-  public void close() throws SQLException {
-    this.conn.close();
-  }
-
-  
 }
