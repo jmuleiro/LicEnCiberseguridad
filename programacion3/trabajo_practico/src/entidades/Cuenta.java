@@ -6,7 +6,7 @@ public class Cuenta {
   private Moneda moneda;
   private String alias;
   private int cbu;
-  private double saldo;
+  protected double saldo;
 
   //* Constructores
   public Cuenta(Moneda moneda, String alias, int cbu) {

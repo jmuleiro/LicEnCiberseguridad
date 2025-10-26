@@ -16,7 +16,14 @@ public class CuentaCorriente extends Cuenta {
   }
 
   //* Métodos
-  
+  @Override
+  public double extraer(double cantidad) {
+    if (this.saldo + this.limiteGiro < cantidad)
+      throw new RuntimeException("Saldo insuficiente");
+    
+    this.saldo -= cantidad;
+    return this.saldo;
+  }
 
   //* Getters & Setters
   public double getLimiteGiro() {
