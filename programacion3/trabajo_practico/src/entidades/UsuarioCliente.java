@@ -15,16 +15,10 @@ public class UsuarioCliente extends Usuario {
     this.tarjetas = new ArrayList<>();
   }
 
-  public UsuarioCliente(String nombre, String apellido, List<Cuenta> cuentas, List<Tarjeta> tarjetas) {
-    super(nombre, apellido);
-    this.cuentas = cuentas;
-    this.tarjetas = tarjetas;
-  }
-
-  public UsuarioCliente(String nombre, String apellido, List<Cuenta> cuentas, List<Tarjeta> tarjetas, int id) {
+  public UsuarioCliente(String nombre, String apellido, int id) {
     super(nombre, apellido, id);
-    this.cuentas = cuentas;
-    this.tarjetas = tarjetas;
+    this.cuentas = new ArrayList<>();
+    this.tarjetas = new ArrayList<>();
   }
 
   //* Métodos
