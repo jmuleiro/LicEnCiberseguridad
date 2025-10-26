@@ -17,11 +17,11 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
       PreparedStatement preparedStatement = conn.prepare(
         "INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
         "VALUES (\"ADM\", ?, ?)"
-        );
-        preparedStatement.setString(1, elemento.getNombre());
-        preparedStatement.setString(2, elemento.getApellido());
-        preparedStatement.executeUpdate();
-        return null; // Necesario para que no tire error for el tipo Void
+      );
+      preparedStatement.setString(1, elemento.getNombre());
+      preparedStatement.setString(2, elemento.getApellido());
+      preparedStatement.executeUpdate();
+      return null; // Necesario para que no tire error por el tipo Void
     });
   }
 
