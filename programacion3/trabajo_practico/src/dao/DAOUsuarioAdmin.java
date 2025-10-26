@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
-import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
 
 public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integer> {
   public DAOUsuarioAdmin() throws DAOException {
