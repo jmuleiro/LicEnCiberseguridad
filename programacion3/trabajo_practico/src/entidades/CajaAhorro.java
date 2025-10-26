@@ -20,6 +20,15 @@ public class CajaAhorro extends Cuenta {
   }
 
   //* Métodos
+  @Override
+  public double extraer(double cantidad) {
+    if (this.saldo < cantidad)
+      throw new RuntimeException("Saldo insuficiente");
+    
+    this.saldo -= cantidad;
+    return this.saldo;
+  }
+  
   public double calcularInteres(double monto) {
     return monto * (this.getPorcentajeInteres() / 100);
   }

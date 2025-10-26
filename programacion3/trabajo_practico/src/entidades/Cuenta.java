@@ -1,6 +1,6 @@
 package programacion3.trabajo_practico.src.entidades;
 
-public class Cuenta {
+public abstract class Cuenta {
   //* Atributos
   private int id;
   private Moneda moneda;
@@ -30,13 +30,7 @@ public class Cuenta {
     return this.saldo;
   }
 
-  public double extraer(double cantidad) {
-    if (this.saldo < cantidad)
-      throw new RuntimeException("Saldo insuficiente");
-    
-    this.saldo -= cantidad;
-    return this.saldo;
-  }
+  public abstract double extraer(double cantidad);
 
   // TODO: public void transferir(Transferencia t) {}
 
