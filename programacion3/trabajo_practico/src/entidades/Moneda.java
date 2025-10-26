@@ -25,4 +25,11 @@ public class Moneda {
   public String toString() {
     return this.nombre;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof Moneda)
+      return this.codigo == ((Moneda) obj).getCodigo();
+    return false;
+  }
 }
