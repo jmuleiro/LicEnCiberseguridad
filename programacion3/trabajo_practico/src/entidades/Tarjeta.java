@@ -24,13 +24,13 @@ public abstract class Tarjeta {
     consumos = new ArrayList<>();
   }
 
-  public Tarjeta(int numero, LocalDate fechaVencimiento, int cvc, double limite, int id, List<Consumo> consumos) {
+  public Tarjeta(int numero, LocalDate fechaVencimiento, int cvc, double limite, int id) {
     this.numero = numero;
     this.fechaVencimiento = fechaVencimiento;
     this.cvc = cvc;
     this.limite = limite;
     this.id = id;
-    this.consumos = consumos;
+    consumos = new ArrayList<>();
   }
 
   //* Métodos
