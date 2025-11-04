@@ -4,7 +4,7 @@ import java.util.List;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
-public class ServiceUsuarioCliente extends ServiceBase<UsuarioCliente, Integer>{
+public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>{
   public ServiceUsuarioCliente() throws ServiceException {
     super();
   }
@@ -16,8 +16,11 @@ public class ServiceUsuarioCliente extends ServiceBase<UsuarioCliente, Integer>{
     });
   }
 
+  @Override
   public UsuarioCliente consultar(String username) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    return new ServiceTemplate<UsuarioCliente>().execute(() -> {
+      return dao.consultar(username);
+    });
   }
 
   @Override
