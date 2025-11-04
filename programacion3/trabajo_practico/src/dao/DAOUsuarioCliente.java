@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class DAOUsuarioCliente extends DAOBase implements IDAO<UsuarioCliente, Integer> {
@@ -30,18 +31,39 @@ public class DAOUsuarioCliente extends DAOBase implements IDAO<UsuarioCliente, I
   public UsuarioCliente consultar(Integer id) throws DAOException {
     return new DAOTemplate<UsuarioCliente>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT T.nombre_tipo, U.nombre, U.apellido, U.usuario " + 
-        "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
-        "WHERE U.usuario_id = ?"
+        "SELECT nombre, apellido, usuario " + 
+        "FROM Usuario " + 
+        "WHERE usuario_id = ?"
       );
       preparedStatement.setInt(1, id);
       ResultSet rs = preparedStatement.executeQuery();
       if (rs.next()) {
         return new UsuarioCliente(
-          rs.getString("U.nombre"),
-          rs.getString("U.apellido"),
-          rs.getString("U.usuario"),
+          rs.getString("nombre"),
+          rs.getString("apellido"),
+          rs.getString("usuario"),
           id
+        );
+      }
+      return null; // No hubo resultados
+    });
+  }
+
+  public UsuarioCliente consultar(String usuario) throws DAOException {
+    return new DAOTemplate<UsuarioCliente>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+        "SELECT nombre, apellido, usuario_id " + 
+        "FROM Usuario " + 
+        "WHERE usuario = ?"
+      );
+      preparedStatement.setString(1, usuario);
+      ResultSet rs = preparedStatement.executeQuery();
+      if (rs.next()) {
+        return new UsuarioCliente(
+          rs.getString("nombre"),
+          rs.getString("apellido"),
+          usuario,
+          rs.getInt("usuario_id")
         );
       }
       return null; // No hubo resultados
@@ -52,17 +74,17 @@ public class DAOUsuarioCliente extends DAOBase implements IDAO<UsuarioCliente, I
   public List<UsuarioCliente> consultarTodos() throws DAOException {
     return new DAOTemplate<List<UsuarioCliente>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido, U.usuario " + 
-        "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario"
+        "SELECT usuario_id, nombre, apellido, usuario " + 
+        "FROM Usuario"
       );
       ResultSet rs = preparedStatement.executeQuery();
       List<UsuarioCliente> usuarioClientes = new ArrayList<>();
       while (rs.next()) {
         usuarioClientes.add(new UsuarioCliente(
-          rs.getString("U.nombre"),
-          rs.getString("U.apellido"),
-          rs.getString("U.usuario"),
-          rs.getInt("U.usuario_id")
+          rs.getString("nombre"),
+          rs.getString("apellido"),
+          rs.getString("usuario"),
+          rs.getInt("usuario_id")
         ));
       }
       return usuarioClientes;

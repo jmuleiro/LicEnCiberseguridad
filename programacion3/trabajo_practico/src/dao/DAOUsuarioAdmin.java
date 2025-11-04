@@ -48,6 +48,28 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
       return null; // No hubo resultados
     });
   }
+
+  public UsuarioAdmin consultar(String usuario) throws DAOException {
+    return new DAOTemplate<UsuarioAdmin>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+        "SELECT T.nombre_tipo, U.nombre, U.apellido, U.usuario_id " + 
+        "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
+        "WHERE U.usuario = ?"
+      );
+      preparedStatement.setString(1, usuario);
+      ResultSet rs = preparedStatement.executeQuery();
+      if (rs.next()) {
+        return new UsuarioAdmin(
+          rs.getString("U.nombre"),
+          rs.getString("U.apellido"),
+          rs.getString("T.nombre_tipo"),
+          usuario,
+          rs.getInt("U.usuario_id")
+        );
+      }
+      return null; // No hubo resultados
+    });
+  }
   
   @Override
   public List<UsuarioAdmin> consultarTodos() throws DAOException {
