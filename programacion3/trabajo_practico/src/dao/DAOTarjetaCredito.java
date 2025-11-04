@@ -4,11 +4,9 @@ import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.Consumo;
-import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 
 public class DAOTarjetaCredito extends DAOBase implements IDAO<TarjetaCredito, Integer> {
   public DAOTarjetaCredito() throws DAOException {
