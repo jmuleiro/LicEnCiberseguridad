@@ -3,7 +3,7 @@ package programacion3.trabajo_practico.src.dao;
 import java.sql.SQLException;
 import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
 
-public class DAOBase {
+public abstract class DAOBase<T, K> implements IDAO<T, K> {
   //* Atributos
   protected ConnectionHelper conn;
   protected String entityName;

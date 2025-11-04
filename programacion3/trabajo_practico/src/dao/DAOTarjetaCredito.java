@@ -8,7 +8,7 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class DAOTarjetaCredito extends DAOBase implements IDAO<TarjetaCredito, Integer> {
+public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public DAOTarjetaCredito() throws DAOException {
     super();
   }

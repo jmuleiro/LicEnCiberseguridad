@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 
-public class DAOMoneda extends DAOBase implements IDAO<Moneda, String> {
+public class DAOMoneda extends DAOBase<Moneda, String>  {
   public DAOMoneda() throws DAOException {
     super();
   }
