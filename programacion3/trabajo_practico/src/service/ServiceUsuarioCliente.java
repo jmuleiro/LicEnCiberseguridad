@@ -11,7 +11,9 @@ public class ServiceUsuarioCliente extends ServiceBase<UsuarioCliente, Integer>{
 
   @Override
   public UsuarioCliente consultar(Integer id) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    return new ServiceTemplate<UsuarioCliente>().execute(() -> {
+      return dao.consultar(id);
+    });
   }
 
   public UsuarioCliente consultar(String username) throws ServiceException {
