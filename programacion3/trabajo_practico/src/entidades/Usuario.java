@@ -5,18 +5,21 @@ public abstract class Usuario {
   private int id;
   private String nombre;
   private String apellido;
+  private String usuario;
 
   //* Constructores
   public Usuario() {}
   
-  public Usuario(String nombre, String apellido) {
+  public Usuario(String nombre, String apellido, String usuario) {
     this.nombre = nombre;
     this.apellido = apellido;
+    this.usuario = usuario;
   }
 
-  public Usuario(String nombre, String apellido, int id) {
+  public Usuario(String nombre, String apellido, String usuario, int id) {
     this.nombre = nombre;
     this.apellido = apellido;
+    this.usuario = usuario;
     this.id = id;
   }
 
@@ -31,6 +34,10 @@ public abstract class Usuario {
 
   public String getApellido() {
     return this.apellido;
+  }
+
+  public String getUsuario() {
+    return this.usuario;
   }
 
   //* Métodos

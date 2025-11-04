@@ -15,11 +15,12 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
   public void insertar(UsuarioAdmin elemento) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido)" +
-        "VALUES (\"ADM\", ?, ?)"
+        "INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido, usuario)" +
+        "VALUES (\"ADM\", ?, ?, ?)"
       );
       preparedStatement.setString(1, elemento.getNombre());
       preparedStatement.setString(2, elemento.getApellido());
+      preparedStatement.setString(3, elemento.getUsuario());
       preparedStatement.executeUpdate();
       return null; // Necesario para que no tire error por el tipo Void
     });
@@ -29,7 +30,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
   public UsuarioAdmin consultar(Integer id) throws DAOException {
     return new DAOTemplate<UsuarioAdmin>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT T.nombre_tipo, U.nombre, U.apellido " + 
+        "SELECT T.nombre_tipo, U.nombre, U.apellido, U.usuario " + 
         "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
         "WHERE U.usuario_id = ?"
       );
@@ -40,6 +41,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
           rs.getString("U.nombre"),
           rs.getString("U.apellido"),
           rs.getString("T.nombre_tipo"),
+          rs.getString("U.usuario"),
           id
         );
       }
@@ -51,7 +53,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
   public List<UsuarioAdmin> consultarTodos() throws DAOException {
     return new DAOTemplate<List<UsuarioAdmin>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido " + 
+        "SELECT U.usuario_id, T.nombre_tipo, U.nombre, U.apellido, U.usuario " + 
         "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario"
       );
       ResultSet rs = preparedStatement.executeQuery();
@@ -61,6 +63,7 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
           rs.getString("U.nombre"),
           rs.getString("U.apellido"),
           rs.getString("T.nombre_tipo"),
+          rs.getString("U.usuario"),
           rs.getInt("U.usuario_id")
         ));
       }
@@ -85,12 +88,13 @@ public class DAOUsuarioAdmin extends DAOBase implements IDAO<UsuarioAdmin, Integ
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
         "UPDATE Usuario " +
-        "SET nombre = ?, apellido = ? " +
+        "SET nombre = ?, apellido = ?, usuario = ? " +
         "WHERE usuario_id = ?"
       );
       preparedStatement.setString(1, elemento.getNombre());
       preparedStatement.setString(2, elemento.getApellido());
-      preparedStatement.setInt(3, elemento.getId());
+      preparedStatement.setString(3, elemento.getUsuario());
+      preparedStatement.setInt(4, elemento.getId());
       preparedStatement.executeUpdate();
       return null;
     });

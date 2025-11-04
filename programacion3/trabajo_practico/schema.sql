@@ -47,11 +47,13 @@ INSERT INTO Tipo_Tarjeta VALUES ('CRE', 'Credito');
 INSERT INTO Tipo_Tarjeta VALUES ('DEB', 'Debito');
 
 /* Usuario */
+/*todo: implementar contraseña hasheada si hay tiempo*/
 CREATE TABLE Usuario (
     usuario_id INT NOT NULL AUTO_INCREMENT,
     cod_tipo_usuario CHAR(3) NOT NULL,
     nombre CHAR(50) NOT NULL,
     apellido CHAR(50) NOT NULL,
+    usuario CHAR(50) NOT NULL,
     PRIMARY KEY (usuario_id),
     FOREIGN KEY (cod_tipo_usuario)
       REFERENCES Tipo_Usuario(cod_tipo_usuario)

@@ -9,14 +9,14 @@ public class UsuarioCliente extends Usuario {
   private List<Tarjeta> tarjetas;
 
   //* Constructores
-  public UsuarioCliente(String nombre, String apellido) {
-    super(nombre, apellido);
+  public UsuarioCliente(String nombre, String apellido, String usuario) {
+    super(nombre, apellido, usuario);
     this.cuentas = new ArrayList<>();
     this.tarjetas = new ArrayList<>();
   }
 
-  public UsuarioCliente(String nombre, String apellido, int id) {
-    super(nombre, apellido, id);
+  public UsuarioCliente(String nombre, String apellido, String usuario, int id) {
+    super(nombre, apellido, usuario, id);
     this.cuentas = new ArrayList<>();
     this.tarjetas = new ArrayList<>();
   }

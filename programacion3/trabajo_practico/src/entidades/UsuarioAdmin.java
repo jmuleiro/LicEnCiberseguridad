@@ -9,13 +9,13 @@ public class UsuarioAdmin extends Usuario {
     super();
   }
 
-  public UsuarioAdmin(String nombre, String apellido, String rol) {
-    super(nombre, apellido);
+  public UsuarioAdmin(String nombre, String apellido, String usuario, String rol) {
+    super(nombre, apellido, usuario);
     this.rol = rol;
   }
 
-  public UsuarioAdmin(String nombre, String apellido, String rol, int id) {
-    super(nombre, apellido, id);
+  public UsuarioAdmin(String nombre, String apellido, String usuario, String rol, int id) {
+    super(nombre, apellido, usuario, id);
     this.rol = rol;
   }
 
