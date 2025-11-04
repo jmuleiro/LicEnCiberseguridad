@@ -35,6 +35,15 @@ public class ServiceUsuarioAdmin implements IService<UsuarioAdmin, Integer>{
     }
   }
 
+  public UsuarioAdmin consultar(String username) throws ServiceException {
+    try {
+      return dao.consultar(username);
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al consultar, DAO: " + dao.getClass().getName());
+    }
+  }
+
   public List<UsuarioAdmin> consultarTodos() throws ServiceException {
     try {
       return dao.consultarTodos();
