@@ -71,6 +71,7 @@ CREATE TABLE Cuenta (
     cbu INT NOT NULL,
     limite_giro DOUBLE NOT NULL,
     porcentaje_interes DOUBLE NOT NULL,
+    saldo DOUBLE NOT NULL,
     PRIMARY KEY (cuenta_id),
     
     -- Foreign Key 1: Tipo_Cuenta
