@@ -14,13 +14,13 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   }
 
   @Override
-  public void insertar(TarjetaCredito elemento) throws DAOException {
+  public void insertar(TarjetaCredito elemento) throws UnsupportedOperationException {
     // Se deja este método implementado para compatibilidad
     throw new UnsupportedOperationException("El método insertar requiere el usuario como parámetro");
   }
 
   public void insertar(TarjetaCredito elemento, UsuarioCliente usuario) throws DAOException {
-    new DAOTemplate<TarjetaCredito>().execute(entityName, () -> {
+    new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
         "INSERT INTO Tarjeta (usuario_id, cod_tipo_tarjeta, limite, numero, fecha_vencimiento, cvc)" + 
         "VALUES (?, \"CRE\", ?, ?, ?, ?)"
