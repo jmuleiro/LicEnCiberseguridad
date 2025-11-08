@@ -32,7 +32,8 @@ public class DAOUsuarioAdmin extends DAOBase<UsuarioAdmin, Integer> {
       PreparedStatement preparedStatement = conn.prepare(
         "SELECT T.nombre_tipo, U.nombre, U.apellido, U.usuario " + 
         "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
-        "WHERE U.usuario_id = ?"
+        "WHERE U.usuario_id = ? " +
+        "AND T.cod_tipo_usuario = \"ADM\""
       );
       preparedStatement.setInt(1, id);
       ResultSet rs = preparedStatement.executeQuery();
@@ -54,7 +55,8 @@ public class DAOUsuarioAdmin extends DAOBase<UsuarioAdmin, Integer> {
       PreparedStatement preparedStatement = conn.prepare(
         "SELECT T.nombre_tipo, U.nombre, U.apellido, U.usuario_id " + 
         "FROM Usuario AS U INNER JOIN Tipo_Usuario AS T ON T.cod_tipo_usuario = U.cod_tipo_usuario " + 
-        "WHERE U.usuario = ?"
+        "WHERE U.usuario = ? " +
+        "AND T.cod_tipo_usuario = \"ADM\""
       );
       preparedStatement.setString(1, usuario);
       ResultSet rs = preparedStatement.executeQuery();

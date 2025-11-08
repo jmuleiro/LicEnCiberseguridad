@@ -13,7 +13,7 @@ public class ServiceUsuarioAdmin implements IService<UsuarioAdmin, Integer>{
       dao = new DAOUsuarioAdmin();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO: " + dao.getClass().getName());
+      throw new ServiceException("Fallo al iniciar DAO");
     }
   }
 
