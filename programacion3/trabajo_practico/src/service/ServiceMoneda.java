@@ -5,7 +5,7 @@ import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.dao.DAOMoneda;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 
-public class ServiceMoneda implements IService<Moneda, String>{
+public class ServiceMoneda extends ServiceBase<Moneda, String>{
   private DAOMoneda dao;
 
   public ServiceMoneda() throws ServiceException {
@@ -13,7 +13,7 @@ public class ServiceMoneda implements IService<Moneda, String>{
       dao = new DAOMoneda();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO: "  + dao.getClass().getName());
+      throw new ServiceException("Fallo al iniciar DAO");
     }
   }
 

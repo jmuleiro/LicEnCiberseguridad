@@ -5,7 +5,7 @@ import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.dao.DAOUsuarioAdmin;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
-public class ServiceUsuarioAdmin implements IService<UsuarioAdmin, Integer>{
+public class ServiceUsuarioAdmin extends ServiceBaseS<UsuarioAdmin, Integer> {
   private DAOUsuarioAdmin dao;
 
   public ServiceUsuarioAdmin() throws ServiceException {

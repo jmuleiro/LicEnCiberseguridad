@@ -53,9 +53,7 @@ public class FormularioLoginAdmin extends JPanel {
       public void actionPerformed(ActionEvent e) {
         try {
           serviceUsuarioAdmin = new ServiceUsuarioAdmin();
-          //todo: Aca tendria que consultar por "username", 
-          //todo: agregar al esquema, clase, DAO, y Service
-          UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.consultar(Integer.valueOf(jTextFieldUsuario.getText()));
+          UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.consultar(jTextFieldUsuario.getText());
           if (usuarioAdmin == null)
             JOptionPane.showMessageDialog(null, "Usuario no encontrado");
         } catch (ServiceException exc) {
