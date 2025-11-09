@@ -39,17 +39,25 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
 
   @Override
   public void insertar(UsuarioCliente elemento) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.insertar(elemento);
+      return null;
+    });
   }
 
   @Override
   public void eliminar(Integer id) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.eliminar(id);
+      return null;
+    });
   }
 
   @Override
   public void modificar(UsuarioCliente elemento) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.modificar(elemento);
+      return null;
+    });
   }
-
 }
