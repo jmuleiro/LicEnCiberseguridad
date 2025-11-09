@@ -2,8 +2,6 @@ package programacion3.trabajo_practico.src.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,6 +12,9 @@ import javax.swing.JTextField;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class FormularioLoginAdmin extends JPanel {
   //* Atributos
@@ -48,17 +49,21 @@ public class FormularioLoginAdmin extends JPanel {
     formularioLoginAdmin.add(jTextFieldPassword);
     formularioLoginAdmin.add(jButtonLogin);
 
-    jButtonLogin.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          serviceUsuarioAdmin = new ServiceUsuarioAdmin();
-          UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.consultar(jTextFieldUsuario.getText());
-          if (usuarioAdmin == null)
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado");
-        } catch (ServiceException exc) {
-          JOptionPane.showMessageDialog(null, exc);
+    jButtonLogin.addActionListener(e -> {
+      try {
+        serviceUsuarioAdmin = new ServiceUsuarioAdmin();
+        UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.consultar(jTextFieldUsuario.getText());
+        if (usuarioAdmin == null) {
+          JOptionPane.showMessageDialog(null, "Usuario no encontrado");
+          return;
         }
+        Map<String, String> contexto = new HashMap<>();
+        contexto.put("usuario", usuarioAdmin.getUsuario());
+        contexto.put("nombre", usuarioAdmin.getNombre());
+        contexto.put("apellido", usuarioAdmin.getApellido());
+        panel.mostrar(2, contexto);
+      } catch (ServiceException exc) {
+        JOptionPane.showMessageDialog(null, exc);
       }
     });
 
