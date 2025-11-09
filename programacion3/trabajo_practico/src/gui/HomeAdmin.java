@@ -13,6 +13,7 @@ public class HomeAdmin extends JPanelBase {
   JLabel jLabelBienvenido;
   JLabel jLabelUsuario;
   JButton jButtonAbmUsuarios;
+  JButton jButtonSalir;
 
   //* Constructor
   public HomeAdmin(PanelManager panel, Map<String, String> contexto) {
@@ -28,11 +29,17 @@ public class HomeAdmin extends JPanelBase {
     actualPanel.add(jLabelBienvenido);
     actualPanel.add(jLabelUsuario);
     jButtonAbmUsuarios = new JButton("ABM Usuarios");
+    jButtonSalir = new JButton("Salir");
     actualPanel.add(jButtonAbmUsuarios);
+    actualPanel.add(jButtonSalir);
 
     jButtonAbmUsuarios.addActionListener(e -> {
       contexto.put("prev", "2");
       panel.mostrar(3, contexto);
+    });
+
+    jButtonSalir.addActionListener(e -> {
+      panel.jFrame.dispose();
     });
 
     setLayout(new BorderLayout());
