@@ -67,6 +67,14 @@ public class FormularioLoginAdmin extends JPanel {
       }
     });
 
+    jTextFieldPassword.addActionListener(e -> {
+      jButtonLogin.doClick();
+    });
+    jTextFieldUsuario.addActionListener(e -> {
+      jButtonLogin.doClick();
+    });
+
+
     setLayout(new BorderLayout());
     add(formularioLoginAdmin, BorderLayout.CENTER);
   }
