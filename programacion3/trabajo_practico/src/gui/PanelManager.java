@@ -1,5 +1,7 @@
 package programacion3.trabajo_practico.src.gui;
 
+import java.util.Map;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -21,15 +23,25 @@ public class PanelManager {
     jFrame.getContentPane().repaint();
     jFrame.setVisible(true);
     jFrame.pack();
-    jFrame.setSize(200, 100);
   }
 
   public void mostrar(int tipo) {
+    mostrar(tipo, Map.of());
+  }
+
+  public void mostrar(int tipo, Map<String, String> contexto) {
     switch (tipo) {
       case 1:
         mostrar(new FormularioLoginAdmin(this));
+        jFrame.setSize(200, 100);
         break;
       case 2:
+        mostrar(new HomeAdmin(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
+      case 3:
+        mostrar(new AbmUsuarios(this, contexto));
+        jFrame.setSize(800, 300);
         break;
       default:
         throw new IllegalArgumentException("Tipo de ventana no definido: " + tipo);
