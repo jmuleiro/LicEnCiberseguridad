@@ -11,7 +11,7 @@ public abstract class ServiceBaseS<T, K> implements IService<T, K> {
       dao = new DAOBaseS<T, K>();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO: " + dao.getClass().getName());
+      throw new ServiceException("Fallo al iniciar DAO");
     }
   }
 
