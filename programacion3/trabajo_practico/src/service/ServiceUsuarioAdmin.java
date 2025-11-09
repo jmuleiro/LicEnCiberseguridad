@@ -18,56 +18,41 @@ public class ServiceUsuarioAdmin extends ServiceBaseS<UsuarioAdmin, Integer> {
   }
 
   public void insertar(UsuarioAdmin usuarioAdmin) throws ServiceException {
-    try {
+    new ServiceTemplate<Void>().execute(() -> {
       dao.insertar(usuarioAdmin);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al insertar, DAO: " + dao.getClass().getName());
-    }
+      return null;
+    });
   }
 
   public UsuarioAdmin consultar(Integer id) throws ServiceException {
-    try {
+    return new ServiceTemplate<UsuarioAdmin>().execute(() -> {
       return dao.consultar(id);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al consultar, DAO: " + dao.getClass().getName());
-    }
+    });
   }
 
   public UsuarioAdmin consultar(String username) throws ServiceException {
-    try {
+    return new ServiceTemplate<UsuarioAdmin>().execute(() -> {
       return dao.consultar(username);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al consultar, DAO: " + dao.getClass().getName());
-    }
+    });
   }
 
   public List<UsuarioAdmin> consultarTodos() throws ServiceException {
-    try {
+    return new ServiceTemplate<List<UsuarioAdmin>>().execute(() -> {
       return dao.consultarTodos();
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al consultar todos, DAO: " + dao.getClass().getName());
-    }
+    });
   }
 
   public void eliminar(Integer id) throws ServiceException {
-    try {
+    new ServiceTemplate<Void>().execute(() -> {
       dao.eliminar(id);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al eliminar, DAO: " + dao.getClass().getName());
-    }
+      return null;
+    });
   }
 
   public void modificar(UsuarioAdmin usuarioAdmin) throws ServiceException {
-    try {
+    new ServiceTemplate<Void>().execute(() -> {
       dao.modificar(usuarioAdmin);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al modificar, DAO: " + dao.getClass().getName());
-    }
+      return null;
+    });
   }
 }

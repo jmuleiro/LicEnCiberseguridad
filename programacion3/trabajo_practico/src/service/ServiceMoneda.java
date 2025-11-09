@@ -19,37 +19,40 @@ public class ServiceMoneda extends ServiceBase<Moneda, String>{
 
   @Override
   public Moneda consultar(String id) throws ServiceException {
-    try {
+    return new ServiceTemplate<Moneda>().execute(() -> {
       return dao.consultar(id);
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al consultar, DAO: " + dao.getClass().getName());
-    }
+    });
   }
 
   @Override
   public List<Moneda> consultarTodos() throws ServiceException {
-    try {
+    return new ServiceTemplate<List<Moneda>>().execute(() -> {
       return dao.consultarTodos();
-    } catch (DAOException e) {
-      System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al consultar todos, DAO: " + dao.getClass().getName());
-    }
+    });
   }
   
   //* Métodos no implementados
   @Override
   public void insertar(Moneda elemento) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.insertar(elemento);
+      return null;
+    });
   }
 
   @Override
   public void eliminar(String id) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.eliminar(id);
+      return null;
+    });
   }
 
   @Override
   public void modificar(Moneda elemento) throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.modificar(elemento);
+      return null;
+    });
   }
 }
