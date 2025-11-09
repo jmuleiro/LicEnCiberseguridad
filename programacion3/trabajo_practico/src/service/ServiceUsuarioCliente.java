@@ -2,11 +2,18 @@ package programacion3.trabajo_practico.src.service;
 
 import java.util.List;
 
+import programacion3.trabajo_practico.src.dao.DAOException;
+import programacion3.trabajo_practico.src.dao.DAOUsuarioCliente;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>{
   public ServiceUsuarioCliente() throws ServiceException {
-    super();
+    try {
+      dao = new DAOUsuarioCliente();
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());
+    }
   }
 
   @Override
@@ -25,7 +32,9 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
 
   @Override
   public List<UsuarioCliente> consultarTodos() throws ServiceException {
-    throw new UnsupportedOperationException("Método no implementado");
+    return new ServiceTemplate<List<UsuarioCliente>>().execute(() -> {
+      return dao.consultarTodos();
+    });
   }
 
   @Override

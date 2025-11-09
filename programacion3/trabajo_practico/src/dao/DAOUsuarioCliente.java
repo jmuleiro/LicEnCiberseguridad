@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
-public class DAOUsuarioCliente extends DAOBase<UsuarioCliente, Integer> {
+public class DAOUsuarioCliente extends DAOBaseS<UsuarioCliente, Integer> {
   public DAOUsuarioCliente() throws DAOException {
     super();
   }

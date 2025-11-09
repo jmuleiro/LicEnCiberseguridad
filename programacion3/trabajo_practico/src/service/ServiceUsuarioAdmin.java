@@ -13,7 +13,7 @@ public class ServiceUsuarioAdmin extends ServiceBaseS<UsuarioAdmin, Integer> {
       dao = new DAOUsuarioAdmin();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO");
+      throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());
     }
   }
 

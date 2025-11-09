@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
-public class DAOUsuarioAdmin extends DAOBase<UsuarioAdmin, Integer> {
+public class DAOUsuarioAdmin extends DAOBaseS<UsuarioAdmin, Integer> {
   public DAOUsuarioAdmin() throws DAOException {
     super();
   }

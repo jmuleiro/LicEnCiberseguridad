@@ -13,7 +13,7 @@ public class ServiceMoneda extends ServiceBase<Moneda, String>{
       dao = new DAOMoneda();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
-      throw new ServiceException("Fallo al iniciar DAO");
+      throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());
     }
   }
 
