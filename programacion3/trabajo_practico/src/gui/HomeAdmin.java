@@ -23,13 +23,17 @@ public class HomeAdmin extends JPanelBase {
 
   @Override
   public void iniciar() {
+    actualPanel.setLayout(new GridLayout(2, 2));
+
     jLabelBienvenido = new JLabel("Bienvenido, " + contexto.get("nombre") + " " + contexto.get("apellido"));
     jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));
-    actualPanel.setLayout(new GridLayout(2, 2));
+
     actualPanel.add(jLabelBienvenido);
     actualPanel.add(jLabelUsuario);
+
     jButtonAbmUsuarios = new JButton("ABM Usuarios");
     jButtonSalir = new JButton("Salir");
+
     actualPanel.add(jButtonAbmUsuarios);
     actualPanel.add(jButtonSalir);
 
