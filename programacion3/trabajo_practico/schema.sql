@@ -61,6 +61,12 @@ CREATE TABLE Usuario (
         ON UPDATE CASCADE
 );
 
+-- Cargar Usuarios
+INSERT INTO Usuario (cod_tipo_usuario, nombre, apellido, usuario)
+VALUES ("ADM", "Joaquin", "Muleiro", "jmuleiro"),
+("CLI", "Fulanito", "Gonzalez", "fgonzalez"),
+("CLI", "Juan", "Perez", "jperez");
+
 /* Cuenta */
 CREATE TABLE Cuenta (
     cuenta_id INT NOT NULL AUTO_INCREMENT,
@@ -92,6 +98,10 @@ CREATE TABLE Cuenta (
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
+
+-- Cargar Cuentas
+INSERT INTO Cuenta (cod_tipo_cuenta, usuario_id, cod_moneda, alias, cbu, limite_giro, porcentaje_interes, saldo)
+VALUES ("SAV", 1, "ARS", NULL, 808508180, 0, 1, 100000);
 
 /* Tarjeta */
 CREATE TABLE Tarjeta (
