@@ -45,7 +45,7 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
   public CuentaCorriente consultar(Integer id) throws DAOException {
     return new DAOTemplate<CuentaCorriente>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo " +
         "FROM Cuenta AS C " +
         "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
         "WHERE C.cuenta_id = ?"
@@ -73,9 +73,10 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
   public List<CuentaCorriente> consultarTodos() throws DAOException {
     return new DAOTemplate<List<CuentaCorriente>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo, C.cuenta_id " +
         "FROM Cuenta AS C " +
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda"
+        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+        "WHERE C.cod_tipo_cuenta = \"COR\""
       );
       ResultSet rs = preparedStatement.executeQuery();
       List<CuentaCorriente> cajasAhorro = new ArrayList<>();
@@ -100,10 +101,10 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
   public List<CuentaCorriente> consultarTodos(UsuarioCliente usuario) throws DAOException {
     return new DAOTemplate<List<CuentaCorriente>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.saldo, C.cuenta_id " +
         "FROM Cuenta AS C " +
         "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
-        "WHERE C.usuario_id = ?"
+        "WHERE C.usuario_id = ? AND C.cod_tipo_cuenta = \"COR\""
       );
       preparedStatement.setInt(1, usuario.getId());
       ResultSet rs = preparedStatement.executeQuery();

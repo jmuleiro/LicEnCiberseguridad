@@ -45,7 +45,7 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public CajaAhorro consultar(Integer id) throws DAOException {
     return new DAOTemplate<CajaAhorro>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo " +
         "FROM Cuenta AS C " +
         "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
         "WHERE C.cuenta_id = ?"
@@ -73,9 +73,10 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public List<CajaAhorro> consultarTodos() throws DAOException {
     return new DAOTemplate<List<CajaAhorro>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
         "FROM Cuenta AS C " +
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda"
+        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+        "WHERE C.cod_tipo_cuenta = \"SAV\""
       );
       ResultSet rs = preparedStatement.executeQuery();
       List<CajaAhorro> cajasAhorro = new ArrayList<>();
@@ -100,10 +101,10 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public List<CajaAhorro> consultarTodos(UsuarioCliente usuario) throws DAOException {
     return new DAOTemplate<List<CajaAhorro>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo" +
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
         "FROM Cuenta AS C " +
         "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
-        "WHERE C.usuario_id = ?"
+        "WHERE C.usuario_id = ? AND C.cod_tipo_cuenta = \"SAV\""
       );
       preparedStatement.setInt(1, usuario.getId());
       ResultSet rs = preparedStatement.executeQuery();
