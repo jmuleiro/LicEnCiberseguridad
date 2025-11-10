@@ -43,6 +43,18 @@ public class PanelManager {
         mostrar(new AbmUsuarios(this, contexto));
         jFrame.setSize(800, 300);
         break;
+      case 4:
+        mostrar(new HomeGestionUsuario(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
+      case 5:
+        mostrar(new AbmCuentas(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
+      case 6:
+        mostrar(new AbmTarjetas(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
       default:
         throw new IllegalArgumentException("Tipo de ventana no definido: " + tipo);
     }
