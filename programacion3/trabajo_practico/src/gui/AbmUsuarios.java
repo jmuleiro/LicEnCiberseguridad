@@ -76,38 +76,48 @@ public class AbmUsuarios extends JPanelBase {
       agregarUsuario();
     });
 
-    jButtonModificar.addActionListener(e -> {
-      int filaSeleccionada = jTableUsuarios.getSelectedRow();
-      if (filaSeleccionada == -1) {
-        JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
+    jButtonAdministrar.addActionListener(e -> {
+      UsuarioCliente usuario = getUsuarioSeleccionado();
+      if (usuario == null)
         return;
-      }
-      UsuarioCliente usuario = new UsuarioCliente(
-        jTableUsuarios.getValueAt(filaSeleccionada, 1).toString(),
-        jTableUsuarios.getValueAt(filaSeleccionada, 2).toString(),
-        jTableUsuarios.getValueAt(filaSeleccionada, 3).toString(),
-        Integer.valueOf(jTableUsuarios.getValueAt(filaSeleccionada, 0).toString())
-      );
+      contexto.put("prev", "3");
+      contexto.put("usuario", usuario.getUsuario());
+      contexto.put("nombre_usuario", usuario.getNombre());
+      contexto.put("apellido_usuario", usuario.getApellido());
+      contexto.put("id_usuario", Integer.toString(usuario.getId()));
+      panel.mostrar(4, contexto);
+    });
+
+    jButtonModificar.addActionListener(e -> {
+      UsuarioCliente usuario = getUsuarioSeleccionado();
+      if (usuario == null)
+        return;
       modificarUsuario(usuario);
     });
 
     jButtonEliminar.addActionListener(e -> {
-      int filaSeleccionada = jTableUsuarios.getSelectedRow();
-      if (filaSeleccionada == -1) {
-        JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
+      UsuarioCliente usuario = getUsuarioSeleccionado();
+      if (usuario == null)
         return;
-      }
-      UsuarioCliente usuario = new UsuarioCliente(
-        jTableUsuarios.getValueAt(filaSeleccionada, 1).toString(),
-        jTableUsuarios.getValueAt(filaSeleccionada, 2).toString(),
-        jTableUsuarios.getValueAt(filaSeleccionada, 3).toString(),
-        Integer.valueOf(jTableUsuarios.getValueAt(filaSeleccionada, 0).toString())
-      );
       eliminarUsuario(usuario);
     });
 
     setLayout(new BorderLayout());
     add(actualPanel);
+  }
+
+  private UsuarioCliente getUsuarioSeleccionado() {
+    int filaSeleccionada = jTableUsuarios.getSelectedRow();
+    if (filaSeleccionada == -1){
+      JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
+      return null;
+    }
+    return new UsuarioCliente(
+      jTableUsuarios.getValueAt(filaSeleccionada, 1).toString(),
+      jTableUsuarios.getValueAt(filaSeleccionada, 2).toString(),
+      jTableUsuarios.getValueAt(filaSeleccionada, 3).toString(),
+      Integer.valueOf(jTableUsuarios.getValueAt(filaSeleccionada, 0).toString())
+    );
   }
 
   private DefaultTableModel construirTablaUsuarios() {
@@ -140,7 +150,7 @@ public class AbmUsuarios extends JPanelBase {
         resultado.addRow(fila);
       }
     } catch (ServiceException e) {
-      JOptionPane.showMessageDialog(null, e);
+      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
     }
     return resultado;
   }
