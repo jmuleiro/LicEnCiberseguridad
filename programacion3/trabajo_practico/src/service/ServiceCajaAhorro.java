@@ -5,6 +5,7 @@ import java.util.List;
 import programacion3.trabajo_practico.src.dao.DAOCajaAhorro;
 import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.entidades.CajaAhorro;
+import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class ServiceCajaAhorro extends ServiceBase<CajaAhorro, Integer>{
   private DAOCajaAhorro dao;
@@ -37,6 +38,12 @@ public class ServiceCajaAhorro extends ServiceBase<CajaAhorro, Integer>{
   public List<CajaAhorro> consultarTodos() throws ServiceException {
     return new ServiceTemplate<List<CajaAhorro>>().execute(() -> {
       return dao.consultarTodos();
+    });
+  }
+
+  public List<CajaAhorro> consultarTodos(UsuarioCliente usuario) throws ServiceException {
+    return new ServiceTemplate<List<CajaAhorro>>().execute(() -> {
+      return dao.consultarTodos(usuario);
     });
   }
   

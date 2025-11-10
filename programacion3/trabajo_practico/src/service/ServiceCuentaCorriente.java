@@ -5,6 +5,7 @@ import java.util.List;
 import programacion3.trabajo_practico.src.dao.DAOCuentaCorriente;
 import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
+import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class ServiceCuentaCorriente extends ServiceBase<CuentaCorriente, Integer>{
   private DAOCuentaCorriente dao;
@@ -37,6 +38,12 @@ public class ServiceCuentaCorriente extends ServiceBase<CuentaCorriente, Integer
   public List<CuentaCorriente> consultarTodos() throws ServiceException {
     return new ServiceTemplate<List<CuentaCorriente>>().execute(() -> {
       return dao.consultarTodos();
+    });
+  }
+
+  public List<CuentaCorriente> consultarTodos(UsuarioCliente usuario) throws ServiceException {
+    return new ServiceTemplate<List<CuentaCorriente>>().execute(() -> {
+      return dao.consultarTodos(usuario);
     });
   }
   

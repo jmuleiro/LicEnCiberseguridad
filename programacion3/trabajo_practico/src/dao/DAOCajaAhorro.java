@@ -97,6 +97,35 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
     });
   }
 
+  public List<CajaAhorro> consultarTodos(UsuarioCliente usuario) throws DAOException {
+    return new DAOTemplate<List<CajaAhorro>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo" +
+        "FROM Cuenta AS C " +
+        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
+        "WHERE C.usuario_id = ?"
+      );
+      preparedStatement.setInt(1, usuario.getId());
+      ResultSet rs = preparedStatement.executeQuery();
+      List<CajaAhorro> cajasAhorro = new ArrayList<>();
+      while (rs.next()) {
+        cajasAhorro.add(new CajaAhorro(
+            new Moneda(
+              rs.getString("M.cod_moneda"),
+              rs.getString("M.nombre_moneda")
+            ),
+            rs.getString("C.alias"),
+            rs.getInt("C.cbu"),
+            rs.getDouble("C.porcentaje_interes"),
+            rs.getInt("C.cuenta_id"),
+            rs.getDouble("C.saldo")
+          )
+        );
+      }
+      return cajasAhorro;
+    });
+  }
+
   @Override
   public void modificar(CajaAhorro elemento) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
