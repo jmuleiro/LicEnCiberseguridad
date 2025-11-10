@@ -27,6 +27,13 @@ public class ServiceCuentaCorriente extends ServiceBase<CuentaCorriente, Integer
     });
   }
 
+  public void insertar(CuentaCorriente elemento, UsuarioCliente usuario) throws ServiceException {
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.insertar(elemento, usuario);
+      return null;
+    });
+  }
+
   @Override
   public CuentaCorriente consultar(Integer id) throws ServiceException {
     return new ServiceTemplate<CuentaCorriente>().execute(() -> {

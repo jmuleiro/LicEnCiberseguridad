@@ -27,6 +27,13 @@ public class ServiceCajaAhorro extends ServiceBase<CajaAhorro, Integer>{
     });
   }
 
+  public void insertar(CajaAhorro elemento, UsuarioCliente usuario) throws ServiceException {
+    new ServiceTemplate<Void>().execute(() -> {
+      dao.insertar(elemento, usuario);
+      return null;
+    });
+  }
+
   @Override
   public CajaAhorro consultar(Integer id) throws ServiceException {
     return new ServiceTemplate<CajaAhorro>().execute(() -> {
