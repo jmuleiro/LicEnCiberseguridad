@@ -187,6 +187,7 @@ public class AbmUsuarios extends JPanelBase {
           jTextFieldApellido.getText().isEmpty() || 
           jTextFieldUsuario.getText().isEmpty()) {
         JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
       }
       try {
         serviceUsuarioCliente = new ServiceUsuarioCliente();
