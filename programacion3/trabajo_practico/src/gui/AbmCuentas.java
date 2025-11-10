@@ -9,23 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import programacion3.trabajo_practico.src.entidades.Cuenta;
+import programacion3.trabajo_practico.src.entidades.CajaAhorro;
+import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
+import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceCajaAhorro;
 import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
 import programacion3.trabajo_practico.src.service.ServiceException;
+import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmCuentas extends JPanelBase {
   //* Atributos
   ServiceCuentaCorriente serviceCuentaCorriente;
   ServiceCajaAhorro serviceCajaAhorro;
+  ServiceMoneda serviceMoneda;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -88,8 +96,57 @@ public class AbmCuentas extends JPanelBase {
       panel.mostrar(prev, contexto);
     });
 
+    jButtonAgregar.addActionListener(e -> {
+      agregarCuenta(usuario);
+    });
+
+    jButtonAdministrar.addActionListener(e -> {
+      Cuenta cuenta = getCuentaSeleccionada();
+      if (cuenta == null)
+        return;
+      contexto.put("prev", "5");
+      contexto.put("id_cuenta", Integer.toString(cuenta.getId()));
+      contexto.put("tipo_cuenta", cuenta.getClass().getSimpleName());
+      panel.mostrar(7, contexto);
+    });
+
+    jButtonModificar.addActionListener(e -> {
+      
+    });
+
+    jButtonEliminar.addActionListener(e -> {
+      Cuenta cuenta = getCuentaSeleccionada();
+      if (cuenta == null)
+        return;
+      eliminarCuenta(cuenta, usuario);
+    });
+
     setLayout(new BorderLayout());
     add(actualPanel);
+  }
+
+  private Cuenta getCuentaSeleccionada() {
+    int filaSeleccionada = jTableCuentas.getSelectedRow();
+    if (filaSeleccionada == -1){
+      JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
+      return null;
+    }
+
+    int idCuenta = Integer.valueOf(jTableCuentas.getValueAt(filaSeleccionada, 0).toString());
+    String tipoCuenta = jTableCuentas.getValueAt(filaSeleccionada, 1).toString();
+
+    try {
+      if (tipoCuenta.equals(CajaAhorro.class.getSimpleName())) {
+        serviceCajaAhorro = new ServiceCajaAhorro();
+        return serviceCajaAhorro.consultar(idCuenta);
+      } else {
+        serviceCuentaCorriente = new ServiceCuentaCorriente();
+        return serviceCuentaCorriente.consultar(idCuenta);
+      }
+    } catch (ServiceException e) {
+      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    return null;
   }
 
   private DefaultTableModel construirTablaCuentas(UsuarioCliente usuario) {
@@ -119,7 +176,7 @@ public class AbmCuentas extends JPanelBase {
         Object [] fila = new Object[4];
         fila[0] = c.getId();
         fila[1] = c.getClass().getSimpleName();
-        fila[2] = c.getMoneda().getNombre();
+        fila[2] = c.getMoneda().getCodigo();
         fila[3] = c.getSaldo();
         resultado.addRow(fila);
       }
@@ -127,5 +184,182 @@ public class AbmCuentas extends JPanelBase {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
     }
     return resultado;
+  }
+
+  private void agregarCuenta(UsuarioCliente usuario) {
+    JDialog jDialogFormulario = new JDialog();
+    jDialogFormulario.setTitle("Agregar Cuenta");
+    jDialogFormulario.setSize(400, 200);
+    jDialogFormulario.setLayout(new GridLayout(7,2));
+
+    jDialogFormulario.add(new JLabel("Usuario: "));
+    jDialogFormulario.add(new JLabel(usuario.getUsuario()));
+    
+    String tipoCajaAhorro = "Caja de Ahorro";
+    String tipoCuentaCorriente = "Cuenta Corriente";
+    String[] tipoOpciones = {"", tipoCajaAhorro, tipoCuentaCorriente};
+    JComboBox<String> jComboBoxTipo = new JComboBox<>(tipoOpciones);
+    jDialogFormulario.add(new JLabel("Tipo: "));
+    jDialogFormulario.add(jComboBoxTipo);
+
+    List<Moneda> monedas = new ArrayList<>();
+    try {
+      serviceMoneda = new ServiceMoneda();
+      monedas = serviceMoneda.consultarTodos();
+      String[] monedasOpciones = new String[monedas.size()];
+      for (int i = 0; i < monedas.size(); i++) {
+        monedasOpciones[i] = monedas.get(i).getCodigo();
+      }
+
+      JComboBox<String> jComboBoxMoneda = new JComboBox<>(monedasOpciones);
+      jComboBoxMoneda.setEnabled(false);
+      jDialogFormulario.add(new JLabel("Moneda: "));
+      jDialogFormulario.add(jComboBoxMoneda);
+
+      jDialogFormulario.add(new JLabel("Alias: "));
+      JTextField jTextFieldAlias = new JTextField();
+      jTextFieldAlias.setEnabled(false);
+      jDialogFormulario.add(jTextFieldAlias);
+
+      jDialogFormulario.add(new JLabel("CBU: "));
+      JTextField jTextFieldCbu = new JTextField();
+      jTextFieldCbu.setEnabled(false);
+      jDialogFormulario.add(jTextFieldCbu);
+
+      JLabel jLabelLimiteOPorcentaje = new JLabel();
+      jDialogFormulario.add(jLabelLimiteOPorcentaje);
+      JTextField jTextFieldLimiteOPorcentaje = new JTextField();
+      jTextFieldLimiteOPorcentaje.setEnabled(false);
+      jTextFieldLimiteOPorcentaje.setText("0");
+      jDialogFormulario.add(jTextFieldLimiteOPorcentaje);
+
+      JButton jButtonAceptar = new JButton("Aceptar");
+      JButton jButtonCancelar = new JButton("Cancelar");
+
+      jButtonAceptar.setEnabled(false);
+
+      jDialogFormulario.add(jButtonAceptar);
+      jDialogFormulario.add(jButtonCancelar);
+
+      jComboBoxTipo.addActionListener(e -> {
+        String tipoSeleccionado = jComboBoxTipo.getSelectedItem().toString();
+        if (tipoSeleccionado.equals(tipoCuentaCorriente))
+          jLabelLimiteOPorcentaje.setText("Limite de Giro: ");
+        else if (tipoSeleccionado.equals(tipoCajaAhorro))
+          jLabelLimiteOPorcentaje.setText("Porcentaje de Interes: ");
+        else
+          return;
+        
+        jComboBoxMoneda.setEnabled(true);
+        jTextFieldAlias.setEnabled(true);
+        jTextFieldCbu.setEnabled(true);
+        jTextFieldLimiteOPorcentaje.setEnabled(true);
+        jButtonAceptar.setEnabled(true);
+      });
+
+      jButtonAceptar.addActionListener(e -> {
+        if (jTextFieldCbu.getText().isEmpty() || 
+            jTextFieldLimiteOPorcentaje.getText().isEmpty() || 
+            jComboBoxMoneda.getSelectedItem().toString().isEmpty() || 
+            jComboBoxTipo.getSelectedItem().toString().isEmpty()) {
+          JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+        try {
+          Moneda moneda = serviceMoneda.consultar(jComboBoxMoneda.getSelectedItem().toString());
+          if (jComboBoxTipo.getSelectedItem().toString().equals(tipoCajaAhorro)) {
+            serviceCajaAhorro = new ServiceCajaAhorro();
+            serviceCajaAhorro.insertar(
+              new CajaAhorro(
+                moneda,
+                jTextFieldAlias.getText().toString(),
+                Integer.valueOf(jTextFieldCbu.getText().toString()),
+                Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                usuario.getId(),
+                0.0
+              ), usuario
+            );
+          } else {
+            serviceCuentaCorriente = new ServiceCuentaCorriente();
+            serviceCuentaCorriente.insertar(
+              new CuentaCorriente(
+                moneda,
+                jTextFieldAlias.getText().toString(),
+                Integer.valueOf(jTextFieldCbu.getText().toString()),
+                Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                usuario.getId(),
+                0.0
+              ), usuario
+            );
+          }
+        } catch (ServiceException exc) {
+          JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        jDialogFormulario.dispose();
+        jTableCuentas.setModel(construirTablaCuentas(usuario));
+      });
+
+      jButtonCancelar.addActionListener(e -> {
+        jDialogFormulario.dispose();
+        jTableCuentas.setModel(construirTablaCuentas(usuario));
+      });
+    } catch (ServiceException e) {
+      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    jDialogFormulario.setLocationRelativeTo(null);
+    jDialogFormulario.setVisible(true);
+  }
+
+  private void eliminarCuenta(Cuenta cuenta, UsuarioCliente usuario) {
+    JDialog jDialogEliminar = new JDialog();
+    jDialogEliminar.setTitle("Eliminar Cuenta");
+    jDialogEliminar.setSize(400, 200);
+    jDialogEliminar.setLayout(new BorderLayout());
+
+    JPanel jPanelMensaje = new JPanel();
+    jPanelMensaje.setLayout(new GridLayout(1, 1));
+    jPanelMensaje.add(new JLabel("¿Desea eliminar la cuenta " + cuenta.getId() + "?"));
+    jDialogEliminar.add(jPanelMensaje, BorderLayout.CENTER);
+
+    JPanel jPanelBotonesEliminar = new JPanel();
+    jPanelBotonesEliminar.setLayout(new GridLayout(1, 2));
+    JButton jButtonConfirmar = new JButton("Confirmar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+    jPanelBotonesEliminar.add(jButtonConfirmar);
+    jPanelBotonesEliminar.add(jButtonCancelar);
+    jDialogEliminar.add(jPanelBotonesEliminar, BorderLayout.SOUTH);
+
+    jButtonConfirmar.addActionListener(e -> {
+      if (cuenta.getSaldo() != 0){
+        JOptionPane.showMessageDialog(null, "No se puede eliminar una cuenta con saldo o saldo negativo", "Error", JOptionPane.ERROR_MESSAGE);
+        jDialogEliminar.dispose();
+        jTableCuentas.setModel(construirTablaCuentas(usuario));
+        return;
+      }
+
+      try {
+        if (cuenta instanceof CajaAhorro) {
+          serviceCajaAhorro = new ServiceCajaAhorro();
+          serviceCajaAhorro.eliminar(cuenta.getId());
+        } else {
+          serviceCuentaCorriente = new ServiceCuentaCorriente();
+          serviceCuentaCorriente.eliminar(cuenta.getId());
+        }
+      } catch (ServiceException exc) {
+        JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogEliminar.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogEliminar.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      return;
+    });
+
+    jDialogEliminar.setLocationRelativeTo(null);
+    jDialogEliminar.setVisible(true);
   }
 }
