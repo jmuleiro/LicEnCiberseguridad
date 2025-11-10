@@ -5,6 +5,7 @@ import java.util.List;
 import programacion3.trabajo_practico.src.dao.DAOTarjetaCredito;
 import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
+import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer>{
   private DAOTarjetaCredito dao;
@@ -37,6 +38,12 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer>{
   public List<TarjetaCredito> consultarTodos() throws ServiceException {
     return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
       return dao.consultarTodos();
+    });
+  }
+
+  public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws ServiceException {
+    return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
+      return dao.consultarTodos(usuario);
     });
   }
   

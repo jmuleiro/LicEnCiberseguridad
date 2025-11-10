@@ -2,8 +2,8 @@ package programacion3.trabajo_practico.src.dao;
 
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
-import programacion3.trabajo_practico.src.entidades.Moneda;
-import programacion3.trabajo_practico.src.entidades.Consumo;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,34 +85,80 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
       );
 
       // Traer los consumos
-      preparedStatement = conn.prepare(
-        "SELECT C.cantidad, C.fecha, C.cod_moneda, C.consumo_id, M.nombre_moneda " + 
-        "FROM Consumo AS C " + 
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
-        "WHERE C.tarjeta_id = ?"
-      );
-      preparedStatement.setInt(1, id.intValue());
-      rs = preparedStatement.executeQuery();
-      while (rs.next()) {
-        tarjeta.agregarConsumo(
-          new Consumo(
-            rs.getDouble("C.cantidad"),
-            rs.getDate("C.fecha").toLocalDate(),
-            new Moneda(
-              rs.getString("C.cod_moneda"),
-              rs.getString("M.nombre_moneda")
-            ),
-            rs.getInt("C.consumo_id")
-          )
-        );
-      }
+      // preparedStatement = conn.prepare(
+      //   "SELECT C.cantidad, C.fecha, C.cod_moneda, C.consumo_id, M.nombre_moneda " + 
+      //   "FROM Consumo AS C " + 
+      //   "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
+      //   "WHERE C.tarjeta_id = ?"
+      // );
+      // preparedStatement.setInt(1, id.intValue());
+      // rs = preparedStatement.executeQuery();
+      // while (rs.next()) {
+      //   tarjeta.agregarConsumo(
+      //     new Consumo(
+      //       rs.getDouble("C.cantidad"),
+      //       rs.getDate("C.fecha").toLocalDate(),
+      //       new Moneda(
+      //         rs.getString("C.cod_moneda"),
+      //         rs.getString("M.nombre_moneda")
+      //       ),
+      //       rs.getInt("C.consumo_id")
+      //     )
+      //   );
+      // }
       return tarjeta;
     });
   }
 
   @Override
   public List<TarjetaCredito> consultarTodos() throws DAOException {
-    throw new UnsupportedOperationException("Método no implementado");
+    return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+        "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" + 
+        "FROM Tarjeta"
+      );
+      ResultSet rs = preparedStatement.executeQuery();
+      if (!(rs.next()))
+        return null; // No hubo resultados
+      
+      List<TarjetaCredito> tarjetas = new ArrayList<>();
+      while (rs.next()) {
+        tarjetas.add(new TarjetaCredito(
+          rs.getInt("numero"),
+          rs.getDate("fecha_vencimiento").toLocalDate(),
+          rs.getInt("cvc"),
+          rs.getDouble("limite"),
+          rs.getInt("tarjeta_id")
+        ));
+      }
+      return tarjetas;
+    });
+  }
+
+  public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws DAOException {
+    return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+        "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" + 
+        "FROM Tarjeta " + 
+        "WHERE usuario_id = ?"
+      );
+      preparedStatement.setInt(1, usuario.getId());
+      ResultSet rs = preparedStatement.executeQuery();
+      if (!(rs.next()))
+        return null; // No hubo resultados
+      
+      List<TarjetaCredito> tarjetas = new ArrayList<>();
+      while (rs.next()) {
+        tarjetas.add(new TarjetaCredito(
+          rs.getInt("numero"),
+          rs.getDate("fecha_vencimiento").toLocalDate(),
+          rs.getInt("cvc"),
+          rs.getDouble("limite"),
+          rs.getInt("tarjeta_id")
+        ));
+      }
+      return tarjetas;
+    });
   }
 
   // todo: consultar todos por usuario
