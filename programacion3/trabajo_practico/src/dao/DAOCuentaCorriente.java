@@ -132,12 +132,13 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
         "UPDATE Cuenta " +
-        "SET alias = ?, porcentaje_interes = ? " +
+        "SET alias = ?, porcentaje_interes = ?, saldo = ? " +
         "WHERE cuenta_id = ?"
       );
       preparedStatement.setString(1, elemento.getAlias());
       preparedStatement.setDouble(2, elemento.getLimiteGiro());
-      preparedStatement.setInt(3, elemento.getId());
+      preparedStatement.setDouble(3, elemento.getSaldo());
+      preparedStatement.setInt(4, elemento.getId());
       preparedStatement.executeUpdate();
       return null;
     });
