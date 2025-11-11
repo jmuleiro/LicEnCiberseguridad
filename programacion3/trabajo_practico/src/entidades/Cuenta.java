@@ -11,14 +11,14 @@ public abstract class Cuenta {
   //* Constructores
   public Cuenta(Moneda moneda, String alias, int cbu) {
     this.moneda = moneda;
-    this.alias = alias;
+    this.setAlias(alias);
     this.cbu = cbu;
     this.saldo = 0;
   }
 
   public Cuenta(Moneda moneda, String alias, int cbu, int id, double saldo) {
     this.moneda = moneda;
-    this.alias = alias;
+    this.setAlias(alias);
     this.cbu = cbu;
     this.id = id;
     this.saldo = saldo;
@@ -48,7 +48,10 @@ public abstract class Cuenta {
   }
 
   public void setAlias(String alias) {
-    this.alias = alias;
+    if (alias == null)
+      this.alias = "";
+    else
+      this.alias = alias;
   }
 
   public int getCbu() {
