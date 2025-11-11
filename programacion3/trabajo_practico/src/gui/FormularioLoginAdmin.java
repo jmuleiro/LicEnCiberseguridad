@@ -28,6 +28,7 @@ public class FormularioLoginAdmin extends JPanel {
   JTextField jTextFieldUsuario;
   JTextField jTextFieldPassword;
   JButton jButtonLogin;
+  JButton jButtonSalir;
 
   //* Constructor
   public FormularioLoginAdmin(PanelManager panel) {
@@ -37,17 +38,23 @@ public class FormularioLoginAdmin extends JPanel {
 
   public void iniciar() {
     formularioLoginAdmin = new JPanel();
+    formularioLoginAdmin.setLayout(new GridLayout(3, 2));
+
     jLabelUsuario = new JLabel("Usuario");
     jLabelPassword = new JLabel("Password");
+
     jTextFieldUsuario = new JTextField();
     jTextFieldPassword = new JTextField();
+
     jButtonLogin = new JButton("Login");
-    formularioLoginAdmin.setLayout(new GridLayout(3, 2));
+    jButtonSalir = new JButton("Salir");
+
     formularioLoginAdmin.add(jLabelUsuario);
     formularioLoginAdmin.add(jTextFieldUsuario);
     formularioLoginAdmin.add(jLabelPassword);
     formularioLoginAdmin.add(jTextFieldPassword);
     formularioLoginAdmin.add(jButtonLogin);
+    formularioLoginAdmin.add(jButtonSalir);
 
     jButtonLogin.addActionListener(e -> {
       try {
@@ -65,6 +72,10 @@ public class FormularioLoginAdmin extends JPanel {
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, exc);
       }
+    });
+
+    jButtonSalir.addActionListener(e -> {
+      panel.jFrame.dispose();
     });
 
     jTextFieldPassword.addActionListener(e -> {
