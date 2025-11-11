@@ -164,8 +164,8 @@ CREATE TABLE Transferencia (
         ON UPDATE CASCADE
 );
 
-/* Movimientos */
-CREATE TABLE Movimientos (
+/* Movimiento */
+CREATE TABLE Movimiento (
     transferencia_id INT NOT NULL,
     cuenta_id INT NOT NULL,
     entrante BOOLEAN NOT NULL, -- TRUE para transferencias entrantes, FALSE para salientes
