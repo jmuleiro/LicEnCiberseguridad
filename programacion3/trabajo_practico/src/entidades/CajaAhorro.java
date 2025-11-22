@@ -1,10 +1,10 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public class CajaAhorro extends Cuenta {
-  //* Atributos
+  // * Atributos
   private double porcentajeInteres;
 
-  //* Constructores
+  // * Constructores
   public CajaAhorro(Moneda moneda, String alias, int cbu, double porcentajeInteres) {
     super(moneda, alias, cbu);
     if (porcentajeInteres >= 100)
@@ -19,16 +19,16 @@ public class CajaAhorro extends Cuenta {
     this.porcentajeInteres = porcentajeInteres;
   }
 
-  //* Métodos
+  // * Métodos
   @Override
   public double extraer(double cantidad) {
     if (this.saldo < cantidad)
       throw new RuntimeException("Saldo insuficiente");
-    
+
     this.saldo -= cantidad;
     return this.saldo;
   }
-  
+
   public double calcularInteres(double monto) {
     return monto * (this.getPorcentajeInteres() / 100);
   }
@@ -38,8 +38,12 @@ public class CajaAhorro extends Cuenta {
     return this.getSaldo();
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public double getPorcentajeInteres() {
     return this.porcentajeInteres;
+  }
+
+  public void setPorcentajeInteres(double porcentajeInteres) {
+    this.porcentajeInteres = porcentajeInteres;
   }
 }

@@ -1,10 +1,10 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public class CuentaCorriente extends Cuenta {
-  //* Atributos
+  // * Atributos
   private double limiteGiro;
-  
-  //* Constructores
+
+  // * Constructores
   public CuentaCorriente(Moneda moneda, String alias, int cbu, double limiteGiro) {
     super(moneda, alias, cbu);
     this.limiteGiro = limiteGiro;
@@ -15,18 +15,22 @@ public class CuentaCorriente extends Cuenta {
     this.limiteGiro = limiteGiro;
   }
 
-  //* Métodos
+  // * Métodos
   @Override
   public double extraer(double cantidad) {
     if (this.saldo + this.limiteGiro < cantidad)
       throw new RuntimeException("Saldo insuficiente");
-    
+
     this.saldo -= cantidad;
     return this.saldo;
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public double getLimiteGiro() {
     return this.limiteGiro;
+  }
+
+  public void setLimiteGiro(double limiteGiro) {
+    this.limiteGiro = limiteGiro;
   }
 }
