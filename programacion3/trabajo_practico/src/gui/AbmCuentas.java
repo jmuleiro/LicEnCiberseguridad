@@ -30,7 +30,7 @@ import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmCuentas extends JPanelBase {
-  //* Atributos
+  // * Atributos
   ServiceCuentaCorriente serviceCuentaCorriente;
   ServiceCajaAhorro serviceCajaAhorro;
   ServiceMoneda serviceMoneda;
@@ -46,7 +46,7 @@ public class AbmCuentas extends JPanelBase {
   JLabel jLabelId;
   JTable jTableCuentas;
 
-  //* Constructor
+  // * Constructor
   public AbmCuentas(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
     iniciar();
@@ -78,13 +78,12 @@ public class AbmCuentas extends JPanelBase {
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
     UsuarioCliente usuario = new UsuarioCliente(
-      contexto.get("nombre_usuario"),
-      contexto.get("apellido_usuario"),
-      contexto.get("usuario"),
-      Integer.valueOf(contexto.get("id_usuario"))
-    );
+        contexto.get("nombre_usuario"),
+        contexto.get("apellido_usuario"),
+        contexto.get("usuario"),
+        Integer.valueOf(contexto.get("id_usuario")));
     jPanelTabla = new JPanel();
-    jPanelTabla.setLayout(new GridLayout(1,1));
+    jPanelTabla.setLayout(new GridLayout(1, 1));
     jTableCuentas = new JTable(construirTablaCuentas(usuario));
     JScrollPane jScrollPane = new JScrollPane(jTableCuentas);
     jPanelTabla.add(jScrollPane);
@@ -111,7 +110,7 @@ public class AbmCuentas extends JPanelBase {
     });
 
     jButtonModificar.addActionListener(e -> {
-      
+      modificarCuenta(getCuentaSeleccionada(), usuario);
     });
 
     jButtonEliminar.addActionListener(e -> {
@@ -127,7 +126,7 @@ public class AbmCuentas extends JPanelBase {
 
   private Cuenta getCuentaSeleccionada() {
     int filaSeleccionada = jTableCuentas.getSelectedRow();
-    if (filaSeleccionada == -1){
+    if (filaSeleccionada == -1) {
       JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
       return null;
     }
@@ -147,6 +146,10 @@ public class AbmCuentas extends JPanelBase {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
     }
     return null;
+  }
+
+  private void modificarCuenta(Cuenta cuenta, UsuarioCliente usuario) {
+
   }
 
   private DefaultTableModel construirTablaCuentas(UsuarioCliente usuario) {
@@ -173,7 +176,7 @@ public class AbmCuentas extends JPanelBase {
       cuentas.addAll(serviceCuentaCorriente.consultarTodos(usuario));
 
       for (Cuenta c : cuentas) {
-        Object [] fila = new Object[4];
+        Object[] fila = new Object[4];
         fila[0] = c.getId();
         fila[1] = c.getClass().getSimpleName();
         fila[2] = c.getMoneda().getCodigo();
@@ -190,14 +193,14 @@ public class AbmCuentas extends JPanelBase {
     JDialog jDialogFormulario = new JDialog();
     jDialogFormulario.setTitle("Agregar Cuenta");
     jDialogFormulario.setSize(400, 200);
-    jDialogFormulario.setLayout(new GridLayout(7,2));
+    jDialogFormulario.setLayout(new GridLayout(7, 2));
 
     jDialogFormulario.add(new JLabel("Usuario: "));
     jDialogFormulario.add(new JLabel(usuario.getUsuario()));
-    
+
     String tipoCajaAhorro = "Caja de Ahorro";
     String tipoCuentaCorriente = "Cuenta Corriente";
-    String[] tipoOpciones = {"", tipoCajaAhorro, tipoCuentaCorriente};
+    String[] tipoOpciones = { "", tipoCajaAhorro, tipoCuentaCorriente };
     JComboBox<String> jComboBoxTipo = new JComboBox<>(tipoOpciones);
     jDialogFormulario.add(new JLabel("Tipo: "));
     jDialogFormulario.add(jComboBoxTipo);
@@ -249,7 +252,7 @@ public class AbmCuentas extends JPanelBase {
           jLabelLimiteOPorcentaje.setText("Porcentaje de Interes: ");
         else
           return;
-        
+
         jComboBoxMoneda.setEnabled(true);
         jTextFieldAlias.setEnabled(true);
         jTextFieldCbu.setEnabled(true);
@@ -258,9 +261,9 @@ public class AbmCuentas extends JPanelBase {
       });
 
       jButtonAceptar.addActionListener(e -> {
-        if (jTextFieldCbu.getText().isEmpty() || 
-            jTextFieldLimiteOPorcentaje.getText().isEmpty() || 
-            jComboBoxMoneda.getSelectedItem().toString().isEmpty() || 
+        if (jTextFieldCbu.getText().isEmpty() ||
+            jTextFieldLimiteOPorcentaje.getText().isEmpty() ||
+            jComboBoxMoneda.getSelectedItem().toString().isEmpty() ||
             jComboBoxTipo.getSelectedItem().toString().isEmpty()) {
           JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
           return;
@@ -270,27 +273,25 @@ public class AbmCuentas extends JPanelBase {
           if (jComboBoxTipo.getSelectedItem().toString().equals(tipoCajaAhorro)) {
             serviceCajaAhorro = new ServiceCajaAhorro();
             serviceCajaAhorro.insertar(
-              new CajaAhorro(
-                moneda,
-                jTextFieldAlias.getText().toString(),
-                Integer.valueOf(jTextFieldCbu.getText().toString()),
-                Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
-                usuario.getId(),
-                0.0
-              ), usuario
-            );
+                new CajaAhorro(
+                    moneda,
+                    jTextFieldAlias.getText().toString(),
+                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                    usuario.getId(),
+                    0.0),
+                usuario);
           } else {
             serviceCuentaCorriente = new ServiceCuentaCorriente();
             serviceCuentaCorriente.insertar(
-              new CuentaCorriente(
-                moneda,
-                jTextFieldAlias.getText().toString(),
-                Integer.valueOf(jTextFieldCbu.getText().toString()),
-                Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
-                usuario.getId(),
-                0.0
-              ), usuario
-            );
+                new CuentaCorriente(
+                    moneda,
+                    jTextFieldAlias.getText().toString(),
+                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                    usuario.getId(),
+                    0.0),
+                usuario);
           }
         } catch (ServiceException exc) {
           JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
@@ -331,8 +332,9 @@ public class AbmCuentas extends JPanelBase {
     jDialogEliminar.add(jPanelBotonesEliminar, BorderLayout.SOUTH);
 
     jButtonConfirmar.addActionListener(e -> {
-      if (cuenta.getSaldo() != 0){
-        JOptionPane.showMessageDialog(null, "No se puede eliminar una cuenta con saldo o saldo negativo", "Error", JOptionPane.ERROR_MESSAGE);
+      if (cuenta.getSaldo() != 0) {
+        JOptionPane.showMessageDialog(null, "No se puede eliminar una cuenta con saldo o saldo negativo", "Error",
+            JOptionPane.ERROR_MESSAGE);
         jDialogEliminar.dispose();
         jTableCuentas.setModel(construirTablaCuentas(usuario));
         return;
