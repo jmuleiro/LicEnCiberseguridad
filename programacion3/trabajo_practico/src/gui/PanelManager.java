@@ -21,8 +21,9 @@ public class PanelManager {
     jFrame.getContentPane().add(BorderLayout.CENTER, panel);
     jFrame.getContentPane().validate();
     jFrame.getContentPane().repaint();
-    jFrame.setVisible(true);
     jFrame.pack();
+    jFrame.setLocationRelativeTo(null);
+    jFrame.setVisible(true);
   }
 
   public void mostrar(int tipo) {
