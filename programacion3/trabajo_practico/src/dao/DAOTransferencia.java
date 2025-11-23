@@ -3,6 +3,9 @@ package programacion3.trabajo_practico.src.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import programacion3.trabajo_practico.src.entidades.Cuenta;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.Transferencia;
@@ -16,24 +19,43 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public Transferencia consultar(Integer id) throws DAOException {
     return new DAOTemplate<Transferencia>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " + 
-        "FROM Transferencia AS T " +
-        "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
-        "WHERE transferencia_id = ?"
-      );
+          "SELECT T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+              "FROM Transferencia AS T " +
+              "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
+              "WHERE transferencia_id = ?");
       preparedStatement.setInt(1, id.intValue());
       preparedStatement.executeQuery();
       ResultSet rs = preparedStatement.getResultSet();
       if (rs.next()) {
         return new Transferencia(
-          rs.getDouble("monto"),
-          new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
-          rs.getString("concepto"),
-          id
-        );
+            rs.getDouble("monto"),
+            new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+            rs.getString("concepto"),
+            id);
       }
 
       return null; // No hubo resultados
+    });
+  }
+
+  @Override
+  public List<Transferencia> consultarTodos() throws DAOException {
+    return new DAOTemplate<List<Transferencia>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+          "SELECT T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+              "FROM Transferencia AS T " +
+              "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda");
+      preparedStatement.executeQuery();
+      ResultSet rs = preparedStatement.getResultSet();
+      List<Transferencia> transferencias = new ArrayList<>();
+      while (rs.next()) {
+        transferencias.add(new Transferencia(
+            rs.getDouble("monto"),
+            new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+            rs.getString("concepto"),
+            rs.getInt("transferencia_id")));
+      }
+      return transferencias;
     });
   }
 
@@ -41,9 +63,8 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       // Insertar la transferencia
       PreparedStatement preparedStatement = conn.prepare(
-        "INSERT INTO Transferencia (monto, cod_moneda, concepto) " +
-        "VALUES (?, ?, ?) "
-      );
+          "INSERT INTO Transferencia (monto, cod_moneda, concepto) " +
+              "VALUES (?, ?, ?) ");
       preparedStatement.setDouble(1, elemento.getMonto());
       preparedStatement.setString(2, elemento.getMoneda().getCodigo());
       preparedStatement.setString(3, elemento.getConcepto());
@@ -59,8 +80,8 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
       }
 
       String movimientoInsertSql = "INSERT INTO Movimiento (transferencia_id, cuenta_id, entrante) " +
-        "VALUES (?, ?, ?)";
-      
+          "VALUES (?, ?, ?)";
+
       // Insertar el movimiento entrante (relación)
       // entrante = true -> Crédito
       preparedStatement = conn.prepare(movimientoInsertSql);
