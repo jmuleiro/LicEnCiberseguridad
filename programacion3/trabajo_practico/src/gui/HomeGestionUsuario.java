@@ -27,7 +27,7 @@ import programacion3.trabajo_practico.src.service.ServiceMoneda;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
 
 public class HomeGestionUsuario extends JPanelBase {
-  //* Atributos
+  // * Atributos
   ServiceMoneda serviceMoneda;
   ServiceUsuarioCliente serviceUsuarioCliente;
   ServiceCuentaCorriente serviceCuentaCorriente;
@@ -35,15 +35,14 @@ public class HomeGestionUsuario extends JPanelBase {
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JLabel jLabelNombre;
-  JLabel jLabelApellido;
   JLabel jLabelUsuario;
   JLabel jLabelId;
   JButton jButtonTransferir;
   JButton jButtonCuentas;
   JButton jButtonTarjetas;
   JButton jButtonVolver;
-  
-  //* Constructor
+
+  // * Constructor
   public HomeGestionUsuario(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
     iniciar();
@@ -52,33 +51,36 @@ public class HomeGestionUsuario extends JPanelBase {
   @Override
   public void iniciar() {
     jPanelLabels = new JPanel();
-    jPanelLabels.setLayout(new GridLayout(2, 2));
+    jPanelLabels.setLayout(new GridLayout(1, 5));
 
     Integer usuarioId = Integer.valueOf(contexto.get("id_usuario"));
 
-    jLabelNombre = new JLabel("Nombre: " + contexto.get("nombre_usuario"));
-    jLabelApellido = new JLabel("Apellido: " + contexto.get("apellido_usuario"));
+    jLabelNombre = new JLabel("Nombre: " + contexto.get("nombre_usuario") + " " + contexto.get("apellido_usuario"));
     jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));
     jLabelId = new JLabel("ID: " + usuarioId);
 
     jPanelLabels.add(jLabelNombre);
-    jPanelLabels.add(jLabelApellido);
+    jPanelLabels.add(new JLabel());
     jPanelLabels.add(jLabelUsuario);
+    jPanelLabels.add(new JLabel());
     jPanelLabels.add(jLabelId);
     actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
     jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(4, 1));
+    jPanelBotones.setLayout(new GridLayout(1, 7));
 
     jButtonTransferir = new JButton("Transferir");
     jButtonCuentas = new JButton("Cuentas");
     jButtonTarjetas = new JButton("Tarjetas");
     jButtonVolver = new JButton("Volver");
 
-    jPanelBotones.add(jButtonTransferir);
-    jPanelBotones.add(jButtonCuentas);
-    jPanelBotones.add(jButtonTarjetas);
     jPanelBotones.add(jButtonVolver);
+    jPanelBotones.add(new JLabel());
+    jPanelBotones.add(jButtonTransferir);
+    jPanelBotones.add(new JLabel());
+    jPanelBotones.add(jButtonCuentas);
+    jPanelBotones.add(new JLabel());
+    jPanelBotones.add(jButtonTarjetas);
     actualPanel.add(jPanelBotones, BorderLayout.SOUTH);
 
     jButtonVolver.addActionListener(e -> {
@@ -109,7 +111,7 @@ public class HomeGestionUsuario extends JPanelBase {
     JDialog jDialogTransferir = new JDialog();
     jDialogTransferir.setTitle("Transferencia");
     jDialogTransferir.setSize(250, 300);
-    jDialogTransferir.setLayout(new GridLayout(7,2));
+    jDialogTransferir.setLayout(new GridLayout(7, 2));
 
     try {
       jDialogTransferir.add(new JLabel("Usuario: "));
@@ -150,7 +152,7 @@ public class HomeGestionUsuario extends JPanelBase {
 
       serviceUsuarioCliente = new ServiceUsuarioCliente();
       UsuarioCliente usuario = serviceUsuarioCliente.consultar(usuarioId);
-      if (usuario == null){
+      if (usuario == null) {
         JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -191,7 +193,8 @@ public class HomeGestionUsuario extends JPanelBase {
         }
 
         if (jComboBoxCuenta.getItemCount() == 1) {
-          JOptionPane.showMessageDialog(null, "El usuario no tiene cuentas disponibles para la moneda seleccionada", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, "El usuario no tiene cuentas disponibles para la moneda seleccionada",
+              "Error", JOptionPane.ERROR_MESSAGE);
           return;
         }
 
@@ -224,11 +227,11 @@ public class HomeGestionUsuario extends JPanelBase {
         String cuentaSeleccionada = jComboBoxCuenta.getSelectedItem().toString();
         if (cuentaSeleccionada.isEmpty())
           return;
-        
+
         String monto = jTextFieldMonto.getText();
         String destino = jTextFieldDestino.getText();
-        
-        if (monto.isEmpty() || 
+
+        if (monto.isEmpty() ||
             destino.isEmpty()) {
           JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
           return;
@@ -246,18 +249,20 @@ public class HomeGestionUsuario extends JPanelBase {
           List<Cuenta> cuentas = new ArrayList<>();
           Cuenta cuentaOrigen;
           serviceCajaAhorro = new ServiceCajaAhorro();
-          serviceCuentaCorriente  = new ServiceCuentaCorriente();
+          serviceCuentaCorriente = new ServiceCuentaCorriente();
           cuentas.addAll(serviceCajaAhorro.consultarTodos());
           cuentas.addAll(serviceCuentaCorriente.consultarTodos());
 
           for (Cuenta c : cuentas) {
             // Seguir hasta encontrar la cuenta
-            //todo: alias falla aca
-            if (!(c.getId() == Integer.valueOf(destino) || c.getCbu() == Integer.valueOf(destino) || c.getAlias().equals(destino))) 
+            // todo: alias falla aca
+            if (!(c.getId() == Integer.valueOf(destino) || c.getCbu() == Integer.valueOf(destino)
+                || c.getAlias().equals(destino)))
               continue;
 
             if (!(c.getMoneda().getCodigo().equals(moneda.getCodigo()))) {
-              JOptionPane.showMessageDialog(null, "Las cuentas no son de la misma moneda", "Error", JOptionPane.ERROR_MESSAGE);
+              JOptionPane.showMessageDialog(null, "Las cuentas no son de la misma moneda", "Error",
+                  JOptionPane.ERROR_MESSAGE);
               return;
             }
 
@@ -281,7 +286,7 @@ public class HomeGestionUsuario extends JPanelBase {
               serviceCuentaCorriente.modificar(((CuentaCorriente) c));
             else
               serviceCajaAhorro.modificar(((CajaAhorro) c));
-            //TODO: actualizar tabla de transferencias
+            // TODO: actualizar tabla de transferencias
             return;
           }
           JOptionPane.showMessageDialog(null, "Cuenta destino no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
