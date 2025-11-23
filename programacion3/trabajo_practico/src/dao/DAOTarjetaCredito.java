@@ -64,7 +64,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public TarjetaCredito consultar(Integer id) throws DAOException {
     return new DAOTemplate<TarjetaCredito>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id " +
               "FROM Tarjeta " +
               "WHERE tarjeta_id = ?");
       preparedStatement.setInt(1, id.intValue());
@@ -109,7 +109,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public List<TarjetaCredito> consultarTodos() throws DAOException {
     return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id " +
               "FROM Tarjeta");
       ResultSet rs = preparedStatement.executeQuery();
       if (!(rs.next()))
@@ -131,7 +131,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws DAOException {
     return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id " +
               "FROM Tarjeta " +
               "WHERE usuario_id = ?");
       preparedStatement.setInt(1, usuario.getId());
