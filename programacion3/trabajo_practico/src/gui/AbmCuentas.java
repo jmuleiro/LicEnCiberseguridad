@@ -38,8 +38,9 @@ public class AbmCuentas extends JPanelBase {
   JPanel jPanelBotones;
   JPanel jPanelTabla;
   JButton jButtonVolver;
+  JButton jButtonExtraer;
+  JButton jButtonDepositar;
   JButton jButtonAgregar;
-  JButton jButtonAdministrar;
   JButton jButtonModificar;
   JButton jButtonEliminar;
   JLabel jLabelUsuario;
@@ -63,16 +64,18 @@ public class AbmCuentas extends JPanelBase {
     actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
     jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 6));
+    jPanelBotones.setLayout(new GridLayout(1, 7));
     jButtonVolver = new JButton("Volver");
+    jButtonExtraer = new JButton("Extraer");
+    jButtonDepositar = new JButton("Depositar");
     jButtonAgregar = new JButton("Agregar");
-    jButtonAdministrar = new JButton("Administrar");
     jButtonModificar = new JButton("Modificar");
     jButtonEliminar = new JButton("Eliminar");
     jPanelBotones.add(jButtonVolver);
     jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
+    jPanelBotones.add(jButtonExtraer);
+    jPanelBotones.add(jButtonDepositar);
     jPanelBotones.add(jButtonAgregar);
-    jPanelBotones.add(jButtonAdministrar);
     jPanelBotones.add(jButtonModificar);
     jPanelBotones.add(jButtonEliminar);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
@@ -95,22 +98,26 @@ public class AbmCuentas extends JPanelBase {
       panel.mostrar(prev, contexto);
     });
 
+    jButtonExtraer.addActionListener(e -> {
+      extraer(getCuentaSeleccionada(), usuario);
+    });
+
+    jButtonDepositar.addActionListener(e -> {
+      Cuenta cuenta = getCuentaSeleccionada();
+      if (cuenta == null)
+        return;
+      depositar(cuenta, usuario);
+    });
+
     jButtonAgregar.addActionListener(e -> {
       agregarCuenta(usuario);
     });
 
-    jButtonAdministrar.addActionListener(e -> {
+    jButtonModificar.addActionListener(e -> {
       Cuenta cuenta = getCuentaSeleccionada();
       if (cuenta == null)
         return;
-      contexto.put("prev", "5");
-      contexto.put("id_cuenta", Integer.toString(cuenta.getId()));
-      contexto.put("tipo_cuenta", cuenta.getClass().getSimpleName());
-      panel.mostrar(7, contexto);
-    });
-
-    jButtonModificar.addActionListener(e -> {
-      modificarCuenta(getCuentaSeleccionada(), usuario);
+      modificarCuenta(cuenta, usuario);
     });
 
     jButtonEliminar.addActionListener(e -> {
@@ -149,7 +156,75 @@ public class AbmCuentas extends JPanelBase {
   }
 
   private void modificarCuenta(Cuenta cuenta, UsuarioCliente usuario) {
+    JDialog jDialogModificar = new JDialog();
+    jDialogModificar.setTitle("Modificar Cuenta");
+    jDialogModificar.setSize(400, 200);
+    jDialogModificar.setLayout(new GridLayout(7, 2));
 
+    jDialogModificar.add(new JLabel("Cuenta: "));
+    jDialogModificar.add(new JLabel(Integer.toString(cuenta.getId())));
+
+    jDialogModificar.add(new JLabel("Tipo de Cuenta: "));
+    if (cuenta instanceof CajaAhorro) {
+      jDialogModificar.add(new JLabel("Caja de Ahorro"));
+    } else {
+      jDialogModificar.add(new JLabel("Cuenta Corriente"));
+    }
+
+    jDialogModificar.add(new JLabel("CBU: "));
+    jDialogModificar.add(new JLabel(Integer.toString(cuenta.getCbu())));
+
+    jDialogModificar.add(new JLabel("Alias: "));
+    JTextField jTextFieldAlias = new JTextField(cuenta.getAlias());
+    jDialogModificar.add(jTextFieldAlias);
+
+    JTextField jTextFieldInteresOGiro;
+
+    if (cuenta instanceof CajaAhorro) {
+      jDialogModificar.add(new JLabel("Interés: "));
+      jTextFieldInteresOGiro = new JTextField(Double.toString(((CajaAhorro) cuenta).getPorcentajeInteres()));
+      jDialogModificar.add(jTextFieldInteresOGiro);
+    } else {
+      jDialogModificar.add(new JLabel("Límite de Giro: "));
+      jTextFieldInteresOGiro = new JTextField(Double.toString(((CuentaCorriente) cuenta).getLimiteGiro()));
+      jDialogModificar.add(jTextFieldInteresOGiro);
+    }
+
+    JButton jButtonGuardar = new JButton("Guardar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+
+    jDialogModificar.add(jButtonGuardar);
+    jDialogModificar.add(jButtonCancelar);
+
+    jButtonGuardar.addActionListener(e -> {
+      try {
+        if (cuenta instanceof CajaAhorro) {
+          CajaAhorro cajaAhorro = (CajaAhorro) cuenta;
+          cajaAhorro.setAlias(jTextFieldAlias.getText());
+          cajaAhorro.setPorcentajeInteres(Double.parseDouble(jTextFieldInteresOGiro.getText()));
+          serviceCajaAhorro = new ServiceCajaAhorro();
+          serviceCajaAhorro.modificar(cajaAhorro);
+        } else {
+          CuentaCorriente cuentaCorriente = (CuentaCorriente) cuenta;
+          cuentaCorriente.setAlias(jTextFieldAlias.getText());
+          cuentaCorriente.setLimiteGiro(Double.parseDouble(jTextFieldInteresOGiro.getText()));
+          serviceCuentaCorriente = new ServiceCuentaCorriente();
+          serviceCuentaCorriente.modificar(cuentaCorriente);
+        }
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogModificar.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogModificar.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+    });
+
+    jDialogModificar.setLocationRelativeTo(null);
+    jDialogModificar.setVisible(true);
   }
 
   private DefaultTableModel construirTablaCuentas(UsuarioCliente usuario) {
@@ -187,6 +262,98 @@ public class AbmCuentas extends JPanelBase {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
     }
     return resultado;
+  }
+
+  private void extraer(Cuenta cuenta, UsuarioCliente usuario) {
+    JDialog jDialogExtraer = new JDialog();
+    jDialogExtraer.setTitle("Extraer");
+    jDialogExtraer.setSize(400, 200);
+    jDialogExtraer.setLayout(new GridLayout(4, 2));
+
+    jDialogExtraer.add(new JLabel("Cuenta: "));
+    jDialogExtraer.add(new JLabel(Integer.toString(cuenta.getId())));
+
+    jDialogExtraer.add(new JLabel("Saldo actual: "));
+    jDialogExtraer.add(new JLabel(String.valueOf(cuenta.getSaldo())));
+
+    jDialogExtraer.add(new JLabel("Monto: "));
+    JTextField jTextFieldMonto = new JTextField();
+    jDialogExtraer.add(jTextFieldMonto);
+
+    JButton jButtonExtraer = new JButton("Extraer");
+    JButton jButtonCancelar = new JButton("Cancelar");
+    jDialogExtraer.add(jButtonExtraer);
+    jDialogExtraer.add(jButtonCancelar);
+
+    jButtonExtraer.addActionListener(e -> {
+      try {
+        cuenta.extraer(Double.parseDouble(jTextFieldMonto.getText()));
+        if (cuenta instanceof CajaAhorro) {
+          serviceCajaAhorro = new ServiceCajaAhorro();
+          serviceCajaAhorro.modificar((CajaAhorro) cuenta);
+        } else {
+          serviceCuentaCorriente = new ServiceCuentaCorriente();
+          serviceCuentaCorriente.modificar((CuentaCorriente) cuenta);
+        }
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "Monto inválido", "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogExtraer.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+    });
+
+    jButtonCancelar.addActionListener(e -> jDialogExtraer.dispose());
+
+    jDialogExtraer.setLocationRelativeTo(null);
+    jDialogExtraer.setVisible(true);
+  }
+
+  private void depositar(Cuenta cuenta, UsuarioCliente usuario) {
+    JDialog jDialogDepositar = new JDialog();
+    jDialogDepositar.setTitle("Depositar");
+    jDialogDepositar.setSize(400, 200);
+    jDialogDepositar.setLayout(new GridLayout(4, 2));
+
+    jDialogDepositar.add(new JLabel("Cuenta: "));
+    jDialogDepositar.add(new JLabel(Integer.toString(cuenta.getId())));
+
+    jDialogDepositar.add(new JLabel("Saldo actual: "));
+    jDialogDepositar.add(new JLabel(String.valueOf(cuenta.getSaldo())));
+
+    jDialogDepositar.add(new JLabel("Monto: "));
+    JTextField jTextFieldMonto = new JTextField();
+    jDialogDepositar.add(jTextFieldMonto);
+
+    JButton jButtonDepositar = new JButton("Depositar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+    jDialogDepositar.add(jButtonDepositar);
+    jDialogDepositar.add(jButtonCancelar);
+
+    jButtonDepositar.addActionListener(e -> {
+      try {
+        cuenta.depositar(Double.parseDouble(jTextFieldMonto.getText()));
+        if (cuenta instanceof CajaAhorro) {
+          serviceCajaAhorro = new ServiceCajaAhorro();
+          serviceCajaAhorro.modificar((CajaAhorro) cuenta);
+        } else {
+          serviceCuentaCorriente = new ServiceCuentaCorriente();
+          serviceCuentaCorriente.modificar((CuentaCorriente) cuenta);
+        }
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "Monto inválido", "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogDepositar.dispose();
+      jTableCuentas.setModel(construirTablaCuentas(usuario));
+    });
+
+    jButtonCancelar.addActionListener(e -> jDialogDepositar.dispose());
+
+    jDialogDepositar.setLocationRelativeTo(null);
+    jDialogDepositar.setVisible(true);
   }
 
   private void agregarCuenta(UsuarioCliente usuario) {
