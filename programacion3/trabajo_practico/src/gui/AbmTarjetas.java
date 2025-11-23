@@ -1,9 +1,48 @@
 package programacion3.trabajo_practico.src.gui;
 
 import java.util.Map;
+import java.util.Random;
+import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import java.time.LocalDate;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
+import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceException;
+import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
 
 public class AbmTarjetas extends JPanelBase {
   // * Atributos
+  ServiceTarjetaCredito serviceTarjetaCredito;
+  JPanel jPanelLabels;
+  JPanel jPanelBotones;
+  JPanel jPanelTabla;
+  JButton jButtonVolver;
+  JButton jButtonAgregar;
+  JButton jButtonModificar;
+  JButton jButtonEliminar;
+  JLabel jLabelUsuario;
+  JLabel jLabelId;
+  JLabel jLabelPeriodo;
+  JTable jTableTarjetas;
 
   // * Constructor
   public AbmTarjetas(PanelManager panel, Map<String, String> contexto) {
@@ -16,5 +55,299 @@ public class AbmTarjetas extends JPanelBase {
     String usuarioString = contexto.get("usuario");
     Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
     panel.jFrame.setTitle("Tarjetas: " + usuarioString);
+
+    LocalDate fechaActual = LocalDate.now();
+
+    jPanelLabels = new JPanel();
+    jPanelLabels.setLayout(new GridLayout(1, 5));
+
+    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
+    jLabelId = new JLabel("ID: " + idUsuario);
+    jLabelPeriodo = new JLabel("Periodo: " + fechaActual.getMonthValue() + "/" + fechaActual.getYear());
+
+    jPanelLabels.add(jLabelUsuario);
+    jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
+    jPanelLabels.add(jLabelId);
+    jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
+    jPanelLabels.add(jLabelPeriodo);
+    actualPanel.add(jPanelLabels, BorderLayout.NORTH);
+
+    jPanelBotones = new JPanel();
+    jPanelBotones.setLayout(new GridLayout(1, 5));
+
+    jButtonVolver = new JButton("Volver");
+    jButtonAgregar = new JButton("Agregar");
+    jButtonModificar = new JButton("Modificar");
+    jButtonEliminar = new JButton("Eliminar");
+
+    jPanelBotones.add(jButtonVolver);
+    jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
+    jPanelBotones.add(jButtonAgregar);
+    jPanelBotones.add(jButtonModificar);
+    jPanelBotones.add(jButtonEliminar);
+    actualPanel.add(jPanelBotones, BorderLayout.CENTER);
+
+    UsuarioCliente usuario = new UsuarioCliente(
+        contexto.get("nombre_usuario"),
+        contexto.get("apellido_usuario"),
+        usuarioString,
+        idUsuario);
+
+    jPanelTabla = new JPanel();
+    jPanelTabla.setLayout(new GridLayout(1, 1));
+
+    jTableTarjetas = new JTable(construirTablaTarjetas(usuario));
+    JScrollPane jScrollPane = new JScrollPane(jTableTarjetas);
+    jPanelTabla.add(jScrollPane);
+    actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
+
+    jButtonVolver.addActionListener(e -> {
+      int prev = Integer.parseInt(contexto.get("prev"));
+      contexto.put("prev", "3");
+      panel.mostrar(prev, contexto);
+    });
+
+    jButtonAgregar.addActionListener(e -> {
+      agregarTarjeta(usuario);
+    });
+
+    jButtonModificar.addActionListener(e -> {
+
+    });
+
+    jButtonEliminar.addActionListener(e -> {
+      TarjetaCredito tarjeta = getTarjetaSeleccionada();
+      if (tarjeta == null)
+        return;
+      eliminarTarjeta(tarjeta);
+      jTableTarjetas.setModel(construirTablaTarjetas(usuario));
+    });
+
+    setLayout(new BorderLayout());
+    add(actualPanel);
   }
+
+  private DefaultTableModel construirTablaTarjetas(UsuarioCliente usuario) {
+    List<TarjetaCredito> tarjetas = new ArrayList<>();
+    Vector<String> columnas = new Vector<>(5);
+    columnas.addElement("ID");
+    columnas.addElement("Numero"); // Últimos 4 dígitos
+    columnas.addElement("Vencimiento");
+    columnas.addElement("Límite");
+    columnas.addElement("Consumos"); // Del mes actual
+
+    DefaultTableModel resultado = new DefaultTableModel(0, columnas.size()) {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    };
+    resultado.setColumnIdentifiers(columnas);
+
+    try {
+      serviceTarjetaCredito = new ServiceTarjetaCredito();
+      tarjetas = serviceTarjetaCredito.consultarTodos(usuario);
+      if (tarjetas == null)
+        return resultado;
+
+      for (TarjetaCredito t : tarjetas) {
+        String numeroTarjeta = String.valueOf(t.getNumero());
+        resultado.addRow(new Object[] {
+            t.getId(),
+            numeroTarjeta.substring(numeroTarjeta.length() - 4),
+            t.getFechaVencimiento(),
+            t.getLimite(),
+            t.getConsumos().stream().mapToDouble(c -> c.getCantidad()).sum()
+        });
+      }
+    } catch (ServiceException e) {
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    return resultado;
+  }
+
+  private TarjetaCredito getTarjetaSeleccionada() {
+    int filaSeleccionada = jTableTarjetas.getSelectedRow();
+    if (filaSeleccionada == -1) {
+      JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
+      return null;
+    }
+
+    int idTarjeta = Integer.parseInt(jTableTarjetas.getValueAt(filaSeleccionada, 0).toString());
+    TarjetaCredito tarjeta = null;
+
+    try {
+      serviceTarjetaCredito = new ServiceTarjetaCredito();
+      tarjeta = serviceTarjetaCredito.consultar(idTarjeta);
+    } catch (ServiceException e) {
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    if (tarjeta == null) {
+      JOptionPane.showMessageDialog(null, "Tarjeta no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
+      return null;
+    }
+
+    return tarjeta;
+  }
+
+  private void agregarTarjeta(UsuarioCliente usuario) {
+    JDialog jDialogAgregar = new JDialog();
+    jDialogAgregar.setTitle("Agregar Tarjeta");
+    jDialogAgregar.setSize(400, 200);
+    jDialogAgregar.setLayout(new GridLayout(6, 2));
+
+    jDialogAgregar.add(new JLabel("Usuario: "));
+    jDialogAgregar.add(new JLabel(usuario.getUsuario()));
+
+    jDialogAgregar.add(new JLabel("Número: "));
+    JTextField jTextFieldNumero = new JTextField();
+    jTextFieldNumero.addKeyListener(new KeyAdapter() {
+      public void keyTyped(KeyEvent e) {
+        if (jTextFieldNumero.getText().length() >= 16)
+          e.consume();
+      }
+    });
+    jDialogAgregar.add(jTextFieldNumero);
+
+    jDialogAgregar.add(new JLabel("Límite: "));
+    JTextField jTextFieldLimite = new JTextField("100000");
+    jDialogAgregar.add(jTextFieldLimite);
+
+    LocalDate vencimientoDate = LocalDate.now().plusMonths(1);
+    String vencimiento = vencimientoDate.getDayOfMonth() + "/" + vencimientoDate.getMonthValue() + "/"
+        + vencimientoDate.getYear();
+
+    jDialogAgregar.add(new JLabel("Vencimiento: "));
+    JTextField jTextFieldVencimiento = new JTextField(vencimiento);
+    jTextFieldVencimiento.setEditable(false);
+    jDialogAgregar.add(jTextFieldVencimiento);
+
+    jDialogAgregar.add(new JLabel("CVC: "));
+    Random random = new Random();
+    int cvc = 100 + random.nextInt(900);
+    JPasswordField jPasswordFieldCVC = new JPasswordField(String.valueOf(cvc));
+    jPasswordFieldCVC.addKeyListener(new KeyAdapter() {
+      public void keyTyped(KeyEvent e) {
+        if (jPasswordFieldCVC.getPassword().length >= 3)
+          e.consume();
+      }
+    });
+    jDialogAgregar.add(jPasswordFieldCVC);
+
+    JButton jButtonAgregar = new JButton("Agregar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+
+    jDialogAgregar.add(jButtonAgregar);
+    jDialogAgregar.add(jButtonCancelar);
+
+    jButtonAgregar.addActionListener(e -> {
+      String limiteString = jTextFieldLimite.getText();
+      String numeroString = jTextFieldNumero.getText();
+      String cvcString = new String(jPasswordFieldCVC.getPassword());
+      if (limiteString.isEmpty() || numeroString.isEmpty() || cvcString.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        Double.parseDouble(limiteString);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "El límite debe ser un número", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (Integer.valueOf(limiteString) < 1000) {
+        JOptionPane.showMessageDialog(null, "El límite debe ser mayor a 1000", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        Integer.valueOf(numeroString);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "El número de tarjeta debe ser un número", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (numeroString.length() != 16) {
+        JOptionPane.showMessageDialog(null, "El número debe tener exactamente 16 dígitos", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        Integer.parseInt(cvcString);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "El CVC debe ser un número", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (cvcString.length() != 3) {
+        JOptionPane.showMessageDialog(null, "El CVC debe tener exactamente 3 dígitos", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito.insertar(
+            new TarjetaCredito(
+                Integer.parseInt(numeroString),
+                vencimientoDate,
+                Integer.parseInt(cvcString),
+                Double.parseDouble(limiteString)),
+            usuario);
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogAgregar.dispose();
+    });
+
+    jDialogAgregar.setLocationRelativeTo(null);
+    jDialogAgregar.setVisible(true);
+  }
+
+  private void eliminarTarjeta(TarjetaCredito tarjeta) {
+    JDialog jDialogEliminar = new JDialog();
+    jDialogEliminar.setTitle("Eliminar Tarjeta");
+    jDialogEliminar.setSize(400, 200);
+    jDialogEliminar.setLayout(new GridLayout(2, 2));
+
+    JPanel jPanelMensaje = new JPanel();
+    jPanelMensaje.add(new JLabel("¿Desea eliminar la tarjeta de ID " + tarjeta.getId() + "?"));
+    jDialogEliminar.add(jPanelMensaje, BorderLayout.CENTER);
+
+    JPanel jPanelBotones = new JPanel();
+    JButton jButtonConfirmar = new JButton("Confirmar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+    jPanelBotones.add(jButtonConfirmar);
+    jPanelBotones.add(jButtonCancelar);
+    jDialogEliminar.add(jPanelBotones, BorderLayout.SOUTH);
+
+    jButtonConfirmar.addActionListener(e -> {
+      try {
+        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito.eliminar(tarjeta.getId());
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogEliminar.dispose();
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogEliminar.dispose();
+    });
+
+    jDialogEliminar.setLocationRelativeTo(null);
+    jDialogEliminar.setVisible(true);
+  }
+
 }
