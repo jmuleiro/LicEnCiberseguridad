@@ -259,9 +259,8 @@ public class HomeGestionUsuario extends JPanelBase {
 
           for (Cuenta cuentaDestino : cuentas) {
             // Seguir hasta encontrar la cuenta
-            // todo: alias falla aca
-            if (!(cuentaDestino.getId() == Integer.valueOf(destino)
-                || cuentaDestino.getCbu() == Integer.valueOf(destino)
+            if (!(Integer.toString(cuentaDestino.getId()).equals(destino)
+                || Integer.toString(cuentaDestino.getCbu()).equals(destino)
                 || cuentaDestino.getAlias().equals(destino)))
               continue;
 
