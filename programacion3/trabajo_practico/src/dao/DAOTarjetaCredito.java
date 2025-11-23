@@ -22,9 +22,8 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public void insertar(TarjetaCredito elemento, UsuarioCliente usuario) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "INSERT INTO Tarjeta (usuario_id, cod_tipo_tarjeta, limite, numero, fecha_vencimiento, cvc)" + 
-        "VALUES (?, \"CRE\", ?, ?, ?, ?)"
-      );
+          "INSERT INTO Tarjeta (usuario_id, cod_tipo_tarjeta, limite, numero, fecha_vencimiento, cvc)" +
+              "VALUES (?, \"CRE\", ?, ?, ?, ?)");
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setDouble(2, elemento.getLimite());
       preparedStatement.setInt(3, elemento.getNumero());
@@ -39,8 +38,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public void eliminar(Integer id) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "DELETE FROM Tarjeta WHERE tarjeta_id = ?"
-      );
+          "DELETE FROM Tarjeta WHERE tarjeta_id = ?");
       preparedStatement.setInt(1, id.intValue());
       preparedStatement.executeUpdate();
       return null;
@@ -52,10 +50,9 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       // El único campo que tiene sentido que sea actualizable es el límite
       PreparedStatement preparedStatement = conn.prepare(
-        "UPDATE Tarjeta " +
-        "SET limite = ? " + 
-        "WHERE tarjeta_id = ?"
-      );
+          "UPDATE Tarjeta " +
+              "SET limite = ? " +
+              "WHERE tarjeta_id = ?");
       preparedStatement.setDouble(1, elemento.getLimite());
       preparedStatement.setInt(2, elemento.getId());
       preparedStatement.executeUpdate();
@@ -67,44 +64,42 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public TarjetaCredito consultar(Integer id) throws DAOException {
     return new DAOTemplate<TarjetaCredito>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" + 
-        "FROM Tarjeta " + 
-        "WHERE tarjeta_id = ?"
-      );
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+              "FROM Tarjeta " +
+              "WHERE tarjeta_id = ?");
       preparedStatement.setInt(1, id.intValue());
       ResultSet rs = preparedStatement.executeQuery();
       if (!(rs.next()))
         return null; // No hubo resultados
-      
+
       TarjetaCredito tarjeta = new TarjetaCredito(
-        rs.getInt("numero"),
-        rs.getDate("fecha_vencimiento").toLocalDate(),
-        rs.getInt("cvc"),
-        rs.getDouble("limite"),
-        rs.getInt("tarjeta_id")
-      );
+          rs.getInt("numero"),
+          rs.getDate("fecha_vencimiento").toLocalDate(),
+          rs.getInt("cvc"),
+          rs.getDouble("limite"),
+          rs.getInt("tarjeta_id"));
 
       // Traer los consumos
       // preparedStatement = conn.prepare(
-      //   "SELECT C.cantidad, C.fecha, C.cod_moneda, C.consumo_id, M.nombre_moneda " + 
-      //   "FROM Consumo AS C " + 
-      //   "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
-      //   "WHERE C.tarjeta_id = ?"
+      // "SELECT C.cantidad, C.fecha, C.cod_moneda, C.consumo_id, M.nombre_moneda " +
+      // "FROM Consumo AS C " +
+      // "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+      // "WHERE C.tarjeta_id = ?"
       // );
       // preparedStatement.setInt(1, id.intValue());
       // rs = preparedStatement.executeQuery();
       // while (rs.next()) {
-      //   tarjeta.agregarConsumo(
-      //     new Consumo(
-      //       rs.getDouble("C.cantidad"),
-      //       rs.getDate("C.fecha").toLocalDate(),
-      //       new Moneda(
-      //         rs.getString("C.cod_moneda"),
-      //         rs.getString("M.nombre_moneda")
-      //       ),
-      //       rs.getInt("C.consumo_id")
-      //     )
-      //   );
+      // tarjeta.agregarConsumo(
+      // new Consumo(
+      // rs.getDouble("C.cantidad"),
+      // rs.getDate("C.fecha").toLocalDate(),
+      // new Moneda(
+      // rs.getString("C.cod_moneda"),
+      // rs.getString("M.nombre_moneda")
+      // ),
+      // rs.getInt("C.consumo_id")
+      // )
+      // );
       // }
       return tarjeta;
     });
@@ -114,22 +109,20 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public List<TarjetaCredito> consultarTodos() throws DAOException {
     return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" + 
-        "FROM Tarjeta"
-      );
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+              "FROM Tarjeta");
       ResultSet rs = preparedStatement.executeQuery();
       if (!(rs.next()))
         return null; // No hubo resultados
-      
+
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
-          rs.getInt("numero"),
-          rs.getDate("fecha_vencimiento").toLocalDate(),
-          rs.getInt("cvc"),
-          rs.getDouble("limite"),
-          rs.getInt("tarjeta_id")
-        ));
+            rs.getInt("numero"),
+            rs.getDate("fecha_vencimiento").toLocalDate(),
+            rs.getInt("cvc"),
+            rs.getDouble("limite"),
+            rs.getInt("tarjeta_id")));
       }
       return tarjetas;
     });
@@ -138,28 +131,24 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws DAOException {
     return new DAOTemplate<List<TarjetaCredito>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" + 
-        "FROM Tarjeta " + 
-        "WHERE usuario_id = ?"
-      );
+          "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id" +
+              "FROM Tarjeta " +
+              "WHERE usuario_id = ?");
       preparedStatement.setInt(1, usuario.getId());
       ResultSet rs = preparedStatement.executeQuery();
       if (!(rs.next()))
         return null; // No hubo resultados
-      
+
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
-          rs.getInt("numero"),
-          rs.getDate("fecha_vencimiento").toLocalDate(),
-          rs.getInt("cvc"),
-          rs.getDouble("limite"),
-          rs.getInt("tarjeta_id")
-        ));
+            rs.getInt("numero"),
+            rs.getDate("fecha_vencimiento").toLocalDate(),
+            rs.getInt("cvc"),
+            rs.getDouble("limite"),
+            rs.getInt("tarjeta_id")));
       }
       return tarjetas;
     });
   }
-
-  // todo: consultar todos por usuario
 }
