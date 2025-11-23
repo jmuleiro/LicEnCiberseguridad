@@ -230,11 +230,13 @@ public class AbmCuentas extends JPanelBase {
 
   private DefaultTableModel construirTablaCuentas(UsuarioCliente usuario) {
     List<Cuenta> cuentas = new ArrayList<>();
-    Vector<String> columnas = new Vector<String>(4);
+    Vector<String> columnas = new Vector<String>(6);
     columnas.addElement("ID");
     columnas.addElement("Tipo");
     columnas.addElement("Moneda");
     columnas.addElement("Saldo");
+    columnas.addElement("CBU");
+    columnas.addElement("Alias");
 
     DefaultTableModel resultado = new DefaultTableModel(0, columnas.size()) {
       @Override
@@ -252,11 +254,16 @@ public class AbmCuentas extends JPanelBase {
       cuentas.addAll(serviceCuentaCorriente.consultarTodos(usuario));
 
       for (Cuenta c : cuentas) {
-        Object[] fila = new Object[4];
+        Object[] fila = new Object[6];
         fila[0] = c.getId();
         fila[1] = c.getClass().getSimpleName();
         fila[2] = c.getMoneda().getCodigo();
         fila[3] = c.getSaldo();
+        fila[4] = c.getCbu();
+        if (c.getAlias() == "")
+          fila[5] = "N/A";
+        else
+          fila[5] = c.getAlias();
         resultado.addRow(fila);
       }
     } catch (ServiceException e) {
