@@ -109,7 +109,7 @@ CREATE TABLE Tarjeta (
     usuario_id INT NOT NULL,
     cod_tipo_tarjeta CHAR(3) NOT NULL,
     limite DOUBLE NOT NULL,
-    numero INT NOT NULL,
+    numero VARCHAR(16) NOT NULL,
     fecha_vencimiento DATE NOT NULL,
     cvc INT NOT NULL,
     PRIMARY KEY (tarjeta_id),

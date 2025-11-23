@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 public class TarjetaCredito extends Tarjeta {
   // * Constructores
-  public TarjetaCredito(int numero, LocalDate fechaVencimiento, int cvc, double limite) {
+  public TarjetaCredito(String numero, LocalDate fechaVencimiento, int cvc, double limite) {
     super(numero, fechaVencimiento, cvc, limite);
   }
 
-  public TarjetaCredito(int numero, LocalDate fechaVencimiento, int cvc, double limite, int id) {
+  public TarjetaCredito(String numero, LocalDate fechaVencimiento, int cvc, double limite, int id) {
     super(numero, fechaVencimiento, cvc, limite, id);
   }
 
@@ -18,15 +18,15 @@ public class TarjetaCredito extends Tarjeta {
   // monedas posibles, pero se eligió obviar eso para el trabajo práctico.
   public void agregarConsumo(Consumo consumo) {
     double total = this.getConsumos().stream()
-      .filter(c -> {
-        return c.getMoneda() == consumo.getMoneda();
-      })
-      .mapToDouble(Consumo::getCantidad)
-      .sum();
-    
+        .filter(c -> {
+          return c.getMoneda() == consumo.getMoneda();
+        })
+        .mapToDouble(Consumo::getCantidad)
+        .sum();
+
     if (total + consumo.getCantidad() > this.getLimite())
       throw new RuntimeException("El consumo excede el límite de la tarjeta");
-    
+
     this.getConsumos().add(consumo);
   }
 }

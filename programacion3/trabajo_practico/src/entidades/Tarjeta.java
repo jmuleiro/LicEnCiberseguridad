@@ -7,16 +7,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class Tarjeta {
-  //* Atributos
+  // * Atributos
   private int id;
   private List<Consumo> consumos;
-  private int numero;
+  private String numero;
   private LocalDate fechaVencimiento;
   private int cvc;
   private double limite;
 
-  //* Constructores
-  public Tarjeta(int numero, LocalDate fechaVencimiento, int cvc, double limite) {
+  // * Constructores
+  public Tarjeta(String numero, LocalDate fechaVencimiento, int cvc, double limite) {
     this.numero = numero;
     this.fechaVencimiento = fechaVencimiento;
     this.cvc = cvc;
@@ -24,7 +24,7 @@ public abstract class Tarjeta {
     consumos = new ArrayList<>();
   }
 
-  public Tarjeta(int numero, LocalDate fechaVencimiento, int cvc, double limite, int id) {
+  public Tarjeta(String numero, LocalDate fechaVencimiento, int cvc, double limite, int id) {
     this.numero = numero;
     this.fechaVencimiento = fechaVencimiento;
     this.cvc = cvc;
@@ -33,7 +33,7 @@ public abstract class Tarjeta {
     consumos = new ArrayList<>();
   }
 
-  //* Métodos
+  // * Métodos
   // Calcular gastos del mes actual
   public Map<String, Double> calcularGastos() {
     LocalDate fechaDesde = LocalDate.now().withDayOfMonth(1);
@@ -42,26 +42,27 @@ public abstract class Tarjeta {
   }
 
   // Calcular gastos del período especificado
-  // Devuelve un Map donde la key es el código de moneda y el valor es el total de gastos
+  // Devuelve un Map donde la key es el código de moneda y el valor es el total de
+  // gastos
   public Map<String, Double> calcularGastos(LocalDate fechaDesde, LocalDate fechaHasta) {
     return this.consumos.stream()
-      .filter(c -> {
-        LocalDate fechaConsumo = c.getFecha();
-        // Filtra consumos que están dentro del período, inclusive.
-        return !fechaConsumo.isBefore(fechaDesde) && !fechaConsumo.isAfter(fechaHasta);
-      })
-      .collect(Collectors.groupingBy(
-        consumo -> consumo.getMoneda().getCodigo(), // Agrupa por código de moneda
-        Collectors.summingDouble(Consumo::getCantidad) // Suma las cantidades para cada grupo
-      ));
+        .filter(c -> {
+          LocalDate fechaConsumo = c.getFecha();
+          // Filtra consumos que están dentro del período, inclusive.
+          return !fechaConsumo.isBefore(fechaDesde) && !fechaConsumo.isAfter(fechaHasta);
+        })
+        .collect(Collectors.groupingBy(
+            consumo -> consumo.getMoneda().getCodigo(), // Agrupa por código de moneda
+            Collectors.summingDouble(Consumo::getCantidad) // Suma las cantidades para cada grupo
+        ));
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public int getId() {
     return this.id;
   }
 
-  public int getNumero() {
+  public String getNumero() {
     return this.numero;
   }
 

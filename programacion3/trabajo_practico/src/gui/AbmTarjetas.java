@@ -265,9 +265,7 @@ public class AbmTarjetas extends JPanelBase {
         return;
       }
 
-      try {
-        Integer.valueOf(numeroString);
-      } catch (NumberFormatException ex) {
+      if (!numeroString.matches("\\d+")) {
         JOptionPane.showMessageDialog(null, "El número de tarjeta debe ser un número", "Error",
             JOptionPane.ERROR_MESSAGE);
         return;
@@ -297,7 +295,7 @@ public class AbmTarjetas extends JPanelBase {
         serviceTarjetaCredito = new ServiceTarjetaCredito();
         serviceTarjetaCredito.insertar(
             new TarjetaCredito(
-                Integer.parseInt(numeroString),
+                numeroString,
                 vencimientoDate,
                 Integer.parseInt(cvcString),
                 Double.parseDouble(limiteString)),
@@ -305,6 +303,7 @@ public class AbmTarjetas extends JPanelBase {
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
+      jDialogAgregar.dispose();
     });
 
     jButtonCancelar.addActionListener(e -> {

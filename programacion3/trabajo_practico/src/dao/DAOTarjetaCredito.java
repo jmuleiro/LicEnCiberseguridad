@@ -26,7 +26,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
               "VALUES (?, \"CRE\", ?, ?, ?, ?)");
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setDouble(2, elemento.getLimite());
-      preparedStatement.setInt(3, elemento.getNumero());
+      preparedStatement.setString(3, elemento.getNumero());
       preparedStatement.setDate(4, java.sql.Date.valueOf(elemento.getFechaVencimiento()));
       preparedStatement.setInt(5, elemento.getCvc());
       preparedStatement.executeUpdate();
@@ -73,7 +73,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
         return null; // No hubo resultados
 
       TarjetaCredito tarjeta = new TarjetaCredito(
-          rs.getInt("numero"),
+          rs.getString("numero"),
           rs.getDate("fecha_vencimiento").toLocalDate(),
           rs.getInt("cvc"),
           rs.getDouble("limite"),
@@ -118,7 +118,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
-            rs.getInt("numero"),
+            rs.getString("numero"),
             rs.getDate("fecha_vencimiento").toLocalDate(),
             rs.getInt("cvc"),
             rs.getDouble("limite"),
@@ -142,7 +142,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
-            rs.getInt("numero"),
+            rs.getString("numero"),
             rs.getDate("fecha_vencimiento").toLocalDate(),
             rs.getInt("cvc"),
             rs.getDouble("limite"),
