@@ -416,12 +416,12 @@ public class AbmCuentas extends JPanelBase {
       jTextFieldLimiteOPorcentaje.setText("0");
       jDialogFormulario.add(jTextFieldLimiteOPorcentaje);
 
-      JButton jButtonAceptar = new JButton("Aceptar");
+      JButton jButtonAgregar = new JButton("Agregar");
       JButton jButtonCancelar = new JButton("Cancelar");
 
-      jButtonAceptar.setEnabled(false);
+      jButtonAgregar.setEnabled(false);
 
-      jDialogFormulario.add(jButtonAceptar);
+      jDialogFormulario.add(jButtonAgregar);
       jDialogFormulario.add(jButtonCancelar);
 
       jComboBoxTipo.addActionListener(e -> {
@@ -437,10 +437,10 @@ public class AbmCuentas extends JPanelBase {
         jTextFieldAlias.setEnabled(true);
         jTextFieldCbu.setEnabled(true);
         jTextFieldLimiteOPorcentaje.setEnabled(true);
-        jButtonAceptar.setEnabled(true);
+        jButtonAgregar.setEnabled(true);
       });
 
-      jButtonAceptar.addActionListener(e -> {
+      jButtonAgregar.addActionListener(e -> {
         if (jTextFieldCbu.getText().isEmpty() ||
             jTextFieldLimiteOPorcentaje.getText().isEmpty() ||
             jComboBoxMoneda.getSelectedItem().toString().isEmpty() ||
