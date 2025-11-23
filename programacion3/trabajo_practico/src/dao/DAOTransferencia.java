@@ -64,7 +64,8 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
       // Insertar la transferencia
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Transferencia (monto, cod_moneda, concepto) " +
-              "VALUES (?, ?, ?) ");
+              "VALUES (?, ?, ?) ",
+          java.sql.Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setDouble(1, elemento.getMonto());
       preparedStatement.setString(2, elemento.getMoneda().getCodigo());
       preparedStatement.setString(3, elemento.getConcepto());
