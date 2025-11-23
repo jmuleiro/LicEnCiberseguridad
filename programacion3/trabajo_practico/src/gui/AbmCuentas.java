@@ -56,10 +56,11 @@ public class AbmCuentas extends JPanelBase {
   @Override
   public void iniciar() {
     jPanelLabels = new JPanel();
-    jPanelLabels.setLayout(new GridLayout(1, 2));
+    jPanelLabels.setLayout(new GridLayout(1, 3));
     jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));
     jLabelId = new JLabel("ID: " + contexto.get("id_usuario"));
     jPanelLabels.add(jLabelUsuario);
+    jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
     jPanelLabels.add(jLabelId);
     actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
