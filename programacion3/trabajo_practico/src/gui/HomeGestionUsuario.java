@@ -25,6 +25,8 @@ import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceTransferencia;
+import programacion3.trabajo_practico.src.entidades.Transferencia;
 
 public class HomeGestionUsuario extends JPanelBase {
   // * Atributos
@@ -253,14 +255,15 @@ public class HomeGestionUsuario extends JPanelBase {
           cuentas.addAll(serviceCajaAhorro.consultarTodos());
           cuentas.addAll(serviceCuentaCorriente.consultarTodos());
 
-          for (Cuenta c : cuentas) {
+          for (Cuenta cuentaDestino : cuentas) {
             // Seguir hasta encontrar la cuenta
             // todo: alias falla aca
-            if (!(c.getId() == Integer.valueOf(destino) || c.getCbu() == Integer.valueOf(destino)
-                || c.getAlias().equals(destino)))
+            if (!(cuentaDestino.getId() == Integer.valueOf(destino)
+                || cuentaDestino.getCbu() == Integer.valueOf(destino)
+                || cuentaDestino.getAlias().equals(destino)))
               continue;
 
-            if (!(c.getMoneda().getCodigo().equals(moneda.getCodigo()))) {
+            if (!(cuentaDestino.getMoneda().getCodigo().equals(moneda.getCodigo()))) {
               JOptionPane.showMessageDialog(null, "Las cuentas no son de la misma moneda", "Error",
                   JOptionPane.ERROR_MESSAGE);
               return;
@@ -272,8 +275,17 @@ public class HomeGestionUsuario extends JPanelBase {
               cuentaOrigen = serviceCajaAhorro.consultar(Integer.valueOf(partes[2]));
             else
               cuentaOrigen = serviceCuentaCorriente.consultar(Integer.valueOf(partes[2]));
-            cuentaOrigen.extraer(Double.valueOf(monto));
-            c.depositar(montoD);
+            cuentaOrigen.extraer(montoD);
+            cuentaDestino.depositar(montoD);
+
+            // Actualizar tabla de transferencias
+            ServiceTransferencia serviceTransferencia = new ServiceTransferencia();
+            Transferencia transferencia = new Transferencia(montoD, moneda, "Transferencia");
+            serviceTransferencia.registrarTransferencia(cuentaOrigen, cuentaDestino, transferencia);
+
+            JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
+                JOptionPane.INFORMATION_MESSAGE);
+            jDialogTransferir.dispose();
 
             // Actualizar cuenta origen en DB
             if (cuentaOrigen instanceof CuentaCorriente)
@@ -282,11 +294,11 @@ public class HomeGestionUsuario extends JPanelBase {
               serviceCajaAhorro.modificar(((CajaAhorro) cuentaOrigen));
 
             // Actualizar cuenta destino en DB
-            if (c instanceof CuentaCorriente)
-              serviceCuentaCorriente.modificar(((CuentaCorriente) c));
+            if (cuentaDestino instanceof CuentaCorriente)
+              serviceCuentaCorriente.modificar(((CuentaCorriente) cuentaDestino));
             else
-              serviceCajaAhorro.modificar(((CajaAhorro) c));
-            // TODO: actualizar tabla de transferencias
+              serviceCajaAhorro.modificar(((CajaAhorro) cuentaDestino));
+
             return;
           }
           JOptionPane.showMessageDialog(null, "Cuenta destino no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
