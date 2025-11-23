@@ -55,10 +55,15 @@ public class AbmCuentas extends JPanelBase {
 
   @Override
   public void iniciar() {
+    String usuarioString = contexto.get("usuario");
+    Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
+    panel.jFrame.setTitle("Cuentas: " + usuarioString);
+
     jPanelLabels = new JPanel();
     jPanelLabels.setLayout(new GridLayout(1, 3));
-    jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));
-    jLabelId = new JLabel("ID: " + contexto.get("id_usuario"));
+
+    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
+    jLabelId = new JLabel("ID: " + idUsuario);
     jPanelLabels.add(jLabelUsuario);
     jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
     jPanelLabels.add(jLabelId);
@@ -84,8 +89,8 @@ public class AbmCuentas extends JPanelBase {
     UsuarioCliente usuario = new UsuarioCliente(
         contexto.get("nombre_usuario"),
         contexto.get("apellido_usuario"),
-        contexto.get("usuario"),
-        Integer.valueOf(contexto.get("id_usuario")));
+        usuarioString,
+        idUsuario);
     jPanelTabla = new JPanel();
     jPanelTabla.setLayout(new GridLayout(1, 1));
     jTableCuentas = new JTable(construirTablaCuentas(usuario));

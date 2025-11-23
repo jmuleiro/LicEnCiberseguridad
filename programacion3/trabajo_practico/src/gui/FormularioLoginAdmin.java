@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class FormularioLoginAdmin extends JPanel {
-  //* Atributos
+  // * Atributos
   ServiceUsuarioAdmin serviceUsuarioAdmin;
   PanelManager panel;
   JPanel formularioLoginAdmin;
@@ -30,7 +30,7 @@ public class FormularioLoginAdmin extends JPanel {
   JButton jButtonLogin;
   JButton jButtonSalir;
 
-  //* Constructor
+  // * Constructor
   public FormularioLoginAdmin(PanelManager panel) {
     this.panel = panel;
     iniciar();
@@ -39,6 +39,7 @@ public class FormularioLoginAdmin extends JPanel {
   public void iniciar() {
     formularioLoginAdmin = new JPanel();
     formularioLoginAdmin.setLayout(new GridLayout(3, 2));
+    panel.jFrame.setTitle("Login");
 
     jLabelUsuario = new JLabel("Usuario");
     jLabelPassword = new JLabel("Password");
@@ -84,7 +85,6 @@ public class FormularioLoginAdmin extends JPanel {
     jTextFieldUsuario.addActionListener(e -> {
       jButtonLogin.doClick();
     });
-
 
     setLayout(new BorderLayout());
     add(formularioLoginAdmin, BorderLayout.CENTER);

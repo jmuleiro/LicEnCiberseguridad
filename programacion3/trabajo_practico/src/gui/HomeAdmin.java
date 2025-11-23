@@ -9,13 +9,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 public class HomeAdmin extends JPanelBase {
-  //* Atributos
+  // * Atributos
   JLabel jLabelBienvenido;
   JLabel jLabelUsuario;
   JButton jButtonAbmUsuarios;
   JButton jButtonSalir;
 
-  //* Constructor
+  // * Constructor
   public HomeAdmin(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
     iniciar();
@@ -24,6 +24,7 @@ public class HomeAdmin extends JPanelBase {
   @Override
   public void iniciar() {
     actualPanel.setLayout(new GridLayout(2, 2));
+    panel.jFrame.setTitle("Home");
 
     jLabelBienvenido = new JLabel("Bienvenido, " + contexto.get("nombre") + " " + contexto.get("apellido"));
     jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));

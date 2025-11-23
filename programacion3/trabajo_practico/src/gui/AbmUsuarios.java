@@ -22,7 +22,7 @@ import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class AbmUsuarios extends JPanelBase {
-  //* Atributos
+  // * Atributos
   ServiceUsuarioCliente serviceUsuarioCliente;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -33,7 +33,7 @@ public class AbmUsuarios extends JPanelBase {
   JButton jButtonEliminar;
   JTable jTableUsuarios;
 
-  //* Constructor
+  // * Constructor
   public AbmUsuarios(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
     iniciar();
@@ -41,6 +41,8 @@ public class AbmUsuarios extends JPanelBase {
 
   @Override
   public void iniciar() {
+    panel.jFrame.setTitle("Usuarios");
+
     jButtonVolver = new JButton("Volver");
     jButtonAgregar = new JButton("Agregar");
     jButtonAdministrar = new JButton("Administrar");
@@ -55,7 +57,7 @@ public class AbmUsuarios extends JPanelBase {
     jPanelBotones.add(jButtonAdministrar);
     jPanelBotones.add(jButtonModificar);
     jPanelBotones.add(jButtonEliminar);
-    
+
     actualPanel.add(jPanelBotones);
 
     jPanelTabla = new JPanel();
@@ -108,16 +110,15 @@ public class AbmUsuarios extends JPanelBase {
 
   private UsuarioCliente getUsuarioSeleccionado() {
     int filaSeleccionada = jTableUsuarios.getSelectedRow();
-    if (filaSeleccionada == -1){
+    if (filaSeleccionada == -1) {
       JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error", JOptionPane.ERROR_MESSAGE);
       return null;
     }
     return new UsuarioCliente(
-      jTableUsuarios.getValueAt(filaSeleccionada, 1).toString(),
-      jTableUsuarios.getValueAt(filaSeleccionada, 2).toString(),
-      jTableUsuarios.getValueAt(filaSeleccionada, 3).toString(),
-      Integer.valueOf(jTableUsuarios.getValueAt(filaSeleccionada, 0).toString())
-    );
+        jTableUsuarios.getValueAt(filaSeleccionada, 1).toString(),
+        jTableUsuarios.getValueAt(filaSeleccionada, 2).toString(),
+        jTableUsuarios.getValueAt(filaSeleccionada, 3).toString(),
+        Integer.valueOf(jTableUsuarios.getValueAt(filaSeleccionada, 0).toString()));
   }
 
   private DefaultTableModel construirTablaUsuarios() {
@@ -137,12 +138,12 @@ public class AbmUsuarios extends JPanelBase {
     try {
       serviceUsuarioCliente = new ServiceUsuarioCliente();
       usuarios = serviceUsuarioCliente.consultarTodos();
-      
+
       if (usuarios == null)
         return resultado;
 
       for (UsuarioCliente u : usuarios) {
-        Object [] fila = new Object[4];
+        Object[] fila = new Object[4];
         fila[0] = u.getId();
         fila[1] = u.getNombre();
         fila[2] = u.getApellido();
@@ -159,12 +160,12 @@ public class AbmUsuarios extends JPanelBase {
     JDialog jDialogFormulario = new JDialog();
     jDialogFormulario.setTitle("Agregar Usuario");
     jDialogFormulario.setSize(400, 200);
-    jDialogFormulario.setLayout(new GridLayout(4,2));
+    jDialogFormulario.setLayout(new GridLayout(4, 2));
 
     JLabel jLabelNombre = new JLabel("Nombre");
     JLabel jLabelApellido = new JLabel("Apellido");
     JLabel jLabelUsuario = new JLabel("Usuario");
-    
+
     JTextField jTextFieldNombre = new JTextField();
     JTextField jTextFieldApellido = new JTextField();
     JTextField jTextFieldUsuario = new JTextField();
@@ -183,8 +184,8 @@ public class AbmUsuarios extends JPanelBase {
     jDialogFormulario.add(jButtonCancelar);
 
     jButtonAceptar.addActionListener(e -> {
-      if (jTextFieldNombre.getText().isEmpty() || 
-          jTextFieldApellido.getText().isEmpty() || 
+      if (jTextFieldNombre.getText().isEmpty() ||
+          jTextFieldApellido.getText().isEmpty() ||
           jTextFieldUsuario.getText().isEmpty()) {
         JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
         return;
@@ -192,12 +193,10 @@ public class AbmUsuarios extends JPanelBase {
       try {
         serviceUsuarioCliente = new ServiceUsuarioCliente();
         serviceUsuarioCliente.insertar(
-          new UsuarioCliente(
-            jTextFieldNombre.getText(),
-            jTextFieldApellido.getText(),
-            jTextFieldUsuario.getText()
-          )
-        );
+            new UsuarioCliente(
+                jTextFieldNombre.getText(),
+                jTextFieldApellido.getText(),
+                jTextFieldUsuario.getText()));
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al insertar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -224,7 +223,7 @@ public class AbmUsuarios extends JPanelBase {
     String usuarioOriginal = usuario.getUsuario();
 
     JPanel jPanelFormulario = new JPanel();
-    jPanelFormulario.setLayout(new GridLayout(3,2));
+    jPanelFormulario.setLayout(new GridLayout(3, 2));
 
     JLabel jLabelNombre = new JLabel("Nombre");
     JTextField jTextFieldNombre = new JTextField();
@@ -258,30 +257,28 @@ public class AbmUsuarios extends JPanelBase {
     jDialogModificar.add(jPanelBotonesModificar, BorderLayout.SOUTH);
 
     jButtonModificar.addActionListener(e -> {
-      if (jTextFieldNombre.getText().isEmpty() || 
-          jTextFieldApellido.getText().isEmpty() || 
+      if (jTextFieldNombre.getText().isEmpty() ||
+          jTextFieldApellido.getText().isEmpty() ||
           jTextFieldUsuario.getText().isEmpty()) {
         JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
 
-      if (jTextFieldNombre.getText().equals(nombreOriginal) && 
-          jTextFieldApellido.getText().equals(apellidoOriginal) && 
+      if (jTextFieldNombre.getText().equals(nombreOriginal) &&
+          jTextFieldApellido.getText().equals(apellidoOriginal) &&
           jTextFieldUsuario.getText().equals(usuarioOriginal)) {
         JOptionPane.showMessageDialog(null, "No se realizaron cambios", "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
-      
+
       try {
         serviceUsuarioCliente = new ServiceUsuarioCliente();
         serviceUsuarioCliente.modificar(
-          new UsuarioCliente(
-            jTextFieldApellido.getText(),
-            jTextFieldNombre.getText(),
-            jTextFieldUsuario.getText(),
-            usuario.getId()
-          )
-        );
+            new UsuarioCliente(
+                jTextFieldApellido.getText(),
+                jTextFieldNombre.getText(),
+                jTextFieldUsuario.getText(),
+                usuario.getId()));
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al modificar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -306,10 +303,11 @@ public class AbmUsuarios extends JPanelBase {
 
     JPanel jPanelMensaje = new JPanel();
     jPanelMensaje.setLayout(new GridLayout(1, 1));
-    JLabel jLabelMensaje = new JLabel("¿Desea eliminar el usuario " + usuario.getNombre() + " " + usuario.getApellido() + "?");
+    JLabel jLabelMensaje = new JLabel(
+        "¿Desea eliminar el usuario " + usuario.getNombre() + " " + usuario.getApellido() + "?");
     jPanelMensaje.add(jLabelMensaje);
     jDialogEliminar.add(jPanelMensaje, BorderLayout.CENTER);
-    
+
     JPanel jPanelBotonesEliminar = new JPanel();
     jPanelBotonesEliminar.setLayout(new GridLayout(1, 2));
     JButton jButtonConfirmar = new JButton("Confirmar");
@@ -328,7 +326,7 @@ public class AbmUsuarios extends JPanelBase {
       jDialogEliminar.dispose();
       jTableUsuarios.setModel(construirTablaUsuarios());
     });
-    
+
     jButtonCancelar.addActionListener(e -> {
       jDialogEliminar.dispose();
       jTableUsuarios.setModel(construirTablaUsuarios());

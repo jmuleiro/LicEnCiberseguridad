@@ -53,12 +53,14 @@ public class HomeGestionUsuario extends JPanelBase {
   @Override
   public void iniciar() {
     jPanelLabels = new JPanel();
+    String usuarioString = contexto.get("usuario");
+    Integer usuarioId = Integer.valueOf(contexto.get("id_usuario"));
+    panel.jFrame.setTitle("Usuario: " + usuarioString);
+
     jPanelLabels.setLayout(new GridLayout(1, 5));
 
-    Integer usuarioId = Integer.valueOf(contexto.get("id_usuario"));
-
     jLabelNombre = new JLabel("Nombre: " + contexto.get("nombre_usuario") + " " + contexto.get("apellido_usuario"));
-    jLabelUsuario = new JLabel("Usuario: " + contexto.get("usuario"));
+    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
     jLabelId = new JLabel("ID: " + usuarioId);
 
     jPanelLabels.add(jLabelNombre);
