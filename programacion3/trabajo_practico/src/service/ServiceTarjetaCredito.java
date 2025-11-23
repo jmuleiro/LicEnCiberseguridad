@@ -7,7 +7,7 @@ import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
-public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer>{
+public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> {
   private DAOTarjetaCredito dao;
 
   public ServiceTarjetaCredito() throws ServiceException {
@@ -21,8 +21,12 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer>{
 
   @Override
   public void insertar(TarjetaCredito elemento) throws ServiceException {
+    throw new UnsupportedOperationException("El método insertar requiere el usuario como parámetro");
+  }
+
+  public void insertar(TarjetaCredito elemento, UsuarioCliente usuario) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
-      dao.insertar(elemento);
+      dao.insertar(elemento, usuario);
       return null;
     });
   }
@@ -46,7 +50,7 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer>{
       return dao.consultarTodos(usuario);
     });
   }
-  
+
   @Override
   public void eliminar(Integer id) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
