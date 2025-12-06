@@ -260,7 +260,7 @@ public class HomeGestionUsuario extends JPanelBase {
           for (Cuenta cuentaDestino : cuentas) {
             // Seguir hasta encontrar la cuenta
             if (!(Integer.toString(cuentaDestino.getId()).equals(destino)
-                || cuentaDestino.getCbu().equals(destino)
+                || Integer.toString(cuentaDestino.getCbu()).equals(destino)
                 || cuentaDestino.getAlias().equals(destino)))
               continue;
 

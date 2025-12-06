@@ -1,22 +1,22 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public abstract class Cuenta {
-  // * Atributos
+  //* Atributos
   private int id;
   private Moneda moneda;
   private String alias;
-  private String cbu;
+  private int cbu;
   protected double saldo;
 
-  // * Constructores
-  public Cuenta(Moneda moneda, String alias, String cbu) {
+  //* Constructores
+  public Cuenta(Moneda moneda, String alias, int cbu) {
     this.moneda = moneda;
     this.setAlias(alias);
     this.cbu = cbu;
     this.saldo = 0;
   }
 
-  public Cuenta(Moneda moneda, String alias, String cbu, int id, double saldo) {
+  public Cuenta(Moneda moneda, String alias, int cbu, int id, double saldo) {
     this.moneda = moneda;
     this.setAlias(alias);
     this.cbu = cbu;
@@ -24,7 +24,7 @@ public abstract class Cuenta {
     this.saldo = saldo;
   }
 
-  // * Métodos
+  //* Métodos
   public double depositar(double cantidad) {
     this.saldo += cantidad;
     return this.saldo;
@@ -32,8 +32,10 @@ public abstract class Cuenta {
 
   public abstract double extraer(double cantidad);
 
-  // * Getters & Setters
-  public int getId() {
+  // TODO: public void transferir(Transferencia t) {}
+
+  //* Getters & Setters
+  public int getId(){
     return this.id;
   }
 
@@ -52,7 +54,7 @@ public abstract class Cuenta {
       this.alias = alias;
   }
 
-  public String getCbu() {
+  public int getCbu() {
     return this.cbu;
   }
 

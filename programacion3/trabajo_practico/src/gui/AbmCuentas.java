@@ -2,8 +2,7 @@ package programacion3.trabajo_practico.src.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+
 import java.util.Map;
 import java.util.Vector;
 import java.util.ArrayList;
@@ -179,7 +178,7 @@ public class AbmCuentas extends JPanelBase {
     }
 
     jDialogModificar.add(new JLabel("CBU: "));
-    jDialogModificar.add(new JLabel(cuenta.getCbu()));
+    jDialogModificar.add(new JLabel(Integer.toString(cuenta.getCbu())));
 
     jDialogModificar.add(new JLabel("Alias: "));
     JTextField jTextFieldAlias = new JTextField(cuenta.getAlias());
@@ -408,13 +407,6 @@ public class AbmCuentas extends JPanelBase {
       jDialogFormulario.add(new JLabel("CBU: "));
       JTextField jTextFieldCbu = new JTextField();
       jTextFieldCbu.setEnabled(false);
-      jTextFieldCbu.addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-          if (jTextFieldCbu.getText().length() >= 22)
-            e.consume();
-        }
-      });
       jDialogFormulario.add(jTextFieldCbu);
 
       JLabel jLabelLimiteOPorcentaje = new JLabel();
@@ -447,6 +439,47 @@ public class AbmCuentas extends JPanelBase {
         jTextFieldLimiteOPorcentaje.setEnabled(true);
         jButtonAgregar.setEnabled(true);
       });
+
+      jButtonAgregar.addActionListener(e -> {
+        if (jTextFieldCbu.getText().isEmpty() ||
+            jTextFieldLimiteOPorcentaje.getText().isEmpty() ||
+            jComboBoxMoneda.getSelectedItem().toString().isEmpty() ||
+            jComboBoxTipo.getSelectedItem().toString().isEmpty()) {
+          JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+        try {
+          Moneda moneda = serviceMoneda.consultar(jComboBoxMoneda.getSelectedItem().toString());
+          if (jComboBoxTipo.getSelectedItem().toString().equals(tipoCajaAhorro)) {
+            serviceCajaAhorro = new ServiceCajaAhorro();
+            serviceCajaAhorro.insertar(
+                new CajaAhorro(
+                    moneda,
+                    jTextFieldAlias.getText().toString(),
+                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                    usuario.getId(),
+                    0.0),
+                usuario);
+          } else {
+            serviceCuentaCorriente = new ServiceCuentaCorriente();
+            serviceCuentaCorriente.insertar(
+                new CuentaCorriente(
+                    moneda,
+                    jTextFieldAlias.getText().toString(),
+                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
+                    usuario.getId(),
+                    0.0),
+                usuario);
+          }
+        } catch (ServiceException exc) {
+          JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        jDialogFormulario.dispose();
+        jTableCuentas.setModel(construirTablaCuentas(usuario));
+      });
+
       jButtonCancelar.addActionListener(e -> {
         jDialogFormulario.dispose();
         jTableCuentas.setModel(construirTablaCuentas(usuario));

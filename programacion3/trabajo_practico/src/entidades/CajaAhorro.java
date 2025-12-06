@@ -5,7 +5,7 @@ public class CajaAhorro extends Cuenta {
   private double porcentajeInteres;
 
   // * Constructores
-  public CajaAhorro(Moneda moneda, String alias, String cbu, double porcentajeInteres) {
+  public CajaAhorro(Moneda moneda, String alias, int cbu, double porcentajeInteres) {
     super(moneda, alias, cbu);
     if (porcentajeInteres >= 100)
       throw new RuntimeException("No se admite un porcentaje de interés mayor a 100%");
@@ -14,7 +14,7 @@ public class CajaAhorro extends Cuenta {
     this.porcentajeInteres = porcentajeInteres;
   }
 
-  public CajaAhorro(Moneda moneda, String alias, String cbu, double porcentajeInteres, int id, double saldo) {
+  public CajaAhorro(Moneda moneda, String alias, int cbu, double porcentajeInteres, int id, double saldo) {
     super(moneda, alias, cbu, id, saldo);
     this.porcentajeInteres = porcentajeInteres;
   }
