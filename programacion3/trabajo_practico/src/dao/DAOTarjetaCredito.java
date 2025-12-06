@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Date;
 
 public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public DAOTarjetaCredito() throws DAOException {
@@ -27,7 +28,7 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setDouble(2, elemento.getLimite());
       preparedStatement.setString(3, elemento.getNumero());
-      preparedStatement.setDate(4, java.sql.Date.valueOf(elemento.getFechaVencimiento()));
+      preparedStatement.setDate(4, Date.valueOf(elemento.getFechaVencimiento()));
       preparedStatement.setInt(5, elemento.getCvc());
       preparedStatement.executeUpdate();
       return null; // Necesario para que no tire error por el tipo Void
@@ -112,9 +113,6 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
           "SELECT numero, fecha_vencimiento, cvc, limite, tarjeta_id " +
               "FROM Tarjeta");
       ResultSet rs = preparedStatement.executeQuery();
-      if (!(rs.next()))
-        return null; // No hubo resultados
-
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
@@ -136,9 +134,6 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
               "WHERE usuario_id = ?");
       preparedStatement.setInt(1, usuario.getId());
       ResultSet rs = preparedStatement.executeQuery();
-      if (!(rs.next()))
-        return null; // No hubo resultados
-
       List<TarjetaCredito> tarjetas = new ArrayList<>();
       while (rs.next()) {
         tarjetas.add(new TarjetaCredito(
