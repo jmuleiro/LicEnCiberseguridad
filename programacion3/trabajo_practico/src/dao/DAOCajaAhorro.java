@@ -27,13 +27,13 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public void insertar(CajaAhorro elemento, UsuarioCliente usuario, Moneda moneda) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "INSERT INTO Cuenta (cod_tipo_cuenta, usuario_id, cod_moneda, alias, cbu, limite_giro, porcentaje_interes, saldo)" +
-        "VALUES (\"SAV\", ?, ?, ?, ?, 0, ?, ?)"
-      );
+          "INSERT INTO Cuenta (cod_tipo_cuenta, usuario_id, cod_moneda, alias, cbu, limite_giro, porcentaje_interes, saldo)"
+              +
+              "VALUES (\"SAV\", ?, ?, ?, ?, 0, ?, ?)");
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setString(2, moneda.getCodigo());
       preparedStatement.setString(3, elemento.getAlias());
-      preparedStatement.setInt(4, elemento.getCbu());
+      preparedStatement.setString(4, elemento.getCbu());
       preparedStatement.setDouble(5, elemento.getPorcentajeInteres());
       preparedStatement.setDouble(6, elemento.getSaldo());
       preparedStatement.executeUpdate();
@@ -45,25 +45,22 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public CajaAhorro consultar(Integer id) throws DAOException {
     return new DAOTemplate<CajaAhorro>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo " +
-        "FROM Cuenta AS C " +
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
-        "WHERE C.cuenta_id = ?"
-      );
+          "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo " +
+              "FROM Cuenta AS C " +
+              "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+              "WHERE C.cuenta_id = ?");
       preparedStatement.setInt(1, id);
       ResultSet rs = preparedStatement.executeQuery();
       if (rs.next()) {
         return new CajaAhorro(
             new Moneda(
-              rs.getString("M.cod_moneda"),
-              rs.getString("M.nombre_moneda")
-            ),
+                rs.getString("M.cod_moneda"),
+                rs.getString("M.nombre_moneda")),
             rs.getString("C.alias"),
-            rs.getInt("C.cbu"),
+            rs.getString("C.cbu"),
             rs.getDouble("C.porcentaje_interes"),
             id,
-            rs.getDouble("C.saldo")
-          );
+            rs.getDouble("C.saldo"));
       }
       return null; // No hubo resultados
     });
@@ -73,26 +70,22 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public List<CajaAhorro> consultarTodos() throws DAOException {
     return new DAOTemplate<List<CajaAhorro>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
-        "FROM Cuenta AS C " +
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
-        "WHERE C.cod_tipo_cuenta = \"SAV\""
-      );
+          "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
+              "FROM Cuenta AS C " +
+              "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+              "WHERE C.cod_tipo_cuenta = \"SAV\"");
       ResultSet rs = preparedStatement.executeQuery();
       List<CajaAhorro> cajasAhorro = new ArrayList<>();
       while (rs.next()) {
         cajasAhorro.add(new CajaAhorro(
             new Moneda(
-              rs.getString("M.cod_moneda"),
-              rs.getString("M.nombre_moneda")
-            ),
+                rs.getString("M.cod_moneda"),
+                rs.getString("M.nombre_moneda")),
             rs.getString("C.alias"),
-            rs.getInt("C.cbu"),
+            rs.getString("C.cbu"),
             rs.getDouble("C.porcentaje_interes"),
             rs.getInt("C.cuenta_id"),
-            rs.getDouble("C.saldo")
-          )
-        );
+            rs.getDouble("C.saldo")));
       }
       return cajasAhorro;
     });
@@ -101,27 +94,23 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public List<CajaAhorro> consultarTodos(UsuarioCliente usuario) throws DAOException {
     return new DAOTemplate<List<CajaAhorro>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
-        "FROM Cuenta AS C " +
-        "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " + 
-        "WHERE C.usuario_id = ? AND C.cod_tipo_cuenta = \"SAV\""
-      );
+          "SELECT M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.porcentaje_interes, C.saldo, C.cuenta_id " +
+              "FROM Cuenta AS C " +
+              "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+              "WHERE C.usuario_id = ? AND C.cod_tipo_cuenta = \"SAV\"");
       preparedStatement.setInt(1, usuario.getId());
       ResultSet rs = preparedStatement.executeQuery();
       List<CajaAhorro> cajasAhorro = new ArrayList<>();
       while (rs.next()) {
         cajasAhorro.add(new CajaAhorro(
             new Moneda(
-              rs.getString("M.cod_moneda"),
-              rs.getString("M.nombre_moneda")
-            ),
+                rs.getString("M.cod_moneda"),
+                rs.getString("M.nombre_moneda")),
             rs.getString("C.alias"),
-            rs.getInt("C.cbu"),
+            rs.getString("C.cbu"),
             rs.getDouble("C.porcentaje_interes"),
             rs.getInt("C.cuenta_id"),
-            rs.getDouble("C.saldo")
-          )
-        );
+            rs.getDouble("C.saldo")));
       }
       return cajasAhorro;
     });
@@ -131,10 +120,9 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public void modificar(CajaAhorro elemento) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "UPDATE Cuenta " +
-        "SET alias = ?, porcentaje_interes = ?, saldo = ? " +
-        "WHERE cuenta_id = ?"
-      );
+          "UPDATE Cuenta " +
+              "SET alias = ?, porcentaje_interes = ?, saldo = ? " +
+              "WHERE cuenta_id = ?");
       preparedStatement.setString(1, elemento.getAlias());
       preparedStatement.setDouble(2, elemento.getPorcentajeInteres());
       preparedStatement.setDouble(3, elemento.getSaldo());
@@ -148,8 +136,7 @@ public class DAOCajaAhorro extends DAOBase<CajaAhorro, Integer> {
   public void eliminar(Integer id) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "DELETE FROM Cuenta WHERE cuenta_id = ?"
-      );
+          "DELETE FROM Cuenta WHERE cuenta_id = ?");
       preparedStatement.setInt(1, id);
       preparedStatement.executeUpdate();
       return null;
