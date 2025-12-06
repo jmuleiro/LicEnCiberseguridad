@@ -31,6 +31,7 @@ import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
 
 public class AbmTarjetas extends JPanelBase {
   // * Atributos
+  UsuarioCliente usuario;
   ServiceTarjetaCredito serviceTarjetaCredito;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
@@ -87,7 +88,7 @@ public class AbmTarjetas extends JPanelBase {
     jPanelBotones.add(jButtonEliminar);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
-    UsuarioCliente usuario = new UsuarioCliente(
+    usuario = new UsuarioCliente(
         contexto.get("nombre_usuario"),
         contexto.get("apellido_usuario"),
         usuarioString,
@@ -96,7 +97,7 @@ public class AbmTarjetas extends JPanelBase {
     jPanelTabla = new JPanel();
     jPanelTabla.setLayout(new GridLayout(1, 1));
 
-    jTableTarjetas = new JTable(construirTablaTarjetas(usuario));
+    jTableTarjetas = new JTable(construirTablaTarjetas());
     JScrollPane jScrollPane = new JScrollPane(jTableTarjetas);
     jPanelTabla.add(jScrollPane);
     actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
@@ -108,11 +109,14 @@ public class AbmTarjetas extends JPanelBase {
     });
 
     jButtonAgregar.addActionListener(e -> {
-      agregarTarjeta(usuario);
+      agregarTarjeta();
     });
 
     jButtonModificar.addActionListener(e -> {
-
+      TarjetaCredito tarjeta = getTarjetaSeleccionada();
+      if (tarjeta == null)
+        return;
+      modificarTarjeta(tarjeta);
     });
 
     jButtonEliminar.addActionListener(e -> {
@@ -120,14 +124,13 @@ public class AbmTarjetas extends JPanelBase {
       if (tarjeta == null)
         return;
       eliminarTarjeta(tarjeta);
-      jTableTarjetas.setModel(construirTablaTarjetas(usuario));
     });
 
     setLayout(new BorderLayout());
     add(actualPanel);
   }
 
-  private DefaultTableModel construirTablaTarjetas(UsuarioCliente usuario) {
+  private DefaultTableModel construirTablaTarjetas() {
     List<TarjetaCredito> tarjetas = new ArrayList<>();
     Vector<String> columnas = new Vector<>(5);
     columnas.addElement("ID");
@@ -191,7 +194,7 @@ public class AbmTarjetas extends JPanelBase {
     return tarjeta;
   }
 
-  private void agregarTarjeta(UsuarioCliente usuario) {
+  private void agregarTarjeta() {
     JDialog jDialogAgregar = new JDialog();
     jDialogAgregar.setTitle("Agregar Tarjeta");
     jDialogAgregar.setSize(400, 200);
@@ -304,14 +307,86 @@ public class AbmTarjetas extends JPanelBase {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogAgregar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
     });
 
     jButtonCancelar.addActionListener(e -> {
       jDialogAgregar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
     });
 
     jDialogAgregar.setLocationRelativeTo(null);
     jDialogAgregar.setVisible(true);
+  }
+
+  private void modificarTarjeta(TarjetaCredito tarjeta) {
+    JDialog jDialogModificar = new JDialog();
+    jDialogModificar.setTitle("Modificar Tarjeta");
+    jDialogModificar.setSize(400, 200);
+    jDialogModificar.setLayout(new GridLayout(4, 2));
+
+    jDialogModificar.add(new JLabel("Usuario: "));
+    jDialogModificar.add(new JLabel(usuario.getUsuario()));
+
+    jDialogModificar.add(new JLabel("Número: "));
+    jDialogModificar.add(new JLabel(tarjeta.getNumero()));
+
+    jDialogModificar.add(new JLabel("Límite: "));
+    JTextField jTextFieldLimite = new JTextField(String.valueOf(tarjeta.getLimite()));
+    jDialogModificar.add(jTextFieldLimite);
+
+    JButton jButtonModificar = new JButton("Modificar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+
+    jDialogModificar.add(jButtonModificar);
+    jDialogModificar.add(jButtonCancelar);
+
+    jButtonModificar.addActionListener(e -> {
+      String limiteString = jTextFieldLimite.getText();
+      if (limiteString.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "El límite es obligatorio", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (Double.valueOf(limiteString) == tarjeta.getLimite()) {
+        JOptionPane.showMessageDialog(null, "El límite no ha cambiado", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        Double.parseDouble(limiteString);
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "El límite debe ser un número", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (Double.valueOf(limiteString) < 1000) {
+        JOptionPane.showMessageDialog(null, "El límite debe ser mayor a 1000", "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      try {
+        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        tarjeta.setLimite(Double.parseDouble(limiteString));
+        serviceTarjetaCredito.modificar(tarjeta);
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogModificar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogModificar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
+    });
+
+    jDialogModificar.setLocationRelativeTo(null);
+    jDialogModificar.setVisible(true);
   }
 
   private void eliminarTarjeta(TarjetaCredito tarjeta) {
@@ -339,10 +414,12 @@ public class AbmTarjetas extends JPanelBase {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogEliminar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
     });
 
     jButtonCancelar.addActionListener(e -> {
       jDialogEliminar.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
     });
 
     jDialogEliminar.setLocationRelativeTo(null);
