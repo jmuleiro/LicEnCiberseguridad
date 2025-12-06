@@ -448,6 +448,12 @@ public class AbmCuentas extends JPanelBase {
           JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
           return;
         }
+
+        if (jTextFieldCbu.getText().length() != 22) {
+          JOptionPane.showMessageDialog(null, "CBU debe tener 22 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
         try {
           Moneda moneda = serviceMoneda.consultar(jComboBoxMoneda.getSelectedItem().toString());
           if (jComboBoxTipo.getSelectedItem().toString().equals(tipoCajaAhorro)) {
