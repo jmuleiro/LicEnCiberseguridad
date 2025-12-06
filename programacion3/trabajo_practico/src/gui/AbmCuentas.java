@@ -449,8 +449,14 @@ public class AbmCuentas extends JPanelBase {
           return;
         }
 
-        if (jTextFieldCbu.getText().length() != 22) {
-          JOptionPane.showMessageDialog(null, "CBU debe tener 22 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
+        if (jTextFieldCbu.getText().length() != 22 || !jTextFieldCbu.getText().matches("\\d+")) {
+          JOptionPane.showMessageDialog(null, "CBU debe ser un número de 22 caracteres", "Error",
+              JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        if (!jTextFieldLimiteOPorcentaje.getText().matches("\\d+")) {
+          JOptionPane.showMessageDialog(null, "Limite debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
           return;
         }
 
