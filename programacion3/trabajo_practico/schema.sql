@@ -74,7 +74,7 @@ CREATE TABLE Cuenta (
     usuario_id INT NOT NULL,
     cod_moneda CHAR(3) NOT NULL,
     alias CHAR(50),
-    cbu INT NOT NULL,
+    cbu VARCHAR(22) NOT NULL,
     limite_giro DOUBLE NOT NULL,
     porcentaje_interes DOUBLE NOT NULL,
     saldo DOUBLE NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE Cuenta (
 
 -- Cargar Cuentas
 INSERT INTO Cuenta (cod_tipo_cuenta, usuario_id, cod_moneda, alias, cbu, limite_giro, porcentaje_interes, saldo)
-VALUES ("SAV", 1, "ARS", NULL, 808508180, 0, 1, 100000);
+VALUES ("SAV", 1, "ARS", NULL, "00000000000808508180", 0, 1, 100000);
 
 /* Tarjeta */
 CREATE TABLE Tarjeta (

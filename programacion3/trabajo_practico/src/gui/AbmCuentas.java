@@ -178,7 +178,7 @@ public class AbmCuentas extends JPanelBase {
     }
 
     jDialogModificar.add(new JLabel("CBU: "));
-    jDialogModificar.add(new JLabel(Integer.toString(cuenta.getCbu())));
+    jDialogModificar.add(new JLabel(cuenta.getCbu()));
 
     jDialogModificar.add(new JLabel("Alias: "));
     JTextField jTextFieldAlias = new JTextField(cuenta.getAlias());
@@ -456,7 +456,7 @@ public class AbmCuentas extends JPanelBase {
                 new CajaAhorro(
                     moneda,
                     jTextFieldAlias.getText().toString(),
-                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    jTextFieldCbu.getText().toString(),
                     Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
                     usuario.getId(),
                     0.0),
@@ -467,7 +467,7 @@ public class AbmCuentas extends JPanelBase {
                 new CuentaCorriente(
                     moneda,
                     jTextFieldAlias.getText().toString(),
-                    Integer.valueOf(jTextFieldCbu.getText().toString()),
+                    jTextFieldCbu.getText().toString(),
                     Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
                     usuario.getId(),
                     0.0),
@@ -480,7 +480,9 @@ public class AbmCuentas extends JPanelBase {
         jTableCuentas.setModel(construirTablaCuentas(usuario));
       });
 
-      jButtonCancelar.addActionListener(e -> {
+      jButtonCancelar.addActionListener(e ->
+
+      {
         jDialogFormulario.dispose();
         jTableCuentas.setModel(construirTablaCuentas(usuario));
       });
