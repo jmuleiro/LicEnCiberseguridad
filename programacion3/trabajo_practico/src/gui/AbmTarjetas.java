@@ -38,6 +38,7 @@ public class AbmTarjetas extends JPanelBase {
   JPanel jPanelTabla;
   JButton jButtonVolver;
   JButton jButtonAgregar;
+  JButton jButtonAgregarConsumo;
   JButton jButtonModificar;
   JButton jButtonEliminar;
   JLabel jLabelUsuario;
@@ -74,16 +75,18 @@ public class AbmTarjetas extends JPanelBase {
     actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
     jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 5));
+    jPanelBotones.setLayout(new GridLayout(1, 6));
 
     jButtonVolver = new JButton("Volver");
     jButtonAgregar = new JButton("Agregar");
+    jButtonAgregarConsumo = new JButton("Agregar Consumo");
     jButtonModificar = new JButton("Modificar");
     jButtonEliminar = new JButton("Eliminar");
 
     jPanelBotones.add(jButtonVolver);
     jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
     jPanelBotones.add(jButtonAgregar);
+    jPanelBotones.add(jButtonAgregarConsumo);
     jPanelBotones.add(jButtonModificar);
     jPanelBotones.add(jButtonEliminar);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
@@ -110,6 +113,13 @@ public class AbmTarjetas extends JPanelBase {
 
     jButtonAgregar.addActionListener(e -> {
       agregarTarjeta();
+    });
+
+    jButtonAgregarConsumo.addActionListener(e -> {
+      TarjetaCredito tarjeta = getTarjetaSeleccionada();
+      if (tarjeta == null)
+        return;
+      agregarConsumo(tarjeta);
     });
 
     jButtonModificar.addActionListener(e -> {
@@ -317,6 +327,10 @@ public class AbmTarjetas extends JPanelBase {
 
     jDialogAgregar.setLocationRelativeTo(null);
     jDialogAgregar.setVisible(true);
+  }
+
+  private void agregarConsumo(TarjetaCredito tarjeta) {
+
   }
 
   private void modificarTarjeta(TarjetaCredito tarjeta) {
