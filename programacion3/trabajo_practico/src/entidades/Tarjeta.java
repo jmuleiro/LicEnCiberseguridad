@@ -81,4 +81,8 @@ public abstract class Tarjeta {
   public double getLimite() {
     return this.limite;
   }
+
+  public void setLimite(double limite) {
+    this.limite = limite;
+  }
 }
