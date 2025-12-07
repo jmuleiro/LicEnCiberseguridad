@@ -10,10 +10,10 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import java.time.LocalDate;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,15 +24,19 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import programacion3.trabajo_practico.src.entidades.Consumo;
+import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
+import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmTarjetas extends JPanelBase {
   // * Atributos
   UsuarioCliente usuario;
   ServiceTarjetaCredito serviceTarjetaCredito;
+  ServiceMoneda serviceMoneda;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -140,6 +144,8 @@ public class AbmTarjetas extends JPanelBase {
     add(actualPanel);
   }
 
+  // todo: posiblemente, agregar un ComboBox que permita seleccionar
+  // la moneda para calc. el total
   private DefaultTableModel construirTablaTarjetas() {
     List<TarjetaCredito> tarjetas = new ArrayList<>();
     Vector<String> columnas = new Vector<>(5);
@@ -159,7 +165,7 @@ public class AbmTarjetas extends JPanelBase {
 
     try {
       serviceTarjetaCredito = new ServiceTarjetaCredito();
-      tarjetas = serviceTarjetaCredito.consultarTodos(usuario);
+      tarjetas = serviceTarjetaCredito.consultarTodosConConsumo(usuario);
       if (tarjetas == null)
         return resultado;
 
@@ -167,7 +173,7 @@ public class AbmTarjetas extends JPanelBase {
         String numeroTarjeta = String.valueOf(t.getNumero());
         resultado.addRow(new Object[] {
             t.getId(),
-            numeroTarjeta.substring(numeroTarjeta.length() - 4),
+            "**** " + numeroTarjeta.substring(numeroTarjeta.length() - 4),
             t.getFechaVencimiento(),
             t.getLimite(),
             t.getConsumos().stream().mapToDouble(c -> c.getCantidad()).sum()
@@ -330,7 +336,78 @@ public class AbmTarjetas extends JPanelBase {
   }
 
   private void agregarConsumo(TarjetaCredito tarjeta) {
+    JDialog jDialogAgregarConsumo = new JDialog();
+    jDialogAgregarConsumo.setTitle("Agregar Consumo");
+    jDialogAgregarConsumo.setSize(400, 200);
+    jDialogAgregarConsumo.setLayout(new GridLayout(6, 2));
 
+    jDialogAgregarConsumo.add(new JLabel("Usuario: "));
+    jDialogAgregarConsumo.add(new JLabel(usuario.getUsuario()));
+
+    jDialogAgregarConsumo.add(new JLabel("Tarjeta: "));
+    jDialogAgregarConsumo.add(new JLabel(
+        "**** " + String.valueOf(tarjeta.getNumero()).substring(String.valueOf(tarjeta.getNumero()).length() - 4)));
+
+    jDialogAgregarConsumo.add(new JLabel("Cantidad: "));
+    JTextField jTextFieldCantidad = new JTextField();
+    jDialogAgregarConsumo.add(jTextFieldCantidad);
+
+    jDialogAgregarConsumo.add(new JLabel("Fecha: "));
+    JTextField jTextFieldFecha = new JTextField();
+    jTextFieldFecha.addKeyListener(new KeyAdapter() {
+      public void keyTyped(KeyEvent e) {
+        if (jTextFieldFecha.getText().length() >= 10)
+          e.consume();
+      }
+    });
+    jTextFieldFecha.setText(LocalDate.now().toString());
+    jDialogAgregarConsumo.add(jTextFieldFecha);
+
+    jDialogAgregarConsumo.add(new JLabel("Moneda: "));
+    JComboBox<String> jComboBoxMoneda = new JComboBox<>();
+    jDialogAgregarConsumo.add(jComboBoxMoneda);
+    // Cargar monedas a combo box
+    try {
+      List<Moneda> monedas = new ArrayList<>();
+      serviceMoneda = new ServiceMoneda();
+      monedas = serviceMoneda.consultarTodos();
+      jComboBoxMoneda.addItem("");
+      for (Moneda moneda : monedas) {
+        jComboBoxMoneda.addItem(moneda.getCodigo());
+      }
+    } catch (ServiceException e) {
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    JButton jButtonAgregar = new JButton("Agregar");
+    JButton jButtonCancelar = new JButton("Cancelar");
+
+    jDialogAgregarConsumo.add(jButtonAgregar);
+    jDialogAgregarConsumo.add(jButtonCancelar);
+
+    jButtonAgregar.addActionListener(e -> {
+      try {
+        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        Consumo consumo = serviceTarjetaCredito.validarConsumo(
+            jTextFieldCantidad.getText(),
+            jTextFieldFecha.getText(),
+            jComboBoxMoneda.getSelectedItem().toString());
+        tarjeta.agregarConsumo(consumo);
+        serviceTarjetaCredito.modificarConConsumo(tarjeta);
+      } catch (ServiceException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      jDialogAgregarConsumo.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
+    });
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogAgregarConsumo.dispose();
+      jTableTarjetas.setModel(construirTablaTarjetas());
+    });
+
+    jDialogAgregarConsumo.setLocationRelativeTo(null);
+    jDialogAgregarConsumo.setVisible(true);
   }
 
   private void modificarTarjeta(TarjetaCredito tarjeta) {

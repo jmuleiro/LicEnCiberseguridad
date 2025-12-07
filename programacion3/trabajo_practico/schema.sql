@@ -127,14 +127,18 @@ CREATE TABLE Tarjeta (
         ON UPDATE CASCADE
 );
 
+-- Cargar Tarjetas
+INSERT INTO Tarjeta (usuario_id, cod_tipo_tarjeta, limite, numero, fecha_vencimiento, cvc)
+VALUES (1, "CRE", 100000, "0000000000001234", "2025-12-01", 123);
+
 /* Consumo */
 CREATE TABLE Consumo (
+    consumo_id INT NOT NULL AUTO_INCREMENT,
     tarjeta_id INT NOT NULL,
-    consumo_id INT NOT NULL,
     fecha DATE NOT NULL,
     cantidad DOUBLE NOT NULL,
     cod_moneda CHAR(3) NOT NULL,
-    PRIMARY KEY (tarjeta_id, consumo_id),
+    PRIMARY KEY (consumo_id),
     
     -- Foreign Key 1: Tarjeta
     FOREIGN KEY (tarjeta_id)
