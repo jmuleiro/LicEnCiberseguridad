@@ -73,36 +73,12 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
       if (!(rs.next()))
         return null; // No hubo resultados
 
-      TarjetaCredito tarjeta = new TarjetaCredito(
+      return new TarjetaCredito(
           rs.getString("numero"),
           rs.getDate("fecha_vencimiento").toLocalDate(),
           rs.getInt("cvc"),
           rs.getDouble("limite"),
           rs.getInt("tarjeta_id"));
-
-      // Traer los consumos
-      // preparedStatement = conn.prepare(
-      // "SELECT C.cantidad, C.fecha, C.cod_moneda, C.consumo_id, M.nombre_moneda " +
-      // "FROM Consumo AS C " +
-      // "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
-      // "WHERE C.tarjeta_id = ?"
-      // );
-      // preparedStatement.setInt(1, id.intValue());
-      // rs = preparedStatement.executeQuery();
-      // while (rs.next()) {
-      // tarjeta.agregarConsumo(
-      // new Consumo(
-      // rs.getDouble("C.cantidad"),
-      // rs.getDate("C.fecha").toLocalDate(),
-      // new Moneda(
-      // rs.getString("C.cod_moneda"),
-      // rs.getString("M.nombre_moneda")
-      // ),
-      // rs.getInt("C.consumo_id")
-      // )
-      // );
-      // }
-      return tarjeta;
     });
   }
 
