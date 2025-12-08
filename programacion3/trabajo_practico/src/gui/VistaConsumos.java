@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import programacion3.trabajo_practico.src.entidades.Consumo;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
@@ -109,16 +110,30 @@ public class VistaConsumos extends JPanelBase {
       jFileChooser.setDialogTitle("Guardar Reporte");
       jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       jFileChooser.setFileFilter(new FileNameExtensionFilter("Archivos CSV", "csv"));
-      int result = jFileChooser.showSaveDialog(null);
-      if (result == JFileChooser.APPROVE_OPTION) {
+      int respuesta = jFileChooser.showSaveDialog(null);
+      if (respuesta == JFileChooser.APPROVE_OPTION) {
         File file = jFileChooser.getSelectedFile();
+
         if (!file.getName().toLowerCase().endsWith(".csv")) {
           file = new File(file.getAbsolutePath() + ".csv");
         }
+
+        if (file.exists()) {
+          int respuesta2 = JOptionPane.showConfirmDialog(null,
+              "El archivo ya existe. ¿Desea sobreescribirlo?", "Confirmar", JOptionPane.YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE);
+          if (respuesta2 != JOptionPane.YES_OPTION) {
+            return;
+          }
+
+          file.delete();
+        }
+
         try {
           serviceTarjetaCredito = new ServiceTarjetaCredito();
           for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {
-            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8);
+            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
+                StandardOpenOption.CREATE);
           }
         } catch (ServiceException | IOException ex) {
           JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

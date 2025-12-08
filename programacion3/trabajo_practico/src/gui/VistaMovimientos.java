@@ -1,7 +1,5 @@
 package programacion3.trabajo_practico.src.gui;
 
-import javax.swing.JOptionPane;
-
 import java.util.Map;
 import java.util.Vector;
 import java.util.ArrayList;
@@ -15,18 +13,19 @@ import java.time.LocalDate;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
@@ -123,12 +122,25 @@ public class VistaMovimientos extends JPanelBase {
       jFileChooser.setDialogTitle("Guardar Reporte");
       jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       jFileChooser.setFileFilter(new FileNameExtensionFilter("Archivos CSV", "csv"));
-      int result = jFileChooser.showSaveDialog(null);
-      if (result == JFileChooser.APPROVE_OPTION) {
+      int respuesta = jFileChooser.showSaveDialog(null);
+      if (respuesta == JFileChooser.APPROVE_OPTION) {
         File file = jFileChooser.getSelectedFile();
+
         if (!file.getName().toLowerCase().endsWith(".csv")) {
           file = new File(file.getAbsolutePath() + ".csv");
         }
+
+        if (file.exists()) {
+          int respuesta2 = JOptionPane.showConfirmDialog(null,
+              "El archivo ya existe. ¿Desea sobreescribirlo?", "Confirmar", JOptionPane.YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE);
+          if (respuesta2 != JOptionPane.YES_OPTION) {
+            return;
+          }
+
+          file.delete();
+        }
+
         try {
           List<String> lineasReporte = new ArrayList<>();
           if (tipoCuentaString.equals("COR")) {
@@ -139,7 +151,8 @@ public class VistaMovimientos extends JPanelBase {
             lineasReporte = serviceCajaAhorro.generarReporteMovimientos((CajaAhorro) cuenta);
           }
           for (String linea : lineasReporte) {
-            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8);
+            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
+                StandardOpenOption.CREATE);
           }
         } catch (ServiceException | IOException ex) {
           JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
