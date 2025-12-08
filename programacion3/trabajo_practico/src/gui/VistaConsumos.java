@@ -2,7 +2,6 @@ package programacion3.trabajo_practico.src.gui;
 
 import java.util.Map;
 import java.util.Vector;
-import java.util.ArrayList;
 import java.util.List;
 
 import java.time.LocalDate;
@@ -12,13 +11,11 @@ import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,12 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import programacion3.trabajo_practico.src.entidades.Consumo;
-import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
-import programacion3.trabajo_practico.src.service.ServiceMoneda;
-import programacion3.trabajo_practico.src.service.ServiceException;
 
 public class VistaConsumos extends JPanelBase {
   // * Atributos
