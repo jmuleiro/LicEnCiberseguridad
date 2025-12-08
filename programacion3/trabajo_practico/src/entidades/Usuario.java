@@ -1,15 +1,16 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public abstract class Usuario {
-  //* Atributos
+  // * Atributos
   private int id;
   private String nombre;
   private String apellido;
   private String usuario;
 
-  //* Constructores
-  public Usuario() {}
-  
+  // * Constructores
+  public Usuario() {
+  }
+
   public Usuario(String nombre, String apellido, String usuario) {
     this.nombre = nombre;
     this.apellido = apellido;
@@ -23,9 +24,13 @@ public abstract class Usuario {
     this.id = id;
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public int getId() {
     return this.id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getNombre() {
@@ -40,7 +45,7 @@ public abstract class Usuario {
     return this.usuario;
   }
 
-  //* Métodos
+  // * Métodos
   @Override
   public String toString() {
     return this.nombre + " " + this.apellido;

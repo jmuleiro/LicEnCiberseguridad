@@ -47,6 +47,10 @@ public abstract class Cuenta {
     return this.id;
   }
 
+  public void setId(int id) {
+    this.id = id;
+  }
+
   public Moneda getMoneda() {
     return this.moneda;
   }

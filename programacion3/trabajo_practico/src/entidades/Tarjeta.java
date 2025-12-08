@@ -62,6 +62,10 @@ public abstract class Tarjeta {
     return this.id;
   }
 
+  public void setId(int id) {
+    this.id = id;
+  }
+
   public String getNumero() {
     return this.numero;
   }
