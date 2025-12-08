@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 
@@ -195,6 +197,46 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
     }
 
     return new Consumo(Double.parseDouble(cantidad), LocalDate.parse(fecha), moneda, referencia);
+  }
+
+  // Funcionalidades
+  public void agregarConsumo(TarjetaCredito tarjeta, String cantidad, String fecha, String monedaString,
+      String referencia)
+      throws ServiceException {
+    Consumo consumo = validarConsumo(cantidad, fecha, monedaString, referencia);
+    tarjeta.agregarConsumo(consumo);
+    this.modificarConConsumo(tarjeta);
+  }
+
+  public void modificarTarjeta(TarjetaCredito tarjeta, String limiteString) throws ServiceException {
+    if (limiteString.isEmpty()) {
+      JOptionPane.showMessageDialog(null, "El límite es obligatorio", "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    if (Double.valueOf(limiteString) == tarjeta.getLimite()) {
+      JOptionPane.showMessageDialog(null, "El límite no ha cambiado", "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    try {
+      Double.parseDouble(limiteString);
+    } catch (NumberFormatException ex) {
+      JOptionPane.showMessageDialog(null, "El límite debe ser un número", "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    if (Double.valueOf(limiteString) < 1000) {
+      JOptionPane.showMessageDialog(null, "El límite debe ser mayor a 1000", "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    tarjeta.setLimite(Double.parseDouble(limiteString));
+    this.modificar(tarjeta);
   }
 
   // Reporte

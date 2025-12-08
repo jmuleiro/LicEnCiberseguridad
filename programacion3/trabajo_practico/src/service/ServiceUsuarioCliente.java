@@ -78,4 +78,35 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
       return null;
     });
   }
+
+  // Funcionalidades
+  public void agregarUsuario(String nombreString, String apellidoString, String usuarioString) throws ServiceException {
+    if (nombreString.isEmpty() ||
+        apellidoString.isEmpty() ||
+        usuarioString.isEmpty()) {
+      throw new ServiceException("Debe completar todos los campos");
+    }
+
+    this.insertar(
+        new UsuarioCliente(
+            nombreString,
+            apellidoString,
+            usuarioString));
+  }
+
+  public void modificarUsuario(String nombreString, String apellidoString, String usuarioString, Integer id)
+      throws ServiceException {
+    if (nombreString.isEmpty() ||
+        apellidoString.isEmpty() ||
+        usuarioString.isEmpty()) {
+      throw new ServiceException("Debe completar todos los campos");
+    }
+
+    this.modificar(
+        new UsuarioCliente(
+            nombreString,
+            apellidoString,
+            usuarioString,
+            id));
+  }
 }

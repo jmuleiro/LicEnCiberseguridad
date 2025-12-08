@@ -25,7 +25,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import programacion3.trabajo_practico.src.entidades.Consumo;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
@@ -408,13 +407,12 @@ public class AbmTarjetas extends JPanelBase {
     jButtonAgregar.addActionListener(e -> {
       try {
         serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
-        Consumo consumo = serviceTarjetaCredito.validarConsumo(
+        serviceTarjetaCredito.agregarConsumo(
+            tarjeta,
             jTextFieldCantidad.getText(),
             jTextFieldFecha.getText(),
             jComboBoxMoneda.getSelectedItem().toString(),
             jTextFieldReferencia.getText());
-        tarjeta.agregarConsumo(consumo);
-        serviceTarjetaCredito.modificarConConsumo(tarjeta);
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -454,37 +452,9 @@ public class AbmTarjetas extends JPanelBase {
     jDialogModificar.add(jButtonCancelar);
 
     jButtonModificar.addActionListener(e -> {
-      String limiteString = jTextFieldLimite.getText();
-      if (limiteString.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "El límite es obligatorio", "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      if (Double.valueOf(limiteString) == tarjeta.getLimite()) {
-        JOptionPane.showMessageDialog(null, "El límite no ha cambiado", "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      try {
-        Double.parseDouble(limiteString);
-      } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(null, "El límite debe ser un número", "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      if (Double.valueOf(limiteString) < 1000) {
-        JOptionPane.showMessageDialog(null, "El límite debe ser mayor a 1000", "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
       try {
         serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
-        tarjeta.setLimite(Double.parseDouble(limiteString));
-        serviceTarjetaCredito.modificar(tarjeta);
+        serviceTarjetaCredito.modificarTarjeta(tarjeta, jTextFieldLimite.getText());
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }

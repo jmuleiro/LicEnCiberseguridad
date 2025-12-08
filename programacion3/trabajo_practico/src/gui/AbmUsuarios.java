@@ -184,19 +184,12 @@ public class AbmUsuarios extends JPanelBase {
     jDialogFormulario.add(jButtonCancelar);
 
     jButtonAceptar.addActionListener(e -> {
-      if (jTextFieldNombre.getText().isEmpty() ||
-          jTextFieldApellido.getText().isEmpty() ||
-          jTextFieldUsuario.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-      }
       try {
         serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-        serviceUsuarioCliente.insertar(
-            new UsuarioCliente(
-                jTextFieldNombre.getText(),
-                jTextFieldApellido.getText(),
-                jTextFieldUsuario.getText()));
+        serviceUsuarioCliente.agregarUsuario(
+            jTextFieldNombre.getText(),
+            jTextFieldApellido.getText(),
+            jTextFieldUsuario.getText());
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al insertar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -257,28 +250,13 @@ public class AbmUsuarios extends JPanelBase {
     jDialogModificar.add(jPanelBotonesModificar, BorderLayout.SOUTH);
 
     jButtonModificar.addActionListener(e -> {
-      if (jTextFieldNombre.getText().isEmpty() ||
-          jTextFieldApellido.getText().isEmpty() ||
-          jTextFieldUsuario.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      if (jTextFieldNombre.getText().equals(nombreOriginal) &&
-          jTextFieldApellido.getText().equals(apellidoOriginal) &&
-          jTextFieldUsuario.getText().equals(usuarioOriginal)) {
-        JOptionPane.showMessageDialog(null, "No se realizaron cambios", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
       try {
         serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-        serviceUsuarioCliente.modificar(
-            new UsuarioCliente(
-                jTextFieldApellido.getText(),
-                jTextFieldNombre.getText(),
-                jTextFieldUsuario.getText(),
-                usuario.getId()));
+        serviceUsuarioCliente.modificarUsuario(
+            jTextFieldApellido.getText(),
+            jTextFieldNombre.getText(),
+            jTextFieldUsuario.getText(),
+            usuario.getId());
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al modificar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
       }

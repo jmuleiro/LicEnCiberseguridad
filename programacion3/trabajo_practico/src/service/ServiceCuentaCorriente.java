@@ -142,6 +142,58 @@ public class ServiceCuentaCorriente extends ServiceBase<CuentaCorriente, Integer
     });
   }
 
+  // Movimientos
+  public double extraer(CuentaCorriente elemento, String monto) throws ServiceException {
+    try {
+      if (monto == null || monto.isEmpty()) {
+        throw new ServiceException("El monto no puede ser nulo o vacio");
+      }
+
+      Double.parseDouble(monto);
+
+      return extraer(elemento, Double.parseDouble(monto));
+    } catch (NumberFormatException e) {
+      throw new ServiceException("El monto debe ser un numero");
+    }
+  }
+
+  public double extraer(CuentaCorriente elemento, double monto) throws ServiceException {
+    new ServiceTemplate<Void>().execute(() -> {
+      elemento.extraer(monto);
+      dao.modificar(elemento);
+      daoEvento.insertar(new Evento(TipoEvento.DEBITO, TipoObjeto.CUENTA_CORRIENTE, Integer.toString(elemento.getId())),
+          contexto);
+      return null;
+    });
+    return monto;
+  }
+
+  public double depositar(CuentaCorriente elemento, String monto) throws ServiceException {
+    try {
+      if (monto == null || monto.isEmpty()) {
+        throw new ServiceException("El monto no puede ser nulo o vacio");
+      }
+
+      Double.parseDouble(monto);
+
+      return depositar(elemento, Double.parseDouble(monto));
+    } catch (NumberFormatException e) {
+      throw new ServiceException("El monto debe ser un numero");
+    }
+  }
+
+  public double depositar(CuentaCorriente elemento, double monto) throws ServiceException {
+    new ServiceTemplate<Void>().execute(() -> {
+      elemento.depositar(monto);
+      dao.modificar(elemento);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CREDITO, TipoObjeto.CUENTA_CORRIENTE, Integer.toString(elemento.getId())),
+          contexto);
+      return null;
+    });
+    return monto;
+  }
+
   // Reporte
   public List<String> generarReporteMovimientos(CuentaCorriente elemento) throws ServiceException {
     try {

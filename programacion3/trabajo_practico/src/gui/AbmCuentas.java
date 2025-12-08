@@ -323,18 +323,15 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonExtraer.addActionListener(e -> {
       try {
-        cuenta.extraer(Double.parseDouble(jTextFieldMonto.getText()));
         if (cuenta instanceof CajaAhorro) {
           serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.modificar((CajaAhorro) cuenta);
+          serviceCajaAhorro.extraer((CajaAhorro) cuenta, jTextFieldMonto.getText());
         } else {
           serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.modificar((CuentaCorriente) cuenta);
+          serviceCuentaCorriente.extraer((CuentaCorriente) cuenta, jTextFieldMonto.getText());
         }
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
-      } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(null, "Monto inválido", "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogExtraer.dispose();
       jTableCuentas.setModel(construirTablaCuentas(usuario));
@@ -369,18 +366,15 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonDepositar.addActionListener(e -> {
       try {
-        cuenta.depositar(Double.parseDouble(jTextFieldMonto.getText()));
         if (cuenta instanceof CajaAhorro) {
           serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.modificar((CajaAhorro) cuenta);
+          serviceCajaAhorro.depositar((CajaAhorro) cuenta, jTextFieldMonto.getText());
         } else {
           serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.modificar((CuentaCorriente) cuenta);
+          serviceCuentaCorriente.depositar((CuentaCorriente) cuenta, jTextFieldMonto.getText());
         }
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
-      } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(null, "Monto inválido", "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogDepositar.dispose();
       jTableCuentas.setModel(construirTablaCuentas(usuario));
@@ -519,9 +513,7 @@ public class AbmCuentas extends JPanelBase {
         jTableCuentas.setModel(construirTablaCuentas(usuario));
       });
 
-      jButtonCancelar.addActionListener(e ->
-
-      {
+      jButtonCancelar.addActionListener(e -> {
         jDialogFormulario.dispose();
         jTableCuentas.setModel(construirTablaCuentas(usuario));
       });
