@@ -41,7 +41,7 @@ public class HomeAdmin extends JPanelBase {
 
     actualPanel.add(jPanelLabels);
 
-    jButtonAbmUsuarios = new JButton("ABM Usuarios");
+    jButtonAbmUsuarios = new JButton("Gestión de Usuarios");
     jButtonGestion = new JButton("Gestión General");
     jButtonSalir = new JButton("Salir");
 
