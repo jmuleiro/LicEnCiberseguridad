@@ -56,7 +56,7 @@ public class FormularioLoginAdmin extends JPanelBase {
 
     jButtonLogin.addActionListener(e -> {
       try {
-        serviceUsuarioAdmin = new ServiceUsuarioAdmin();
+        serviceUsuarioAdmin = new ServiceUsuarioAdmin(contexto);
         UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.login(jTextFieldUsuario.getText(),
             new String(jPasswordFieldPassword.getPassword()));
 

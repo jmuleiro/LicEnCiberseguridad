@@ -85,7 +85,7 @@ public class VistaConsumos extends JPanelBase {
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
     try {
-      serviceTarjetaCredito = new ServiceTarjetaCredito();
+      serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
       tarjeta = serviceTarjetaCredito.consultarConConsumo(Integer.parseInt(tarjetaIdString));
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -130,7 +130,7 @@ public class VistaConsumos extends JPanelBase {
         }
 
         try {
-          serviceTarjetaCredito = new ServiceTarjetaCredito();
+          serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
           for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {
             Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
                 StandardOpenOption.CREATE);

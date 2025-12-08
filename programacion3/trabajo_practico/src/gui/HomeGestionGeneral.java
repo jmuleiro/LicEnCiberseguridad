@@ -61,7 +61,7 @@ public class HomeGestionGeneral extends JPanelBase {
 
     jButtonIntereses.addActionListener(e -> {
       try {
-        serviceCajaAhorro = new ServiceCajaAhorro();
+        serviceCajaAhorro = new ServiceCajaAhorro(contexto);
         serviceCajaAhorro.aplicarIntereses();
         JOptionPane.showMessageDialog(null, "Intereses aplicados");
       } catch (ServiceException exc) {

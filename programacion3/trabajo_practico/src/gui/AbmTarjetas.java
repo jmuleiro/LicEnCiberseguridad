@@ -180,7 +180,7 @@ public class AbmTarjetas extends JPanelBase {
     resultado.setColumnIdentifiers(columnas);
 
     try {
-      serviceTarjetaCredito = new ServiceTarjetaCredito();
+      serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
       tarjetas = serviceTarjetaCredito.consultarTodosConConsumo(usuario);
       if (tarjetas == null)
         return resultado;
@@ -212,7 +212,7 @@ public class AbmTarjetas extends JPanelBase {
     TarjetaCredito tarjeta = null;
 
     try {
-      serviceTarjetaCredito = new ServiceTarjetaCredito();
+      serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
       tarjeta = serviceTarjetaCredito.consultar(idTarjeta);
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -327,7 +327,7 @@ public class AbmTarjetas extends JPanelBase {
       }
 
       try {
-        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
         serviceTarjetaCredito.insertar(
             new TarjetaCredito(
                 numeroString,
@@ -385,7 +385,7 @@ public class AbmTarjetas extends JPanelBase {
     // Cargar monedas a combo box
     try {
       List<Moneda> monedas = new ArrayList<>();
-      serviceMoneda = new ServiceMoneda();
+      serviceMoneda = new ServiceMoneda(contexto);
       monedas = serviceMoneda.consultarTodos();
       jComboBoxMoneda.addItem("");
       for (Moneda moneda : monedas) {
@@ -407,7 +407,7 @@ public class AbmTarjetas extends JPanelBase {
 
     jButtonAgregar.addActionListener(e -> {
       try {
-        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
         Consumo consumo = serviceTarjetaCredito.validarConsumo(
             jTextFieldCantidad.getText(),
             jTextFieldFecha.getText(),
@@ -482,7 +482,7 @@ public class AbmTarjetas extends JPanelBase {
       }
 
       try {
-        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
         tarjeta.setLimite(Double.parseDouble(limiteString));
         serviceTarjetaCredito.modificar(tarjeta);
       } catch (ServiceException ex) {
@@ -520,7 +520,7 @@ public class AbmTarjetas extends JPanelBase {
 
     jButtonConfirmar.addActionListener(e -> {
       try {
-        serviceTarjetaCredito = new ServiceTarjetaCredito();
+        serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
         serviceTarjetaCredito.eliminar(tarjeta.getId());
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

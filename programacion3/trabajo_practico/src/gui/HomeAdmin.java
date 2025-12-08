@@ -71,6 +71,7 @@ public class HomeAdmin extends JPanelBase {
 
     jButtonSalir.addActionListener(e -> {
       try {
+        serviceUsuarioAdmin = new ServiceUsuarioAdmin(contexto);
         serviceUsuarioAdmin.logout(contexto.get("usuario"));
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);

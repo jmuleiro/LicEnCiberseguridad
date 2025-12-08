@@ -155,7 +155,7 @@ public class HomeGestionUsuario extends JPanelBase {
       jDialogTransferir.add(jButtonTransferir);
       jDialogTransferir.add(jButtonCancelar);
 
-      serviceUsuarioCliente = new ServiceUsuarioCliente();
+      serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
       UsuarioCliente usuario = serviceUsuarioCliente.consultar(usuarioId);
       if (usuario == null) {
         JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
@@ -164,15 +164,15 @@ public class HomeGestionUsuario extends JPanelBase {
 
       jLabelUsuario.setText(usuario.getUsuario());
 
-      serviceMoneda = new ServiceMoneda();
+      serviceMoneda = new ServiceMoneda(contexto);
       List<Moneda> monedas = serviceMoneda.consultarTodos();
       for (Moneda m : monedas) {
         jComboBoxMoneda.addItem(m.getCodigo());
       }
 
       List<Cuenta> cuentasUsuario = new ArrayList<>();
-      serviceCajaAhorro = new ServiceCajaAhorro();
-      serviceCuentaCorriente = new ServiceCuentaCorriente();
+      serviceCajaAhorro = new ServiceCajaAhorro(contexto);
+      serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
 
       cuentasUsuario.addAll(serviceCajaAhorro.consultarTodos(usuario));
       cuentasUsuario.addAll(serviceCuentaCorriente.consultarTodos(usuario));
@@ -211,10 +211,10 @@ public class HomeGestionUsuario extends JPanelBase {
             String[] partes = cuentaSeleccionada.split(" ");
             Cuenta cuenta;
             if (partes[0].equals("CA")) {
-              serviceCajaAhorro = new ServiceCajaAhorro();
+              serviceCajaAhorro = new ServiceCajaAhorro(contexto);
               cuenta = serviceCajaAhorro.consultar(Integer.valueOf(partes[2].strip()));
             } else {
-              serviceCuentaCorriente = new ServiceCuentaCorriente();
+              serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
               cuenta = serviceCuentaCorriente.consultar(Integer.valueOf(partes[2].strip()));
             }
             jLabelDisponible.setText(String.valueOf(cuenta.getSaldo()));
@@ -243,7 +243,7 @@ public class HomeGestionUsuario extends JPanelBase {
         }
 
         try {
-          serviceMoneda = new ServiceMoneda();
+          serviceMoneda = new ServiceMoneda(contexto);
           String[] partes = cuentaSeleccionada.split(" ");
           Moneda moneda = serviceMoneda.consultar(partes[1].replace(":", ""));
           if (moneda == null) {
@@ -253,8 +253,8 @@ public class HomeGestionUsuario extends JPanelBase {
 
           List<Cuenta> cuentas = new ArrayList<>();
           Cuenta cuentaOrigen;
-          serviceCajaAhorro = new ServiceCajaAhorro();
-          serviceCuentaCorriente = new ServiceCuentaCorriente();
+          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
+          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
           cuentas.addAll(serviceCajaAhorro.consultarTodos());
           cuentas.addAll(serviceCuentaCorriente.consultarTodos());
 

@@ -144,10 +144,10 @@ public class VistaMovimientos extends JPanelBase {
         try {
           List<String> lineasReporte = new ArrayList<>();
           if (tipoCuentaString.equals("COR")) {
-            serviceCuentaCorriente = new ServiceCuentaCorriente();
+            serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
             lineasReporte = serviceCuentaCorriente.generarReporteMovimientos((CuentaCorriente) cuenta);
           } else {
-            serviceCajaAhorro = new ServiceCajaAhorro();
+            serviceCajaAhorro = new ServiceCajaAhorro(contexto);
             lineasReporte = serviceCajaAhorro.generarReporteMovimientos((CajaAhorro) cuenta);
           }
           for (String linea : lineasReporte) {
@@ -210,10 +210,10 @@ public class VistaMovimientos extends JPanelBase {
     Cuenta cuenta = null;
     try {
       if (tipoCuenta.equals("COR")) {
-        serviceCuentaCorriente = new ServiceCuentaCorriente();
+        serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
         cuenta = serviceCuentaCorriente.consultarConTransferencia(Integer.parseInt(idCuenta));
       } else {
-        serviceCajaAhorro = new ServiceCajaAhorro();
+        serviceCajaAhorro = new ServiceCajaAhorro(contexto);
         cuenta = serviceCajaAhorro.consultarConTransferencia(Integer.parseInt(idCuenta));
       }
       return cuenta;

@@ -136,7 +136,7 @@ public class AbmUsuarios extends JPanelBase {
     };
     resultado.setColumnIdentifiers(columnas);
     try {
-      serviceUsuarioCliente = new ServiceUsuarioCliente();
+      serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
       usuarios = serviceUsuarioCliente.consultarTodos();
 
       if (usuarios == null)
@@ -191,7 +191,7 @@ public class AbmUsuarios extends JPanelBase {
         return;
       }
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente();
+        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
         serviceUsuarioCliente.insertar(
             new UsuarioCliente(
                 jTextFieldNombre.getText(),
@@ -272,7 +272,7 @@ public class AbmUsuarios extends JPanelBase {
       }
 
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente();
+        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
         serviceUsuarioCliente.modificar(
             new UsuarioCliente(
                 jTextFieldApellido.getText(),
@@ -318,7 +318,7 @@ public class AbmUsuarios extends JPanelBase {
 
     jButtonConfirmar.addActionListener(e -> {
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente();
+        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
         serviceUsuarioCliente.eliminar(usuario.getId());
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al insertar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
