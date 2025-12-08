@@ -231,7 +231,7 @@ CREATE TABLE Evento (
     fecha_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cod_evento CHAR(5) NOT NULL,
     cod_objeto CHAR(5) NOT NULL,
-    objeto_id CHAR(10),
+    objeto_id CHAR(50),
     exitoso BOOLEAN NOT NULL,
     PRIMARY KEY (evento_id),
         
