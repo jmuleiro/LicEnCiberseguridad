@@ -5,7 +5,8 @@ public enum TipoObjeto {
   CAJA_AHORRO("SAV"),
   CUENTA_CORRIENTE("COR"),
   TARJETA_CREDITO("CAR"),
-  TRANSFERENCIA("TRF");
+  TRANSFERENCIA("TRF"),
+  CONSUMO("CON");
 
   private final String codigo;
 

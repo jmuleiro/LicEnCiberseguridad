@@ -78,7 +78,8 @@ INSERT INTO Tipo_Objeto VALUES ('USR', 'Usuario'),
                                 ('SAV', 'Caja de Ahorro'),
                                 ('COR', 'Cuenta Corriente'),
                                 ('CAR', 'Tarjeta de Crédito'),
-                                ('TRF', 'Transferencia');
+                                ('TRF', 'Transferencia'),
+                                ('CON', 'Consumo');
 
 /* Usuario */
 /*todo: implementar contraseña hasheada si hay tiempo*/
