@@ -157,6 +157,7 @@ CREATE TABLE Consumo (
 /* Transferencia */
 CREATE TABLE Transferencia (
     transferencia_id INT NOT NULL AUTO_INCREMENT,
+    fecha DATE NOT NULL,
     monto DOUBLE NOT NULL,
     cod_moneda CHAR(3) NOT NULL,
     concepto CHAR(50) NOT NULL,

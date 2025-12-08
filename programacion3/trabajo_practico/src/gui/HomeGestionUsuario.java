@@ -3,6 +3,8 @@ package programacion3.trabajo_practico.src.gui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
+import java.time.LocalDate;
+
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -281,7 +283,8 @@ public class HomeGestionUsuario extends JPanelBase {
 
             // Actualizar tabla de transferencias
             ServiceTransferencia serviceTransferencia = new ServiceTransferencia();
-            Transferencia transferencia = new Transferencia(montoD, moneda, "Transferencia");
+            Transferencia transferencia = new Transferencia(LocalDate.now(), montoD,
+                moneda, "Transferencia");
             serviceTransferencia.registrarTransferencia(cuentaOrigen, cuentaDestino, transferencia);
 
             JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",

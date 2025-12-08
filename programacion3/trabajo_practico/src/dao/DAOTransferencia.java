@@ -19,7 +19,7 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public Transferencia consultar(Integer id) throws DAOException {
     return new DAOTemplate<Transferencia>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
               "FROM Transferencia AS T " +
               "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
               "WHERE transferencia_id = ?");
@@ -28,6 +28,7 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
       ResultSet rs = preparedStatement.getResultSet();
       if (rs.next()) {
         return new Transferencia(
+            rs.getDate("fecha").toLocalDate(),
             rs.getDouble("monto"),
             new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
             rs.getString("concepto"),
@@ -42,7 +43,7 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public List<Transferencia> consultarTodos() throws DAOException {
     return new DAOTemplate<List<Transferencia>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
               "FROM Transferencia AS T " +
               "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda");
       preparedStatement.executeQuery();
@@ -50,6 +51,7 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
       List<Transferencia> transferencias = new ArrayList<>();
       while (rs.next()) {
         transferencias.add(new Transferencia(
+            rs.getDate("fecha").toLocalDate(),
             rs.getDouble("monto"),
             new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
             rs.getString("concepto"),
@@ -63,12 +65,13 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       // Insertar la transferencia
       PreparedStatement preparedStatement = conn.prepare(
-          "INSERT INTO Transferencia (monto, cod_moneda, concepto) " +
-              "VALUES (?, ?, ?) ",
+          "INSERT INTO Transferencia (fecha, monto, cod_moneda, concepto) " +
+              "VALUES (?, ?, ?, ?) ",
           java.sql.Statement.RETURN_GENERATED_KEYS);
-      preparedStatement.setDouble(1, elemento.getMonto());
-      preparedStatement.setString(2, elemento.getMoneda().getCodigo());
-      preparedStatement.setString(3, elemento.getConcepto());
+      preparedStatement.setDate(1, java.sql.Date.valueOf(elemento.getFecha()));
+      preparedStatement.setDouble(2, elemento.getMonto());
+      preparedStatement.setString(3, elemento.getMoneda().getCodigo());
+      preparedStatement.setString(4, elemento.getConcepto());
       preparedStatement.executeUpdate();
 
       // Traer ID transferencia
