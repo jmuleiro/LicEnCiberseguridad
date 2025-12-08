@@ -3,14 +3,20 @@ package programacion3.trabajo_practico.src.service;
 import java.util.List;
 import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.dao.DAOUsuarioAdmin;
+import programacion3.trabajo_practico.src.dao.DAOEvento;
+import programacion3.trabajo_practico.src.entidades.Evento;
+import programacion3.trabajo_practico.src.entidades.TipoEvento;
+import programacion3.trabajo_practico.src.entidades.TipoObjeto;
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
 public class ServiceUsuarioAdmin extends ServiceBaseS<UsuarioAdmin, Integer> {
   private DAOUsuarioAdmin dao;
+  private DAOEvento daoEvento;
 
   public ServiceUsuarioAdmin() throws ServiceException {
     try {
       dao = new DAOUsuarioAdmin();
+      daoEvento = new DAOEvento();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
       throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());
@@ -54,5 +60,22 @@ public class ServiceUsuarioAdmin extends ServiceBaseS<UsuarioAdmin, Integer> {
       dao.modificar(usuarioAdmin);
       return null;
     });
+  }
+
+  public UsuarioAdmin login(String username, String password) throws ServiceException {
+    try {
+      UsuarioAdmin usuarioAdmin = this.consultar(username);
+      if (usuarioAdmin == null) {
+        daoEvento.insertar(new Evento(TipoEvento.LOGIN, TipoObjeto.USUARIO, username, false));
+        throw new ServiceException("Usuario no encontrado");
+      }
+
+      daoEvento.insertar(new Evento(TipoEvento.LOGIN, TipoObjeto.USUARIO, username));
+      return usuarioAdmin;
+    } catch (DAOException e) {
+      System.out.println("DAOException: " + e.getMessage());
+      throw new ServiceException(
+          "Fallo del DAO " + daoEvento.getClass().getName() + " en: " + this.getClass().getName());
+    }
   }
 }

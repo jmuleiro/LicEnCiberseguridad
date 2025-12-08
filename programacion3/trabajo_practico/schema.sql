@@ -43,8 +43,42 @@ CREATE TABLE Tipo_Tarjeta (
 );
 
 -- Cargar Tipos
-INSERT INTO Tipo_Tarjeta VALUES ('CRE', 'Credito');
-INSERT INTO Tipo_Tarjeta VALUES ('DEB', 'Debito');
+INSERT INTO Tipo_Tarjeta VALUES ('CRE', 'Crédito');
+INSERT INTO Tipo_Tarjeta VALUES ('DEB', 'Débito');
+
+/* Tipo de Evento */
+CREATE TABLE Tipo_Evento (
+    cod_evento CHAR(3) NOT NULL,
+    nombre_evento CHAR(50) NOT NULL,
+    PRIMARY KEY (cod_evento)
+);
+
+-- Cargar Tipos
+INSERT INTO Tipo_Evento VALUES ('LGI', 'Login'),
+                                ('LGO', 'Logout'),
+                                ('CRE', 'Creación'),
+                                ('MOD', 'Modificación'),
+                                ('DEL', 'Eliminación'),
+                                ('QRY', 'Consulta'),
+                                ('CRD', 'Crédito'),
+                                ('DBT', 'Débito'),
+                                ('EXT', 'Extracción'),
+                                ('DEP', 'Depósito'),
+                                ('REP', 'Reporte');
+
+/* Tipo de Objeto */
+CREATE TABLE Tipo_Objeto (
+    cod_objeto CHAR(3) NOT NULL,
+    nombre_objeto CHAR(50) NOT NULL,
+    PRIMARY KEY (cod_objeto)
+);
+
+-- Cargar Tipos
+INSERT INTO Tipo_Objeto VALUES ('USR', 'Usuario'),
+                                ('SAV', 'Caja de Ahorro'),
+                                ('COR', 'Cuenta Corriente'),
+                                ('CAR', 'Tarjeta de Crédito'),
+                                ('TRF', 'Transferencia');
 
 /* Usuario */
 /*todo: implementar contraseña hasheada si hay tiempo*/
@@ -187,5 +221,46 @@ CREATE TABLE Movimiento (
     FOREIGN KEY (cuenta_id)
         REFERENCES Cuenta(cuenta_id)
         ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
+/* Auditoria */
+CREATE TABLE Evento (
+    evento_id INT NOT NULL AUTO_INCREMENT,
+    fecha_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cod_evento CHAR(5) NOT NULL,
+    cod_objeto CHAR(5) NOT NULL,
+    objeto_id CHAR(10),
+    exitoso BOOLEAN NOT NULL,
+    PRIMARY KEY (evento_id),
+        
+    -- Foreign Key 1: Tipo de Evento
+    FOREIGN KEY (cod_evento)
+        REFERENCES Tipo_Evento(cod_evento)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Foreign Key 2: Tipo de Objeto
+    FOREIGN KEY (cod_objeto)
+        REFERENCES Tipo_Objeto(cod_objeto)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Evento_Usuario (
+    usuario_id INT NOT NULL,
+    evento_id INT NOT NULL,
+    PRIMARY KEY (usuario_id, evento_id), 
+    
+    -- Foreign Key 1: Usuario
+    FOREIGN KEY (usuario_id)
+        REFERENCES Usuario(usuario_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Foreign Key 2: Evento
+    FOREIGN KEY (evento_id)
+        REFERENCES Evento(evento_id)
+        ON DELETE CASCADE
         ON UPDATE CASCADE
 );

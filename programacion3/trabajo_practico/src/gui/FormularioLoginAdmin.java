@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
@@ -23,7 +24,7 @@ public class FormularioLoginAdmin extends JPanelBase {
   JLabel jLabelUsuario;
   JLabel jLabelPassword;
   JTextField jTextFieldUsuario;
-  JTextField jTextFieldPassword;
+  JPasswordField jPasswordFieldPassword;
   JButton jButtonLogin;
   JButton jButtonSalir;
 
@@ -41,7 +42,7 @@ public class FormularioLoginAdmin extends JPanelBase {
     jLabelPassword = new JLabel("Password");
 
     jTextFieldUsuario = new JTextField();
-    jTextFieldPassword = new JTextField();
+    jPasswordFieldPassword = new JPasswordField();
 
     jButtonLogin = new JButton("Login");
     jButtonSalir = new JButton("Salir");
@@ -49,18 +50,16 @@ public class FormularioLoginAdmin extends JPanelBase {
     actualPanel.add(jLabelUsuario);
     actualPanel.add(jTextFieldUsuario);
     actualPanel.add(jLabelPassword);
-    actualPanel.add(jTextFieldPassword);
+    actualPanel.add(jPasswordFieldPassword);
     actualPanel.add(jButtonLogin);
     actualPanel.add(jButtonSalir);
 
     jButtonLogin.addActionListener(e -> {
       try {
         serviceUsuarioAdmin = new ServiceUsuarioAdmin();
-        UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.consultar(jTextFieldUsuario.getText());
-        if (usuarioAdmin == null) {
-          JOptionPane.showMessageDialog(null, "Usuario no encontrado");
-          return;
-        }
+        UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.login(jTextFieldUsuario.getText(),
+            new String(jPasswordFieldPassword.getPassword()));
+
         Map<String, String> contexto = new HashMap<>();
         contexto.put("usuario", usuarioAdmin.getUsuario());
         contexto.put("nombre", usuarioAdmin.getNombre());
@@ -75,9 +74,10 @@ public class FormularioLoginAdmin extends JPanelBase {
       panel.jFrame.dispose();
     });
 
-    jTextFieldPassword.addActionListener(e -> {
+    jPasswordFieldPassword.addActionListener(e -> {
       jButtonLogin.doClick();
     });
+
     jTextFieldUsuario.addActionListener(e -> {
       jButtonLogin.doClick();
     });
