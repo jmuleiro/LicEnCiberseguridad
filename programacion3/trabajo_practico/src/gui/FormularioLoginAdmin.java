@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
