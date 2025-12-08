@@ -16,11 +16,9 @@ import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
 import java.util.Map;
 import java.util.HashMap;
 
-public class FormularioLoginAdmin extends JPanel {
+public class FormularioLoginAdmin extends JPanelBase {
   // * Atributos
   ServiceUsuarioAdmin serviceUsuarioAdmin;
-  PanelManager panel;
-  JPanel formularioLoginAdmin;
 
   // GUI
   JLabel jLabelUsuario;
@@ -32,13 +30,12 @@ public class FormularioLoginAdmin extends JPanel {
 
   // * Constructor
   public FormularioLoginAdmin(PanelManager panel) {
-    this.panel = panel;
+    super(panel);
     iniciar();
   }
 
   public void iniciar() {
-    formularioLoginAdmin = new JPanel();
-    formularioLoginAdmin.setLayout(new GridLayout(3, 2));
+    actualPanel.setLayout(new GridLayout(3, 2));
     panel.jFrame.setTitle("Login");
 
     jLabelUsuario = new JLabel("Usuario");
@@ -50,12 +47,12 @@ public class FormularioLoginAdmin extends JPanel {
     jButtonLogin = new JButton("Login");
     jButtonSalir = new JButton("Salir");
 
-    formularioLoginAdmin.add(jLabelUsuario);
-    formularioLoginAdmin.add(jTextFieldUsuario);
-    formularioLoginAdmin.add(jLabelPassword);
-    formularioLoginAdmin.add(jTextFieldPassword);
-    formularioLoginAdmin.add(jButtonLogin);
-    formularioLoginAdmin.add(jButtonSalir);
+    actualPanel.add(jLabelUsuario);
+    actualPanel.add(jTextFieldUsuario);
+    actualPanel.add(jLabelPassword);
+    actualPanel.add(jTextFieldPassword);
+    actualPanel.add(jButtonLogin);
+    actualPanel.add(jButtonSalir);
 
     jButtonLogin.addActionListener(e -> {
       try {
@@ -71,7 +68,7 @@ public class FormularioLoginAdmin extends JPanel {
         contexto.put("apellido", usuarioAdmin.getApellido());
         panel.mostrar(2, contexto);
       } catch (ServiceException exc) {
-        JOptionPane.showMessageDialog(null, exc);
+        JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
     });
 
@@ -87,6 +84,6 @@ public class FormularioLoginAdmin extends JPanel {
     });
 
     setLayout(new BorderLayout());
-    add(formularioLoginAdmin, BorderLayout.CENTER);
+    add(actualPanel, BorderLayout.CENTER);
   }
 }

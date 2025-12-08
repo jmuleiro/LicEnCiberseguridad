@@ -114,4 +114,13 @@ public class ServiceCajaAhorro extends ServiceBase<CajaAhorro, Integer> {
     }
     return reporte;
   }
+
+  // Intereses
+  public void aplicarIntereses() throws ServiceException {
+    List<CajaAhorro> cajasAhorro = consultarTodos();
+    for (CajaAhorro cajaAhorro : cajasAhorro) {
+      cajaAhorro.aplicarInteres();
+      this.modificar(cajaAhorro);
+    }
+  }
 }

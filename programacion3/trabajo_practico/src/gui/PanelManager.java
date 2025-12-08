@@ -63,6 +63,10 @@ public class PanelManager {
         mostrar(new VistaMovimientos(this, contexto));
         jFrame.setSize(800, 300);
         break;
+      case 9:
+        mostrar(new HomeGestionGeneral(this, contexto));
+        jFrame.setSize(800, 100);
+        break;
       default:
         throw new IllegalArgumentException("Tipo de ventana no definido: " + tipo);
     }
