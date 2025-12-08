@@ -354,8 +354,8 @@ public class AbmTarjetas extends JPanelBase {
   private void agregarConsumo(TarjetaCredito tarjeta) {
     JDialog jDialogAgregarConsumo = new JDialog();
     jDialogAgregarConsumo.setTitle("Agregar Consumo");
-    jDialogAgregarConsumo.setSize(400, 200);
-    jDialogAgregarConsumo.setLayout(new GridLayout(6, 2));
+    jDialogAgregarConsumo.setSize(400, 250);
+    jDialogAgregarConsumo.setLayout(new GridLayout(7, 2));
 
     jDialogAgregarConsumo.add(new JLabel("Usuario: "));
     jDialogAgregarConsumo.add(new JLabel(usuario.getUsuario()));
@@ -395,6 +395,10 @@ public class AbmTarjetas extends JPanelBase {
       JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    jDialogAgregarConsumo.add(new JLabel("Referencia: "));
+    JTextField jTextFieldReferencia = new JTextField();
+    jDialogAgregarConsumo.add(jTextFieldReferencia);
+
     JButton jButtonAgregar = new JButton("Agregar");
     JButton jButtonCancelar = new JButton("Cancelar");
 
@@ -407,7 +411,8 @@ public class AbmTarjetas extends JPanelBase {
         Consumo consumo = serviceTarjetaCredito.validarConsumo(
             jTextFieldCantidad.getText(),
             jTextFieldFecha.getText(),
-            jComboBoxMoneda.getSelectedItem().toString());
+            jComboBoxMoneda.getSelectedItem().toString(),
+            jTextFieldReferencia.getText());
         tarjeta.agregarConsumo(consumo);
         serviceTarjetaCredito.modificarConConsumo(tarjeta);
       } catch (ServiceException ex) {

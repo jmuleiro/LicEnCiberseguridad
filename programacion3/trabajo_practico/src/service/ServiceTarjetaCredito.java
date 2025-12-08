@@ -117,8 +117,9 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   }
 
   // Validaciones
-  public Consumo validarConsumo(String cantidad, String fecha, String monedaString) throws ServiceException {
-    if (cantidad.isEmpty() || fecha.isEmpty() || monedaString.isEmpty()) {
+  public Consumo validarConsumo(String cantidad, String fecha, String monedaString, String referencia)
+      throws ServiceException {
+    if (cantidad.isEmpty() || fecha.isEmpty() || monedaString.isEmpty() || referencia.isEmpty()) {
       throw new ServiceException("Todos los campos son obligatorios");
     }
 
@@ -145,6 +146,6 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
       throw new ServiceException("La moneda seleccionada no es válida");
     }
 
-    return new Consumo(Double.parseDouble(cantidad), LocalDate.parse(fecha), moneda);
+    return new Consumo(Double.parseDouble(cantidad), LocalDate.parse(fecha), moneda, referencia);
   }
 }

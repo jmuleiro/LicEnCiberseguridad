@@ -19,12 +19,13 @@ public class DAOConsumo extends DAOBase<Consumo, Integer> {
   public void insertar(TarjetaCredito tarjeta, Consumo elemento) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "INSERT INTO Consumo (tarjeta_id, fecha, cantidad, cod_moneda) " +
-              "VALUES (?, ?, ?, ?)");
+          "INSERT INTO Consumo (tarjeta_id, fecha, cantidad, cod_moneda, referencia) " +
+              "VALUES (?, ?, ?, ?, ?)");
       preparedStatement.setInt(1, tarjeta.getId());
       preparedStatement.setDate(2, Date.valueOf(elemento.getFecha()));
       preparedStatement.setDouble(3, elemento.getCantidad());
       preparedStatement.setString(4, elemento.getMoneda().getCodigo());
+      preparedStatement.setString(5, elemento.getReferencia());
       preparedStatement.executeUpdate();
       return null;
     });
@@ -34,7 +35,7 @@ public class DAOConsumo extends DAOBase<Consumo, Integer> {
   public Consumo consultar(Integer id) throws DAOException {
     return new DAOTemplate<Consumo>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT C.cantidad, C.fecha, M.cod_moneda, M.nombre_moneda " +
+          "SELECT C.cantidad, C.fecha, M.cod_moneda, M.nombre_moneda, C.referencia " +
               "FROM Consumo AS C " +
               "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
               "WHERE C.consumo_id = ?");
@@ -44,7 +45,8 @@ public class DAOConsumo extends DAOBase<Consumo, Integer> {
         return new Consumo(
             rs.getDouble("C.cantidad"),
             rs.getDate("C.fecha").toLocalDate(),
-            new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")));
+            new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
+            rs.getString("C.referencia"));
       }
       return null;
     });
@@ -53,7 +55,7 @@ public class DAOConsumo extends DAOBase<Consumo, Integer> {
   public List<Consumo> consultarTodos(TarjetaCredito tarjeta) throws DAOException {
     return new DAOTemplate<List<Consumo>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT C.consumo_id, C.cantidad, C.fecha, M.cod_moneda, M.nombre_moneda " +
+          "SELECT C.consumo_id, C.cantidad, C.fecha, M.cod_moneda, M.nombre_moneda, C.referencia " +
               "FROM Consumo AS C " +
               "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
               "WHERE C.tarjeta_id = ?");
@@ -65,7 +67,8 @@ public class DAOConsumo extends DAOBase<Consumo, Integer> {
             rs.getDouble("C.cantidad"),
             rs.getDate("C.fecha").toLocalDate(),
             new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
-            rs.getInt("C.consumo_id")));
+            rs.getInt("C.consumo_id"),
+            rs.getString("C.referencia")));
       }
       return consumos;
     });

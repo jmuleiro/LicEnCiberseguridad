@@ -124,6 +124,7 @@ public class VistaConsumos extends JPanelBase {
   private DefaultTableModel construirTablaConsumos(List<Consumo> consumos) {
     Vector<String> columnas = new Vector<String>();
     columnas.add("Fecha");
+    columnas.add("Referencia");
     columnas.add("Cantidad");
     columnas.add("Moneda");
 
@@ -138,6 +139,7 @@ public class VistaConsumos extends JPanelBase {
     for (Consumo consumo : consumos) {
       resultado.addRow(new Object[] {
           consumo.getFecha(),
+          consumo.getReferencia(),
           consumo.getCantidad(),
           consumo.getMoneda().getNombre()
       });

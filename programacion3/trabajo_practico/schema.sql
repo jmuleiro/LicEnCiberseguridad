@@ -138,6 +138,7 @@ CREATE TABLE Consumo (
     fecha DATE NOT NULL,
     cantidad DOUBLE NOT NULL,
     cod_moneda CHAR(3) NOT NULL,
+    referencia CHAR(50) NOT NULL,
     PRIMARY KEY (consumo_id),
     
     -- Foreign Key 1: Tarjeta
