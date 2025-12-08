@@ -2,6 +2,7 @@ package programacion3.trabajo_practico.src.gui;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.util.Map;
@@ -9,8 +10,12 @@ import java.util.Map;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
+import programacion3.trabajo_practico.src.service.ServiceException;
+import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
+
 public class HomeAdmin extends JPanelBase {
   // * Atributos
+  ServiceUsuarioAdmin serviceUsuarioAdmin;
   JLabel jLabelBienvenido;
   JLabel jLabelUsuario;
   JButton jButtonAbmUsuarios;
@@ -65,6 +70,11 @@ public class HomeAdmin extends JPanelBase {
     });
 
     jButtonSalir.addActionListener(e -> {
+      try {
+        serviceUsuarioAdmin.logout(contexto.get("usuario"));
+      } catch (ServiceException exc) {
+        JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+      }
       panel.jFrame.dispose();
     });
 
