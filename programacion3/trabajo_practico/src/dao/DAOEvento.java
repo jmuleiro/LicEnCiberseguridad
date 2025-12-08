@@ -1,7 +1,6 @@
 package programacion3.trabajo_practico.src.dao;
 
 import programacion3.trabajo_practico.src.entidades.Evento;
-import programacion3.trabajo_practico.src.entidades.Usuario;
 import programacion3.trabajo_practico.src.entidades.TipoEvento;
 import programacion3.trabajo_practico.src.entidades.TipoObjeto;
 
@@ -9,10 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.Statement;
-import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DAOEvento extends DAOBase<Evento, Integer> {
   public DAOEvento() throws DAOException {
@@ -21,6 +21,15 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
 
   @Override
   public void insertar(Evento elemento) throws DAOException {
+    insertar(elemento, new HashMap<>());
+  }
+
+  public void insertar(Evento elemento, Map<String, String> contexto) throws DAOException {
+    if (contexto.get("id_usuario") != null) {
+      insertar(elemento, Integer.parseInt(contexto.get("id_usuario")));
+      return;
+    }
+
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Evento (cod_evento, cod_objeto, objeto_id, exitoso) VALUES (?, ?, ?, ?)");
@@ -33,7 +42,7 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
     });
   }
 
-  public void insertar(Usuario usuario, Evento elemento) throws DAOException {
+  public void insertar(Evento elemento, int usuarioId) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Evento (cod_evento, cod_objeto, objeto_id, exitoso) VALUES (?, ?, ?, ?)",
@@ -47,10 +56,11 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
       ResultSet rs = preparedStatement.getGeneratedKeys();
       if (rs.next()) {
         int eventoId = rs.getInt(1);
-        PreparedStatement psRel = conn.prepare("INSERT INTO Evento_Usuario (usuario_id, evento_id) VALUES (?, ?)");
-        psRel.setInt(1, usuario.getId());
-        psRel.setInt(2, eventoId);
-        psRel.executeUpdate();
+        PreparedStatement preparedStatement2 = conn
+            .prepare("INSERT INTO Evento_Usuario (usuario_id, evento_id) VALUES (?, ?)");
+        preparedStatement2.setInt(1, usuarioId);
+        preparedStatement2.setInt(2, eventoId);
+        preparedStatement2.executeUpdate();
       }
       return null;
     });
