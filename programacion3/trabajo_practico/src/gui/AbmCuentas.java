@@ -77,6 +77,7 @@ public class AbmCuentas extends JPanelBase {
     jButtonAgregar = new JButton("Agregar");
     jButtonModificar = new JButton("Modificar");
     jButtonEliminar = new JButton("Eliminar");
+
     jPanelBotones.add(jButtonVolver);
     jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
     jPanelBotones.add(jButtonExtraer);
@@ -91,8 +92,10 @@ public class AbmCuentas extends JPanelBase {
         contexto.get("apellido_usuario"),
         usuarioString,
         idUsuario);
+
     jPanelTabla = new JPanel();
     jPanelTabla.setLayout(new GridLayout(1, 1));
+
     jTableCuentas = new JTable(construirTablaCuentas(usuario));
     JScrollPane jScrollPane = new JScrollPane(jTableCuentas);
     jPanelTabla.add(jScrollPane);
