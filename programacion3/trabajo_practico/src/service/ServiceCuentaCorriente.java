@@ -1,5 +1,6 @@
 package programacion3.trabajo_practico.src.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import programacion3.trabajo_practico.src.dao.DAOCuentaCorriente;
@@ -95,5 +96,22 @@ public class ServiceCuentaCorriente extends ServiceBase<CuentaCorriente, Integer
       }
       return null;
     });
+  }
+
+  // Reporte
+  public List<String> generarReporteMovimientos(CuentaCorriente elemento) {
+    List<String> reporte = new ArrayList<String>();
+    reporte.add("id,fecha,monto,concepto,moneda,cbu_origen,cbu_destino\n");
+    for (Transferencia transferencia : elemento.getTransferencias()) {
+      if (transferencia.getEntrante())
+        reporte.add(transferencia.getId() + "," + transferencia.getFecha() + "," + transferencia.getMonto() + ","
+            + transferencia.getConcepto() + "," + transferencia.getMoneda() + ","
+            + transferencia.getCuentaTercero().getCbu() + "," + elemento.getCbu() + "\n");
+      else
+        reporte.add(transferencia.getId() + "," + transferencia.getFecha() + "," + transferencia.getMonto() + ","
+            + transferencia.getConcepto() + "," + transferencia.getMoneda() + "," + elemento.getCbu() + ","
+            + transferencia.getCuentaTercero().getCbu() + "\n");
+    }
+    return reporte;
   }
 }

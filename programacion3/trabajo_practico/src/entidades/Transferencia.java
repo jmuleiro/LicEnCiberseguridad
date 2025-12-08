@@ -9,23 +9,45 @@ public class Transferencia {
   private LocalDate fecha;
   private Moneda moneda;
   private String concepto;
-  private Cuenta cuentaDestino;
+  private Cuenta cuentaTercero;
+  private boolean entrante = false;
 
   // * Constructores
-  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaDestino) {
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero) {
     this.fecha = fecha;
     this.monto = monto;
     this.moneda = moneda;
     this.concepto = concepto;
-    this.cuentaDestino = cuentaDestino;
+    this.cuentaTercero = cuentaTercero;
   }
 
-  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaDestino, int id) {
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero,
+      boolean entrante) {
     this.fecha = fecha;
     this.monto = monto;
     this.moneda = moneda;
     this.concepto = concepto;
-    this.cuentaDestino = cuentaDestino;
+    this.cuentaTercero = cuentaTercero;
+    this.entrante = entrante;
+  }
+
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero, int id) {
+    this.fecha = fecha;
+    this.monto = monto;
+    this.moneda = moneda;
+    this.concepto = concepto;
+    this.cuentaTercero = cuentaTercero;
+    this.id = id;
+  }
+
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero,
+      boolean entrante, int id) {
+    this.fecha = fecha;
+    this.monto = monto;
+    this.moneda = moneda;
+    this.concepto = concepto;
+    this.cuentaTercero = cuentaTercero;
+    this.entrante = entrante;
     this.id = id;
   }
 
@@ -50,7 +72,11 @@ public class Transferencia {
     return this.concepto;
   }
 
-  public Cuenta getCuentaDestino() {
-    return this.cuentaDestino;
+  public Cuenta getCuentaTercero() {
+    return this.cuentaTercero;
+  }
+
+  public boolean getEntrante() {
+    return this.entrante;
   }
 }

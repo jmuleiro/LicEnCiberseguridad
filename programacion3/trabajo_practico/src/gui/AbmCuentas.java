@@ -43,6 +43,7 @@ public class AbmCuentas extends JPanelBase {
   JButton jButtonExtraer;
   JButton jButtonDepositar;
   JButton jButtonAgregar;
+  JButton jButtonVerMovimientos;
   JButton jButtonModificar;
   JButton jButtonEliminar;
   JLabel jLabelUsuario;
@@ -77,6 +78,7 @@ public class AbmCuentas extends JPanelBase {
     jButtonExtraer = new JButton("Extraer");
     jButtonDepositar = new JButton("Depositar");
     jButtonAgregar = new JButton("Agregar");
+    jButtonVerMovimientos = new JButton("Ver Movimientos");
     jButtonModificar = new JButton("Modificar");
     jButtonEliminar = new JButton("Eliminar");
 
@@ -85,6 +87,7 @@ public class AbmCuentas extends JPanelBase {
     jPanelBotones.add(jButtonExtraer);
     jPanelBotones.add(jButtonDepositar);
     jPanelBotones.add(jButtonAgregar);
+    jPanelBotones.add(jButtonVerMovimientos);
     jPanelBotones.add(jButtonModificar);
     jPanelBotones.add(jButtonEliminar);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
@@ -122,6 +125,21 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonAgregar.addActionListener(e -> {
       agregarCuenta(usuario);
+    });
+
+    jButtonVerMovimientos.addActionListener(e -> {
+      Cuenta cuenta = getCuentaSeleccionada();
+      if (cuenta == null)
+        return;
+      contexto.put("prev", "5");
+      contexto.put("usuario", usuarioString);
+      contexto.put("id_cuenta", Integer.toString(cuenta.getId()));
+      String tipoCuenta = "SAV";
+      if (cuenta instanceof CuentaCorriente) {
+        tipoCuenta = "COR";
+      }
+      contexto.put("tipo_cuenta", tipoCuenta);
+      panel.mostrar(8, contexto);
     });
 
     jButtonModificar.addActionListener(e -> {

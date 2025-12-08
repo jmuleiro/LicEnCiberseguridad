@@ -49,7 +49,7 @@ public class PanelManager {
         break;
       case 5:
         mostrar(new AbmCuentas(this, contexto));
-        jFrame.setSize(800, 300);
+        jFrame.setSize(1050, 300);
         break;
       case 6:
         mostrar(new AbmTarjetas(this, contexto));
@@ -57,6 +57,10 @@ public class PanelManager {
         break;
       case 7:
         mostrar(new VistaConsumos(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
+      case 8:
+        mostrar(new VistaMovimientos(this, contexto));
         jFrame.setSize(800, 300);
         break;
       default:

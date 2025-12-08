@@ -280,9 +280,8 @@ public class HomeGestionUsuario extends JPanelBase {
             cuentaOrigen.extraer(montoD);
             cuentaDestino.depositar(montoD);
 
-            // Actualizar tabla de transferencias
             Transferencia transferencia = new Transferencia(LocalDate.now(), montoD,
-                moneda, "Transferencia", cuentaDestino);
+                moneda, "Transferencia", cuentaDestino, false);
             cuentaOrigen.agregarTransferencia(transferencia);
 
             // Actualizar cuenta origen en DB y agregar transferencia

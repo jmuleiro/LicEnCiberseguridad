@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class JPanelBase extends JPanel {
-  //* Contexto
+  // * Contexto
   protected JPanel actualPanel;
   protected PanelManager panel;
   protected Map<String, String> contexto;
 
-  //* Constructores
+  // * Constructores
   public JPanelBase(PanelManager panel) {
     super();
     this.panel = panel;
@@ -25,5 +25,5 @@ public abstract class JPanelBase extends JPanel {
     this.contexto = contexto;
   }
 
-  public abstract void iniciar();
+  public abstract void iniciar() throws GUIException;
 }
