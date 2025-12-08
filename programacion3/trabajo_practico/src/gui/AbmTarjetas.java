@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import java.time.LocalDate;
 
 import javax.swing.JButton;
@@ -43,6 +44,7 @@ public class AbmTarjetas extends JPanelBase {
   JButton jButtonVolver;
   JButton jButtonAgregar;
   JButton jButtonAgregarConsumo;
+  JButton jButtonVerConsumos;
   JButton jButtonModificar;
   JButton jButtonEliminar;
   JLabel jLabelUsuario;
@@ -79,11 +81,12 @@ public class AbmTarjetas extends JPanelBase {
     actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
     jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 6));
+    jPanelBotones.setLayout(new GridLayout(1, 7));
 
     jButtonVolver = new JButton("Volver");
     jButtonAgregar = new JButton("Agregar");
     jButtonAgregarConsumo = new JButton("Agregar Consumo");
+    jButtonVerConsumos = new JButton("Ver Consumos");
     jButtonModificar = new JButton("Modificar");
     jButtonEliminar = new JButton("Eliminar");
 
@@ -91,6 +94,7 @@ public class AbmTarjetas extends JPanelBase {
     jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
     jPanelBotones.add(jButtonAgregar);
     jPanelBotones.add(jButtonAgregarConsumo);
+    jPanelBotones.add(jButtonVerConsumos);
     jPanelBotones.add(jButtonModificar);
     jPanelBotones.add(jButtonEliminar);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
@@ -124,6 +128,18 @@ public class AbmTarjetas extends JPanelBase {
       if (tarjeta == null)
         return;
       agregarConsumo(tarjeta);
+    });
+
+    jButtonVerConsumos.addActionListener(e -> {
+      TarjetaCredito tarjeta = getTarjetaSeleccionada();
+      if (tarjeta == null)
+        return;
+      contexto.put("prev", "6");
+      contexto.put("usuario", usuarioString);
+      contexto.put("id_usuario", String.valueOf(idUsuario));
+      contexto.put("id_tarjeta", String.valueOf(tarjeta.getId()));
+      contexto.put("nro_tarjeta", String.valueOf(tarjeta.getNumero()));
+      panel.mostrar(7, contexto);
     });
 
     jButtonModificar.addActionListener(e -> {
@@ -490,12 +506,12 @@ public class AbmTarjetas extends JPanelBase {
     jPanelMensaje.add(new JLabel("¿Desea eliminar la tarjeta de ID " + tarjeta.getId() + "?"));
     jDialogEliminar.add(jPanelMensaje, BorderLayout.CENTER);
 
-    JPanel jPanelBotones = new JPanel();
+    JPanel jPanelBotonesEliminar = new JPanel();
     JButton jButtonConfirmar = new JButton("Confirmar");
     JButton jButtonCancelar = new JButton("Cancelar");
-    jPanelBotones.add(jButtonConfirmar);
-    jPanelBotones.add(jButtonCancelar);
-    jDialogEliminar.add(jPanelBotones, BorderLayout.SOUTH);
+    jPanelBotonesEliminar.add(jButtonConfirmar);
+    jPanelBotonesEliminar.add(jButtonCancelar);
+    jDialogEliminar.add(jPanelBotonesEliminar, BorderLayout.SOUTH);
 
     jButtonConfirmar.addActionListener(e -> {
       try {
