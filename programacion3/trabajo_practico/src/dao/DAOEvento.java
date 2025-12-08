@@ -24,8 +24,8 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Evento (cod_evento, cod_objeto, objeto_id, exitoso) VALUES (?, ?, ?, ?)");
-      preparedStatement.setString(1, elemento.getTipo().name());
-      preparedStatement.setString(2, elemento.getObjeto().name());
+      preparedStatement.setString(1, elemento.getTipo().getCodigo());
+      preparedStatement.setString(2, elemento.getObjeto().getCodigo());
       preparedStatement.setString(3, elemento.getIdObjeto());
       preparedStatement.setBoolean(4, elemento.isExitoso());
       preparedStatement.executeUpdate();
@@ -38,8 +38,8 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Evento (cod_evento, cod_objeto, objeto_id, exitoso) VALUES (?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      preparedStatement.setString(1, elemento.getTipo().name());
-      preparedStatement.setString(2, elemento.getObjeto().name());
+      preparedStatement.setString(1, elemento.getTipo().getCodigo());
+      preparedStatement.setString(2, elemento.getObjeto().getCodigo());
       preparedStatement.setString(3, elemento.getIdObjeto());
       preparedStatement.setBoolean(4, elemento.isExitoso());
       preparedStatement.executeUpdate();
