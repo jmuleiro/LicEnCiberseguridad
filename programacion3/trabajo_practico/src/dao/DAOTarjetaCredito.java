@@ -8,6 +8,7 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Date;
+import java.sql.Statement;
 
 public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
   public DAOTarjetaCredito() throws DAOException {
@@ -24,13 +25,18 @@ public class DAOTarjetaCredito extends DAOBase<TarjetaCredito, Integer> {
     new DAOTemplate<Void>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Tarjeta (usuario_id, cod_tipo_tarjeta, limite, numero, fecha_vencimiento, cvc)" +
-              "VALUES (?, \"CRE\", ?, ?, ?, ?)");
+              "VALUES (?, \"CRE\", ?, ?, ?, ?)",
+          Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setDouble(2, elemento.getLimite());
       preparedStatement.setString(3, elemento.getNumero());
       preparedStatement.setDate(4, Date.valueOf(elemento.getFechaVencimiento()));
       preparedStatement.setInt(5, elemento.getCvc());
       preparedStatement.executeUpdate();
+      ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        elemento.setId(generatedKeys.getInt(1));
+      }
       return null; // Necesario para que no tire error por el tipo Void
     });
   }

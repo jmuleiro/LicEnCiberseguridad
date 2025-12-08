@@ -2,6 +2,8 @@ package programacion3.trabajo_practico.src.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,8 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
       PreparedStatement preparedStatement = conn.prepare(
           "INSERT INTO Cuenta (cod_tipo_cuenta, usuario_id, cod_moneda, alias, cbu, limite_giro, porcentaje_interes, saldo)"
               +
-              "VALUES (\"COR\", ?, ?, ?, ?, ?, 0, ?)");
+              "VALUES (\"COR\", ?, ?, ?, ?, ?, 0, ?)",
+          Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setInt(1, usuario.getId());
       preparedStatement.setString(2, moneda.getCodigo());
       preparedStatement.setString(3, elemento.getAlias());
@@ -37,6 +40,10 @@ public class DAOCuentaCorriente extends DAOBase<CuentaCorriente, Integer> {
       preparedStatement.setDouble(5, elemento.getLimiteGiro());
       preparedStatement.setDouble(6, elemento.getSaldo());
       preparedStatement.executeUpdate();
+      ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        elemento.setId(generatedKeys.getInt(1));
+      }
       return null; // Necesario para que no tire error por el tipo Void
     });
   }
