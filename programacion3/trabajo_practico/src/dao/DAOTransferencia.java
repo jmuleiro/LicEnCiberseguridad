@@ -9,6 +9,8 @@ import java.util.List;
 import programacion3.trabajo_practico.src.entidades.Cuenta;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.Transferencia;
+import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
+import programacion3.trabajo_practico.src.entidades.CajaAhorro;
 
 public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public DAOTransferencia() throws DAOException {
@@ -19,20 +21,56 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public Transferencia consultar(Integer id) throws DAOException {
     return new DAOTemplate<Transferencia>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda, MV.cuenta_id " +
               "FROM Transferencia AS T " +
               "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
-              "WHERE transferencia_id = ?");
+              "INNER JOIN Movimiento AS MV ON T.transferencia_id = MV.transferencia_id " +
+              "WHERE T.transferencia_id = ? " +
+              "AND MV.entrante = false");
       preparedStatement.setInt(1, id.intValue());
       preparedStatement.executeQuery();
       ResultSet rs = preparedStatement.getResultSet();
       if (rs.next()) {
-        return new Transferencia(
-            rs.getDate("fecha").toLocalDate(),
-            rs.getDouble("monto"),
-            new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
-            rs.getString("concepto"),
-            id);
+        PreparedStatement preparedStatement2 = conn.prepare(
+            "SELECT C.cod_tipo_cuenta, M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.porcentaje_interes, C.saldo "
+                +
+                "FROM Cuenta AS C " +
+                "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+                "WHERE C.cuenta_id = ?");
+        preparedStatement2.setInt(1, Integer.parseInt(rs.getString("MV.cuenta_id")));
+        preparedStatement2.executeQuery();
+        ResultSet rs2 = preparedStatement2.getResultSet();
+        if (rs2.next()) {
+          if (rs.getString("C.cod_tipo_cuenta").equals("SAV")) {
+            return new Transferencia(
+                rs.getDate("T.fecha").toLocalDate(),
+                rs.getDouble("T.monto"),
+                new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+                rs.getString("T.concepto"),
+                new CajaAhorro(
+                    new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
+                    rs.getString("C.alias"),
+                    rs.getString("C.cbu"),
+                    rs.getDouble("C.porcentaje_interes"),
+                    Integer.parseInt(rs.getString("MV.cuenta_id")),
+                    rs.getDouble("C.saldo")),
+                id);
+          } else {
+            return new Transferencia(
+                rs.getDate("T.fecha").toLocalDate(),
+                rs.getDouble("T.monto"),
+                new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+                rs.getString("T.concepto"),
+                new CuentaCorriente(
+                    new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
+                    rs.getString("C.alias"),
+                    rs.getString("C.cbu"),
+                    rs.getDouble("C.limite_giro"),
+                    Integer.parseInt(rs.getString("MV.cuenta_id")),
+                    rs.getDouble("C.saldo")),
+                id);
+          }
+        }
       }
 
       return null; // No hubo resultados
@@ -43,25 +81,85 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
   public List<Transferencia> consultarTodos() throws DAOException {
     return new DAOTemplate<List<Transferencia>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda " +
+          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda, MV.cuenta_id, T.transferencia_id " +
               "FROM Transferencia AS T " +
-              "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda");
+              "INNER JOIN Movimiento AS MV ON T.transferencia_id = MV.transferencia_id " +
+              "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
+              "WHERE MV.entrante = false");
       preparedStatement.executeQuery();
       ResultSet rs = preparedStatement.getResultSet();
       List<Transferencia> transferencias = new ArrayList<>();
       while (rs.next()) {
-        transferencias.add(new Transferencia(
-            rs.getDate("fecha").toLocalDate(),
-            rs.getDouble("monto"),
-            new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
-            rs.getString("concepto"),
-            rs.getInt("transferencia_id")));
+        PreparedStatement preparedStatement2 = conn.prepare(
+            "SELECT C.cod_tipo_cuenta, M.cod_moneda, M.nombre_moneda, C.alias, C.cbu, C.limite_giro, C.porcentaje_interes, C.saldo "
+                +
+                "FROM Cuenta AS C " +
+                "INNER JOIN Moneda AS M ON C.cod_moneda = M.cod_moneda " +
+                "WHERE C.cuenta_id = ?");
+        preparedStatement2.setInt(1, Integer.parseInt(rs.getString("MV.cuenta_id")));
+        preparedStatement2.executeQuery();
+        ResultSet rs2 = preparedStatement2.getResultSet();
+        if (rs2.next()) {
+          if (rs.getString("C.cod_tipo_cuenta").equals("SAV")) {
+            transferencias.add(new Transferencia(
+                rs.getDate("T.fecha").toLocalDate(),
+                rs.getDouble("T.monto"),
+                new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+                rs.getString("T.concepto"),
+                new CajaAhorro(
+                    new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
+                    rs.getString("C.alias"),
+                    rs.getString("C.cbu"),
+                    rs.getDouble("C.porcentaje_interes"),
+                    Integer.parseInt(rs.getString("MV.cuenta_id")),
+                    rs.getDouble("C.saldo")),
+                Integer.parseInt(rs.getString("T.transferencia_id"))));
+          } else {
+            transferencias.add(new Transferencia(
+                rs.getDate("T.fecha").toLocalDate(),
+                rs.getDouble("T.monto"),
+                new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+                rs.getString("T.concepto"),
+                new CuentaCorriente(
+                    new Moneda(rs.getString("M.cod_moneda"), rs.getString("M.nombre_moneda")),
+                    rs.getString("C.alias"),
+                    rs.getString("C.cbu"),
+                    rs.getDouble("C.limite_giro"),
+                    Integer.parseInt(rs.getString("MV.cuenta_id")),
+                    rs.getDouble("C.saldo")),
+                Integer.parseInt(rs.getString("T.transferencia_id"))));
+          }
+        }
       }
       return transferencias;
     });
   }
 
-  public void insertar(Cuenta cuentaOrigen, Cuenta cuentaDestino, Transferencia elemento) throws DAOException {
+  public List<Transferencia> consultarTodos(Cuenta cuenta) throws DAOException {
+    return new DAOTemplate<List<Transferencia>>().execute(entityName, () -> {
+      PreparedStatement preparedStatement = conn.prepare(
+          "SELECT T.fecha, T.monto, T.cod_moneda, T.concepto, M.nombre_moneda, T.transferencia_id " +
+              "FROM Transferencia AS T " +
+              "INNER JOIN Moneda AS M ON T.cod_moneda = M.cod_moneda " +
+              "WHERE T.cuenta_id = ?");
+      preparedStatement.setInt(1, cuenta.getId());
+      preparedStatement.executeQuery();
+      ResultSet rs = preparedStatement.getResultSet();
+      List<Transferencia> transferencias = new ArrayList<>();
+      while (rs.next()) {
+        transferencias.add(new Transferencia(
+            rs.getDate("T.fecha").toLocalDate(),
+            rs.getDouble("T.monto"),
+            new Moneda(rs.getString("T.cod_moneda"), rs.getString("M.nombre_moneda")),
+            rs.getString("T.concepto"),
+            cuenta,
+            rs.getInt("T.transferencia_id")));
+      }
+      return transferencias;
+    });
+  }
+
+  public void insertar(Cuenta cuentaOrigen, Transferencia elemento) throws DAOException {
     new DAOTemplate<Void>().execute(entityName, () -> {
       // Insertar la transferencia
       PreparedStatement preparedStatement = conn.prepare(
@@ -90,7 +188,7 @@ public class DAOTransferencia extends DAOBase<Transferencia, Integer> {
       // entrante = true -> Crédito
       preparedStatement = conn.prepare(movimientoInsertSql);
       preparedStatement.setInt(1, id);
-      preparedStatement.setInt(2, cuentaDestino.getId());
+      preparedStatement.setInt(2, elemento.getCuentaDestino().getId());
       preparedStatement.setBoolean(3, true);
       preparedStatement.executeUpdate();
 

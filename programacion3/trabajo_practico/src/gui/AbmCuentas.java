@@ -2,6 +2,8 @@ package programacion3.trabajo_practico.src.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import java.util.Map;
 import java.util.Vector;
@@ -409,6 +411,14 @@ public class AbmCuentas extends JPanelBase {
 
       jDialogFormulario.add(new JLabel("CBU: "));
       JTextField jTextFieldCbu = new JTextField();
+      jTextFieldCbu.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+          if (jTextFieldCbu.getText().length() >= 22) {
+            e.consume();
+          }
+        }
+      });
       jTextFieldCbu.setEnabled(false);
       jDialogFormulario.add(jTextFieldCbu);
 
@@ -472,9 +482,7 @@ public class AbmCuentas extends JPanelBase {
                     moneda,
                     jTextFieldAlias.getText().toString(),
                     jTextFieldCbu.getText().toString(),
-                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
-                    usuario.getId(),
-                    0.0),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString())),
                 usuario);
           } else {
             serviceCuentaCorriente = new ServiceCuentaCorriente();
@@ -483,9 +491,7 @@ public class AbmCuentas extends JPanelBase {
                     moneda,
                     jTextFieldAlias.getText().toString(),
                     jTextFieldCbu.getText().toString(),
-                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString()),
-                    usuario.getId(),
-                    0.0),
+                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString())),
                 usuario);
           }
         } catch (ServiceException exc) {

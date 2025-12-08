@@ -27,7 +27,6 @@ import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
-import programacion3.trabajo_practico.src.service.ServiceTransferencia;
 import programacion3.trabajo_practico.src.entidades.Transferencia;
 
 public class HomeGestionUsuario extends JPanelBase {
@@ -282,26 +281,25 @@ public class HomeGestionUsuario extends JPanelBase {
             cuentaDestino.depositar(montoD);
 
             // Actualizar tabla de transferencias
-            ServiceTransferencia serviceTransferencia = new ServiceTransferencia();
             Transferencia transferencia = new Transferencia(LocalDate.now(), montoD,
-                moneda, "Transferencia");
-            serviceTransferencia.registrarTransferencia(cuentaOrigen, cuentaDestino, transferencia);
+                moneda, "Transferencia", cuentaDestino);
+            cuentaOrigen.agregarTransferencia(transferencia);
 
-            JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
-                JOptionPane.INFORMATION_MESSAGE);
-            jDialogTransferir.dispose();
-
-            // Actualizar cuenta origen en DB
+            // Actualizar cuenta origen en DB y agregar transferencia
             if (cuentaOrigen instanceof CuentaCorriente)
-              serviceCuentaCorriente.modificar(((CuentaCorriente) cuentaOrigen));
+              serviceCuentaCorriente.modificarConTransferencia(((CuentaCorriente) cuentaOrigen));
             else
-              serviceCajaAhorro.modificar(((CajaAhorro) cuentaOrigen));
+              serviceCajaAhorro.modificarConTransferencia(((CajaAhorro) cuentaOrigen));
 
             // Actualizar cuenta destino en DB
             if (cuentaDestino instanceof CuentaCorriente)
               serviceCuentaCorriente.modificar(((CuentaCorriente) cuentaDestino));
             else
               serviceCajaAhorro.modificar(((CajaAhorro) cuentaDestino));
+
+            JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
+                JOptionPane.INFORMATION_MESSAGE);
+            jDialogTransferir.dispose();
 
             return;
           }

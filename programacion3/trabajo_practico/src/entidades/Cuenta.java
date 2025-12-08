@@ -1,5 +1,8 @@
 package programacion3.trabajo_practico.src.entidades;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Cuenta {
   // * Atributos
   private int id;
@@ -7,6 +10,7 @@ public abstract class Cuenta {
   private String alias;
   private String cbu;
   protected double saldo;
+  private List<Transferencia> transferencias;
 
   // * Constructores
   public Cuenta(Moneda moneda, String alias, String cbu) {
@@ -14,6 +18,7 @@ public abstract class Cuenta {
     this.setAlias(alias);
     this.cbu = cbu;
     this.saldo = 0;
+    this.transferencias = new ArrayList<>();
   }
 
   public Cuenta(Moneda moneda, String alias, String cbu, int id, double saldo) {
@@ -22,6 +27,7 @@ public abstract class Cuenta {
     this.cbu = cbu;
     this.id = id;
     this.saldo = saldo;
+    this.transferencias = new ArrayList<>();
   }
 
   // * Métodos
@@ -31,6 +37,10 @@ public abstract class Cuenta {
   }
 
   public abstract double extraer(double cantidad);
+
+  public void agregarTransferencia(Transferencia transferencia) {
+    this.transferencias.add(transferencia);
+  }
 
   // * Getters & Setters
   public int getId() {
@@ -58,5 +68,9 @@ public abstract class Cuenta {
 
   public double getSaldo() {
     return this.saldo;
+  }
+
+  public List<Transferencia> getTransferencias() {
+    return this.transferencias;
   }
 }
