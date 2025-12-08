@@ -2,6 +2,7 @@ package programacion3.trabajo_practico.src.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -10,6 +11,10 @@ import programacion3.trabajo_practico.src.dao.DAOTarjetaCredito;
 import programacion3.trabajo_practico.src.dao.DAOConsumo;
 import programacion3.trabajo_practico.src.dao.DAOMoneda;
 import programacion3.trabajo_practico.src.dao.DAOException;
+import programacion3.trabajo_practico.src.dao.DAOEvento;
+import programacion3.trabajo_practico.src.entidades.Evento;
+import programacion3.trabajo_practico.src.entidades.TipoEvento;
+import programacion3.trabajo_practico.src.entidades.TipoObjeto;
 import programacion3.trabajo_practico.src.entidades.Consumo;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
@@ -19,12 +24,15 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   private DAOTarjetaCredito dao;
   private DAOConsumo daoConsumo;
   private DAOMoneda daoMoneda;
+  private DAOEvento daoEvento;
 
-  public ServiceTarjetaCredito() throws ServiceException {
+  public ServiceTarjetaCredito(Map<String, String> contexto) throws ServiceException {
+    super(contexto);
     try {
       dao = new DAOTarjetaCredito();
       daoConsumo = new DAOConsumo();
       daoMoneda = new DAOMoneda();
+      daoEvento = new DAOEvento();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
       throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());
@@ -39,6 +47,9 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   public void insertar(TarjetaCredito elemento, UsuarioCliente usuario) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.insertar(elemento, usuario);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CREACION, TipoObjeto.TARJETA_CREDITO, Integer.toString(elemento.getId())),
+          contexto);
       return null;
     });
   }
@@ -46,14 +57,24 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   @Override
   public TarjetaCredito consultar(Integer id) throws ServiceException {
     return new ServiceTemplate<TarjetaCredito>().execute(() -> {
-      return dao.consultar(id);
+      TarjetaCredito resultado = dao.consultar(id);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, Integer.toString(id)),
+          contexto);
+      return resultado;
     });
   }
 
   public TarjetaCredito consultarConConsumo(Integer id) throws ServiceException {
     return new ServiceTemplate<TarjetaCredito>().execute(() -> {
       TarjetaCredito resultado = dao.consultar(id);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, Integer.toString(id)),
+          contexto);
       List<Consumo> consumos = daoConsumo.consultarTodos(resultado);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.CONSUMO, Integer.toString(id)),
+          contexto);
       for (Consumo consumo : consumos) {
         resultado.agregarConsumo(consumo);
       }
@@ -64,14 +85,22 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   @Override
   public List<TarjetaCredito> consultarTodos() throws ServiceException {
     return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
-      return dao.consultarTodos();
+      List<TarjetaCredito> resultado = dao.consultarTodos();
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, "-1"),
+          contexto);
+      return resultado;
     });
   }
 
   // todo: esta logica tendria que hacerse en el ServiceUsuarioCliente
   public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws ServiceException {
     return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
-      return dao.consultarTodos(usuario);
+      List<TarjetaCredito> resultado = dao.consultarTodos(usuario);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, "-1"),
+          contexto);
+      return resultado;
     });
   }
 
@@ -79,8 +108,14 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   public List<TarjetaCredito> consultarTodosConConsumo(UsuarioCliente usuario) throws ServiceException {
     return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
       List<TarjetaCredito> tarjetas = dao.consultarTodos(usuario);
+      daoEvento.insertar(
+          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, "-1"),
+          contexto);
       for (TarjetaCredito tarjeta : tarjetas) {
         List<Consumo> consumos = daoConsumo.consultarTodos(tarjeta);
+        daoEvento.insertar(
+            new Evento(TipoEvento.CONSULTA, TipoObjeto.CONSUMO, "-1"),
+            contexto);
         for (Consumo consumo : consumos) {
           tarjeta.agregarConsumo(consumo);
         }
@@ -93,6 +128,9 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   public void eliminar(Integer id) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.eliminar(id);
+      daoEvento.insertar(
+          new Evento(TipoEvento.ELIMINACION, TipoObjeto.TARJETA_CREDITO, Integer.toString(id)),
+          contexto);
       return null;
     });
   }
@@ -101,6 +139,9 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   public void modificar(TarjetaCredito elemento) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.modificar(elemento);
+      daoEvento.insertar(
+          new Evento(TipoEvento.MODIFICACION, TipoObjeto.TARJETA_CREDITO, Integer.toString(elemento.getId())),
+          contexto);
       return null;
     });
   }
@@ -108,9 +149,15 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   public void modificarConConsumo(TarjetaCredito elemento) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.modificar(elemento);
+      daoEvento.insertar(
+          new Evento(TipoEvento.MODIFICACION, TipoObjeto.TARJETA_CREDITO, Integer.toString(elemento.getId())),
+          contexto);
       for (Consumo consumo : elemento.getConsumos()) {
         if (daoConsumo.consultar(consumo.getId()) == null) {
           daoConsumo.insertar(elemento, consumo);
+          daoEvento.insertar(
+              new Evento(TipoEvento.CREACION, TipoObjeto.CONSUMO, Integer.toString(consumo.getId())),
+              contexto);
         }
       }
       return null;
@@ -151,11 +198,18 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
   }
 
   // Reporte
-  public List<String> generarReporteConsumos(TarjetaCredito tarjeta) {
+  public List<String> generarReporteConsumos(TarjetaCredito tarjeta) throws ServiceException {
     List<String> reporte = new ArrayList<>();
     reporte.add("id,fecha,cantidad,moneda,referencia\n");
     for (Consumo consumo : tarjeta.getConsumos()) {
       reporte.add(consumo.toCsv() + "\n");
+    }
+    try {
+      daoEvento.insertar(
+          new Evento(TipoEvento.REPORTE, TipoObjeto.TARJETA_CREDITO, Integer.toString(tarjeta.getId())),
+          contexto);
+    } catch (DAOException e) {
+      throw new ServiceException("Fallo al generar reporte de movimientos en: " + this.getClass().getName());
     }
     return reporte;
   }
