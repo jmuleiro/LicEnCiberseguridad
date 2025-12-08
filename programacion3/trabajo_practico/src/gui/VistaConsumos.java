@@ -112,6 +112,9 @@ public class VistaConsumos extends JPanelBase {
       int result = jFileChooser.showSaveDialog(null);
       if (result == JFileChooser.APPROVE_OPTION) {
         File file = jFileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".csv")) {
+          file = new File(file.getAbsolutePath() + ".csv");
+        }
         try {
           serviceTarjetaCredito = new ServiceTarjetaCredito();
           for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {

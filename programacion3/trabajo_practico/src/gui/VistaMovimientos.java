@@ -126,16 +126,19 @@ public class VistaMovimientos extends JPanelBase {
       int result = jFileChooser.showSaveDialog(null);
       if (result == JFileChooser.APPROVE_OPTION) {
         File file = jFileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".csv")) {
+          file = new File(file.getAbsolutePath() + ".csv");
+        }
         try {
-          List<String> lines = new ArrayList<>();
+          List<String> lineasReporte = new ArrayList<>();
           if (tipoCuentaString.equals("COR")) {
             serviceCuentaCorriente = new ServiceCuentaCorriente();
-            lines = serviceCuentaCorriente.generarReporteMovimientos((CuentaCorriente) cuenta);
+            lineasReporte = serviceCuentaCorriente.generarReporteMovimientos((CuentaCorriente) cuenta);
           } else {
             serviceCajaAhorro = new ServiceCajaAhorro();
-            lines = serviceCajaAhorro.generarReporteMovimientos((CajaAhorro) cuenta);
+            lineasReporte = serviceCajaAhorro.generarReporteMovimientos((CajaAhorro) cuenta);
           }
-          for (String linea : lines) {
+          for (String linea : lineasReporte) {
             Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8);
           }
         } catch (ServiceException | IOException ex) {
