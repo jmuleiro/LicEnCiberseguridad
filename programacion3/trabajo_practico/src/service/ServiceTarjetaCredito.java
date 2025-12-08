@@ -1,5 +1,6 @@
 package programacion3.trabajo_practico.src.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.time.DateTimeException;
@@ -147,5 +148,15 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
     }
 
     return new Consumo(Double.parseDouble(cantidad), LocalDate.parse(fecha), moneda, referencia);
+  }
+
+  // Reporte
+  public List<String> generarReporteConsumos(TarjetaCredito tarjeta) {
+    List<String> reporte = new ArrayList<>();
+    reporte.add("id,fecha,cantidad,moneda,referencia\n");
+    for (Consumo consumo : tarjeta.getConsumos()) {
+      reporte.add(consumo.toCsv() + "\n");
+    }
+    return reporte;
   }
 }

@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,7 +19,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import programacion3.trabajo_practico.src.entidades.Consumo;
 import programacion3.trabajo_practico.src.entidades.Moneda;
@@ -37,6 +44,7 @@ public class VistaConsumos extends JPanelBase {
   JPanel jPanelTabla;
   JButton jButtonVolver;
   JButton jButtonReporte;
+  JFileChooser jFileChooser;
   JLabel jLabelUsuario;
   JLabel jLabelTarjeta;
   JLabel jLabelPeriodo;
@@ -85,7 +93,7 @@ public class VistaConsumos extends JPanelBase {
       serviceTarjetaCredito = new ServiceTarjetaCredito();
       tarjeta = serviceTarjetaCredito.consultarConConsumo(Integer.parseInt(tarjetaIdString));
     } catch (ServiceException e) {
-      e.printStackTrace();
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     jPanelTabla = new JPanel();
@@ -103,22 +111,26 @@ public class VistaConsumos extends JPanelBase {
     });
 
     jButtonReporte.addActionListener(e -> {
-
+      jFileChooser = new JFileChooser();
+      jFileChooser.setDialogTitle("Guardar Reporte");
+      jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      jFileChooser.setFileFilter(new FileNameExtensionFilter("Archivos CSV", "csv"));
+      int result = jFileChooser.showSaveDialog(null);
+      if (result == JFileChooser.APPROVE_OPTION) {
+        File file = jFileChooser.getSelectedFile();
+        try {
+          serviceTarjetaCredito = new ServiceTarjetaCredito();
+          for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {
+            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8);
+          }
+        } catch (ServiceException | IOException ex) {
+          JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+      }
     });
 
     setLayout(new BorderLayout());
     add(actualPanel);
-  }
-
-  private DefaultTableModel construirTablaConsumos() {
-    try {
-      serviceTarjetaCredito = new ServiceTarjetaCredito();
-      tarjeta = serviceTarjetaCredito.consultarConConsumo(tarjeta.getId());
-      return construirTablaConsumos(tarjeta.getConsumos());
-    } catch (ServiceException e) {
-      e.printStackTrace();
-      return null;
-    }
   }
 
   private DefaultTableModel construirTablaConsumos(List<Consumo> consumos) {

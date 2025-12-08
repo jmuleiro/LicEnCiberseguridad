@@ -47,6 +47,10 @@ public class Consumo {
     this.referencia = referencia;
   }
 
+  public String toCsv() {
+    return this.id + "," + this.fecha + "," + this.cantidad + "," + this.moneda.getCodigo() + "," + this.referencia;
+  }
+
   // * Getters & Setters
   public int getId() {
     return this.id;
