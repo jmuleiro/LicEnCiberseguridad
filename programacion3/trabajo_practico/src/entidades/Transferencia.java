@@ -11,6 +11,7 @@ public class Transferencia {
   private String concepto;
   private Cuenta cuentaTercero;
   private boolean entrante = false;
+  private TipoOperacion tipoOperacion = TipoOperacion.TRANSFERENCIA;
 
   // * Constructores
   public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero) {
@@ -31,6 +32,18 @@ public class Transferencia {
     this.entrante = entrante;
   }
 
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero,
+      TipoOperacion tipoOperacion,
+      boolean entrante) {
+    this.fecha = fecha;
+    this.monto = monto;
+    this.moneda = moneda;
+    this.concepto = concepto;
+    this.cuentaTercero = cuentaTercero;
+    this.entrante = entrante;
+    this.tipoOperacion = tipoOperacion;
+  }
+
   public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero, int id) {
     this.fecha = fecha;
     this.monto = monto;
@@ -49,6 +62,19 @@ public class Transferencia {
     this.cuentaTercero = cuentaTercero;
     this.entrante = entrante;
     this.id = id;
+  }
+
+  public Transferencia(LocalDate fecha, double monto, Moneda moneda, String concepto, Cuenta cuentaTercero,
+      TipoOperacion tipoOperacion,
+      boolean entrante, int id) {
+    this.fecha = fecha;
+    this.monto = monto;
+    this.moneda = moneda;
+    this.concepto = concepto;
+    this.cuentaTercero = cuentaTercero;
+    this.entrante = entrante;
+    this.id = id;
+    this.tipoOperacion = tipoOperacion;
   }
 
   // * Getters & Setters
@@ -78,5 +104,9 @@ public class Transferencia {
 
   public boolean getEntrante() {
     return this.entrante;
+  }
+
+  public TipoOperacion getTipoOperacion() {
+    return this.tipoOperacion;
   }
 }

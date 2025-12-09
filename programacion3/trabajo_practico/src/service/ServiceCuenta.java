@@ -17,6 +17,7 @@ import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Evento;
 import programacion3.trabajo_practico.src.entidades.TipoEvento;
 import programacion3.trabajo_practico.src.entidades.TipoObjeto;
+import programacion3.trabajo_practico.src.entidades.TipoOperacion;
 import programacion3.trabajo_practico.src.entidades.Transferencia;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
@@ -195,6 +196,9 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
     new ServiceTemplate<Void>().execute(() -> {
       elemento.extraer(monto);
       dao.modificar(elemento);
+      daoTransferencia.insertar(
+          new Transferencia(LocalDate.now(), monto, elemento.getMoneda(), "Extracción", elemento,
+              TipoOperacion.EXTRACCION, false));
       daoEvento.insertar(new Evento(TipoEvento.DEBITO, TipoObjeto.CAJA_AHORRO, Integer.toString(elemento.getId())),
           contexto);
       return null;
@@ -220,6 +224,9 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
     new ServiceTemplate<Void>().execute(() -> {
       elemento.depositar(monto);
       dao.modificar(elemento);
+      daoTransferencia.insertar(
+          new Transferencia(LocalDate.now(), monto, elemento.getMoneda(), "Depósito", elemento,
+              TipoOperacion.DEPOSITO, true));
       daoEvento.insertar(new Evento(TipoEvento.CREDITO, TipoObjeto.CAJA_AHORRO, Integer.toString(elemento.getId())),
           contexto);
       return null;
@@ -373,8 +380,12 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
       for (Cuenta cuenta : cuentas) {
         if (cuenta instanceof CajaAhorro) {
           CajaAhorro cajaAhorro = (CajaAhorro) cuenta;
+          double monto = cajaAhorro.calcularInteres(cajaAhorro.getSaldo());
           cajaAhorro.aplicarInteres();
           dao.modificar(cajaAhorro);
+          daoTransferencia.insertar(
+              new Transferencia(LocalDate.now(), monto, cajaAhorro.getMoneda(), "Interés",
+                  cajaAhorro, TipoOperacion.CREDITO, true));
           daoEvento.insertar(
               new Evento(TipoEvento.CREDITO, TipoObjeto.CAJA_AHORRO, Integer.toString(cajaAhorro.getId())),
               contexto);

@@ -80,7 +80,8 @@ INSERT INTO Tipo_Objeto VALUES ('USR', 'Usuario'),
                                 ('CAR', 'Tarjeta de Crédito'),
                                 ('TRF', 'Transferencia'),
                                 ('CON', 'Consumo'),
-                                ('ACC', 'Cuenta');
+                                ('ACC', 'Cuenta')
+                                ('EVT', 'Evento');
 
 /* Usuario */
 /*todo: implementar contraseña hasheada si hay tiempo*/
@@ -190,18 +191,39 @@ CREATE TABLE Consumo (
         ON UPDATE CASCADE
 );
 
+/* Tipo de Operacion */
+CREATE TABLE Tipo_Operacion (
+    cod_tipo_operacion CHAR(3) NOT NULL,
+    nombre_operacion CHAR(50) NOT NULL,
+    PRIMARY KEY (cod_tipo_operacion)
+);
+
+-- Cargar Tipos
+INSERT INTO Tipo_Operacion VALUES ('TRF', 'Transferencia'),
+                                ('EXT', 'Extracción'),
+                                ('DEP', 'Depósito'),
+                                ('CRE', 'Crédito'),
+                                ('DEB', 'Débito');
+
 /* Transferencia */
 CREATE TABLE Transferencia (
     transferencia_id INT NOT NULL AUTO_INCREMENT,
     fecha DATE NOT NULL,
     monto DOUBLE NOT NULL,
     cod_moneda CHAR(3) NOT NULL,
+    cod_tipo_operacion CHAR(3) NOT NULL DEFAULT 'TRF',
     concepto CHAR(50) NOT NULL,
     PRIMARY KEY (transferencia_id),
     
-    -- Foreign Key: Moneda
+    -- Foreign Key 1: Moneda
     FOREIGN KEY (cod_moneda)
         REFERENCES Moneda(cod_moneda)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Foreign Key 2: Tipo de Operacion
+    FOREIGN KEY (cod_tipo_operacion)
+        REFERENCES Tipo_Operacion(cod_tipo_operacion)
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
