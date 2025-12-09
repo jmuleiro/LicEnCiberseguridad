@@ -205,7 +205,7 @@ public class AbmTarjetas extends JPanelBase {
               "**** " + numeroTarjeta.substring(numeroTarjeta.length() - 4),
               t.getFechaVencimiento(),
               t.getLimite(),
-              t.calcularGastos()
+              t.calcularGastos().getOrDefault("ARS", 0.0)
           });
         }
       }
