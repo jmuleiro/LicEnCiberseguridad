@@ -1,10 +1,10 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public class UsuarioAdmin extends Usuario {
-  //* Atributos
+  // * Atributos
   private String rol;
 
-  //* Constructores
+  // * Constructores
   public UsuarioAdmin() {
     super();
   }
@@ -19,12 +19,12 @@ public class UsuarioAdmin extends Usuario {
     this.rol = rol;
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public String getRol() {
     return this.rol;
   }
 
-  //* Métodos
+  // * Métodos
   @Override
   public String toString() {
     return this.getRol() + " " + super.toString();

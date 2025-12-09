@@ -1,10 +1,10 @@
 package programacion3.trabajo_practico.src.dao;
 
 public class DAOException extends Exception {
-  //* Atributos
+  // * Atributos
   private String daoClassName = null;
-  
-  //* Constructores
+
+  // * Constructores
   public DAOException() {
     super();
   }
@@ -18,12 +18,12 @@ public class DAOException extends Exception {
     this.daoClassName = dao;
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public String getDaoClassName() {
     return this.daoClassName;
   }
 
-  //* Métodos
+  // * Métodos
   public String toString() {
     return "Exception " + this.getClass().getName() + ": " + this.getMessage();
   }

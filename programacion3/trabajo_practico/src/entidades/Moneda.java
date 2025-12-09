@@ -1,17 +1,17 @@
 package programacion3.trabajo_practico.src.entidades;
 
 public class Moneda {
-  //* Atributos
+  // * Atributos
   private String codigo;
   private String nombre;
 
-  //* Constructores
+  // * Constructores
   public Moneda(String codigo, String nombre) {
     this.codigo = codigo;
     this.nombre = nombre;
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public String getCodigo() {
     return this.codigo;
   }
@@ -20,7 +20,7 @@ public class Moneda {
     return this.nombre;
   }
 
-  //* Métodos
+  // * Métodos
   @Override
   public String toString() {
     return this.nombre;

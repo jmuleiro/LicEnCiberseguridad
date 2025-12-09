@@ -1,7 +1,7 @@
 package programacion3.trabajo_practico.src.dao;
 
 public class DAOBaseS<T, K> extends DAOBase<T, K> {
-  //* Constructor
+  // * Constructor
   public DAOBaseS() throws DAOException {
     super();
   }

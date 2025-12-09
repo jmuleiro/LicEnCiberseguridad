@@ -6,11 +6,11 @@ import java.util.List;
 import programacion3.trabajo_practico.src.helpers.ConnectionHelper;
 
 public class DAOBase<T, K> implements IDAO<T, K> {
-  //* Atributos
+  // * Atributos
   protected ConnectionHelper conn;
   protected String entityName;
 
-  //* Constructor
+  // * Constructor
   public DAOBase() throws DAOException {
     try {
       this.conn = new ConnectionHelper();

@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 
-public class DAOMoneda extends DAOBase<Moneda, String>  {
+public class DAOMoneda extends DAOBase<Moneda, String> {
   public DAOMoneda() throws DAOException {
     super();
   }
@@ -30,15 +30,13 @@ public class DAOMoneda extends DAOBase<Moneda, String>  {
   public Moneda consultar(String cod) throws DAOException {
     return new DAOTemplate<Moneda>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT cod_moneda, nombre_moneda FROM Moneda WHERE cod_moneda = ?"
-      );
+          "SELECT cod_moneda, nombre_moneda FROM Moneda WHERE cod_moneda = ?");
       preparedStatement.setString(1, cod);
       ResultSet rs = preparedStatement.executeQuery();
       if (rs.next()) {
         return new Moneda(
-          rs.getString("cod_moneda"),
-          rs.getString("nombre_moneda")
-        );
+            rs.getString("cod_moneda"),
+            rs.getString("nombre_moneda"));
       }
       return null; // No hubo resultados
     });
@@ -48,15 +46,13 @@ public class DAOMoneda extends DAOBase<Moneda, String>  {
   public List<Moneda> consultarTodos() throws DAOException {
     return new DAOTemplate<List<Moneda>>().execute(entityName, () -> {
       PreparedStatement preparedStatement = conn.prepare(
-        "SELECT cod_moneda, nombre_moneda FROM Moneda"
-      );
+          "SELECT cod_moneda, nombre_moneda FROM Moneda");
       ResultSet rs = preparedStatement.executeQuery();
       List<Moneda> monedas = new ArrayList<>();
       while (rs.next()) {
         monedas.add(new Moneda(
-          rs.getString("cod_moneda"), 
-          rs.getString("nombre_moneda")
-        ));
+            rs.getString("cod_moneda"),
+            rs.getString("nombre_moneda")));
       }
       return monedas;
     });

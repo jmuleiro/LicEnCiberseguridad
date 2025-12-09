@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioCliente extends Usuario {
-  //* Atributos
+  // * Atributos
   private List<Cuenta> cuentas;
   private List<Tarjeta> tarjetas;
 
-  //* Constructores
+  // * Constructores
   public UsuarioCliente(String nombre, String apellido, String usuario) {
     super(nombre, apellido, usuario);
     this.cuentas = new ArrayList<>();
@@ -21,7 +21,7 @@ public class UsuarioCliente extends Usuario {
     this.tarjetas = new ArrayList<>();
   }
 
-  //* Métodos
+  // * Métodos
   // Tarjetas
   public int altaTarjeta(Tarjeta t) {
     this.tarjetas.add(t);
@@ -54,7 +54,7 @@ public class UsuarioCliente extends Usuario {
     throw new RuntimeException("Cuenta no encontrada");
   }
 
-  //* Getters & Setters
+  // * Getters & Setters
   public List<Cuenta> getCuentas() {
     return this.cuentas;
   }
