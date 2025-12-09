@@ -80,7 +80,7 @@ INSERT INTO Tipo_Objeto VALUES ('USR', 'Usuario'),
                                 ('CAR', 'Tarjeta de Crédito'),
                                 ('TRF', 'Transferencia'),
                                 ('CON', 'Consumo'),
-                                ('ACC', 'Cuenta')
+                                ('ACC', 'Cuenta'),
                                 ('EVT', 'Evento');
 
 /* Usuario */
