@@ -7,7 +7,8 @@ public enum TipoObjeto {
   CUENTA_CORRIENTE("COR"),
   TARJETA_CREDITO("CAR"),
   TRANSFERENCIA("TRF"),
-  CONSUMO("CON");
+  CONSUMO("CON"),
+  EVENTO("EVT");
 
   private final String codigo;
 
@@ -17,5 +18,14 @@ public enum TipoObjeto {
 
   public String getCodigo() {
     return codigo;
+  }
+
+  public static TipoObjeto fromCodigo(String codigo) {
+    for (TipoObjeto tipo : TipoObjeto.values()) {
+      if (tipo.getCodigo().equals(codigo)) {
+        return tipo;
+      }
+    }
+    throw new IllegalArgumentException("No enum constant for code: " + codigo);
   }
 }

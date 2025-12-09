@@ -67,6 +67,10 @@ public class PanelManager {
         mostrar(new HomeGestionGeneral(this, contexto));
         jFrame.setSize(800, 100);
         break;
+      case 10:
+        mostrar(new VistaAuditoria(this, contexto));
+        jFrame.setSize(800, 300);
+        break;
       default:
         throw new IllegalArgumentException("Tipo de ventana no definido: " + tipo);
     }

@@ -22,4 +22,13 @@ public enum TipoEvento {
   public String getCodigo() {
     return codigo;
   }
+
+  public static TipoEvento fromCodigo(String codigo) {
+    for (TipoEvento tipo : TipoEvento.values()) {
+      if (tipo.getCodigo().equals(codigo)) {
+        return tipo;
+      }
+    }
+    throw new IllegalArgumentException("No enum constant for code: " + codigo);
+  }
 }

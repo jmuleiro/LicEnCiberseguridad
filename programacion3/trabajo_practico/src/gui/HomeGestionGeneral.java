@@ -70,7 +70,8 @@ public class HomeGestionGeneral extends JPanelBase {
     });
 
     jButtonAuditoria.addActionListener(e -> {
-
+      contexto.put("prev", "9");
+      panel.mostrar(10, contexto);
     });
 
     jButtonVolver.addActionListener(e -> {

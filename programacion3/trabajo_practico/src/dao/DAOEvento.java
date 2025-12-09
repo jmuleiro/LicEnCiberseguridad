@@ -74,8 +74,8 @@ public class DAOEvento extends DAOBase<Evento, Integer> {
       List<Evento> eventos = new ArrayList<>();
       while (resultSet.next()) {
         Evento evento = new Evento(
-            TipoEvento.valueOf(resultSet.getString("cod_evento")),
-            TipoObjeto.valueOf(resultSet.getString("cod_objeto")),
+            TipoEvento.fromCodigo(resultSet.getString("cod_evento")),
+            TipoObjeto.fromCodigo(resultSet.getString("cod_objeto")),
             resultSet.getString("objeto_id"),
             resultSet.getTimestamp("fecha_hora").toLocalDateTime(),
             resultSet.getInt("evento_id"),
