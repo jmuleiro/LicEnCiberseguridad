@@ -41,10 +41,6 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
 
   @Override
   public void insertar(Cuenta elemento) throws UnsupportedOperationException {
-    // todo
-    // daoEvento.insertar(new Evento(TipoEvento.CREACION, TipoObjeto.CAJA_AHORRO,
-    // Integer.toString(elemento.getId())),
-    // contexto);
     throw new UnsupportedOperationException("El método insertar requiere el usuario como parámetro");
   }
 
