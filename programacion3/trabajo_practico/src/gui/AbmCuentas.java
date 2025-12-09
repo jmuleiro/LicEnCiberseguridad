@@ -27,7 +27,7 @@ import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceCuenta;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
@@ -36,7 +36,7 @@ public class AbmCuentas extends JPanelBase {
   UsuarioCliente usuario;
   ServiceCuenta serviceCuenta;
   ServiceMoneda serviceMoneda;
-  ServiceUsuarioCliente serviceUsuarioCliente;
+  ServiceUsuario serviceUsuario;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -167,13 +167,13 @@ public class AbmCuentas extends JPanelBase {
   }
 
   private UsuarioCliente actualizarUsuario() throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(usuario.getId());
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(usuario.getId());
   }
 
   private UsuarioCliente actualizarUsuario(Integer idUsuario) throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(idUsuario);
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(idUsuario);
   }
 
   private Cuenta getCuentaSeleccionada() {

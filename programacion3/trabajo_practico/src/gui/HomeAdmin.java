@@ -11,11 +11,11 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 import programacion3.trabajo_practico.src.service.ServiceException;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 
 public class HomeAdmin extends JPanelBase {
   // * Atributos
-  ServiceUsuarioAdmin serviceUsuarioAdmin;
+  ServiceUsuario serviceUsuario;
   JLabel jLabelBienvenido;
   JLabel jLabelUsuario;
   JButton jButtonAbmUsuarios;
@@ -71,8 +71,8 @@ public class HomeAdmin extends JPanelBase {
 
     jButtonSalir.addActionListener(e -> {
       try {
-        serviceUsuarioAdmin = new ServiceUsuarioAdmin(contexto);
-        serviceUsuarioAdmin.logout(contexto.get("usuario"));
+        serviceUsuario = new ServiceUsuario(contexto);
+        serviceUsuario.logout(contexto.get("usuario"));
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
       }

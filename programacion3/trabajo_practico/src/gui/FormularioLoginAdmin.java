@@ -11,14 +11,14 @@ import javax.swing.JTextField;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 import programacion3.trabajo_practico.src.service.ServiceException;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioAdmin;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 
 import java.util.Map;
 import java.util.HashMap;
 
 public class FormularioLoginAdmin extends JPanelBase {
   // * Atributos
-  ServiceUsuarioAdmin serviceUsuarioAdmin;
+  ServiceUsuario serviceUsuario;
 
   // GUI
   JLabel jLabelUsuario;
@@ -56,8 +56,8 @@ public class FormularioLoginAdmin extends JPanelBase {
 
     jButtonLogin.addActionListener(e -> {
       try {
-        serviceUsuarioAdmin = new ServiceUsuarioAdmin(contexto);
-        UsuarioAdmin usuarioAdmin = serviceUsuarioAdmin.login(jTextFieldUsuario.getText(),
+        serviceUsuario = new ServiceUsuario(contexto);
+        UsuarioAdmin usuarioAdmin = serviceUsuario.login(jTextFieldUsuario.getText(),
             new String(jPasswordFieldPassword.getPassword()));
 
         Map<String, String> contexto = new HashMap<>();
