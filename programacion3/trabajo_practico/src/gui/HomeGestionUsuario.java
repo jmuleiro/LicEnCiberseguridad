@@ -153,7 +153,7 @@ public class HomeGestionUsuario extends JPanelBase {
       jDialogTransferir.add(jButtonCancelar);
 
       serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-      UsuarioCliente usuario = serviceUsuarioCliente.consultar(usuarioId);
+      UsuarioCliente usuario = serviceUsuarioCliente.consultarCompleto(usuarioId);
       if (usuario == null) {
         JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
         return;
@@ -167,10 +167,7 @@ public class HomeGestionUsuario extends JPanelBase {
         jComboBoxMoneda.addItem(m.getCodigo());
       }
 
-      List<Cuenta> cuentasUsuario = new ArrayList<>();
-      serviceCuenta = new ServiceCuenta(contexto);
-
-      cuentasUsuario.addAll(serviceCuenta.consultarTodos(usuario));
+      List<Cuenta> cuentasUsuario = usuario.getCuentas();
 
       jButtonCancelar.addActionListener(e -> {
         jDialogTransferir.dispose();

@@ -123,11 +123,13 @@ public class AbmUsuarios extends JPanelBase {
 
   private DefaultTableModel construirTablaUsuarios() {
     List<UsuarioCliente> usuarios;
-    Vector<String> columnas = new Vector<String>(4);
+    Vector<String> columnas = new Vector<String>(6);
     columnas.addElement("ID");
     columnas.addElement("Nombre");
     columnas.addElement("Apellido");
     columnas.addElement("Usuario");
+    columnas.addElement("Tarjetas");
+    columnas.addElement("Cuentas");
     DefaultTableModel resultado = new DefaultTableModel(0, columnas.size()) {
       @Override
       public boolean isCellEditable(int row, int column) {
@@ -137,17 +139,19 @@ public class AbmUsuarios extends JPanelBase {
     resultado.setColumnIdentifiers(columnas);
     try {
       serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-      usuarios = serviceUsuarioCliente.consultarTodos();
+      usuarios = serviceUsuarioCliente.consultarTodosCompleto();
 
       if (usuarios == null)
         return resultado;
 
       for (UsuarioCliente u : usuarios) {
-        Object[] fila = new Object[4];
+        Object[] fila = new Object[6];
         fila[0] = u.getId();
         fila[1] = u.getNombre();
         fila[2] = u.getApellido();
         fila[3] = u.getUsuario();
+        fila[4] = u.getTarjetas().size();
+        fila[5] = u.getCuentas().size();
         resultado.addRow(fila);
       }
     } catch (ServiceException e) {

@@ -2,7 +2,6 @@ package programacion3.trabajo_practico.src.entidades;
 
 import java.time.LocalDate;
 
-// TODO
 public class TarjetaDebito extends Tarjeta {
   // * Constructores
   public TarjetaDebito(String numero, LocalDate fechaVencimiento, int cvc, double limite) {

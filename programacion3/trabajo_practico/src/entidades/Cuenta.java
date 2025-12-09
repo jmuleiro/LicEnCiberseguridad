@@ -77,4 +77,8 @@ public abstract class Cuenta {
   public List<Transferencia> getTransferencias() {
     return this.transferencias;
   }
+
+  public void setTransferencias(List<Transferencia> transferencias) {
+    this.transferencias = transferencias;
+  }
 }

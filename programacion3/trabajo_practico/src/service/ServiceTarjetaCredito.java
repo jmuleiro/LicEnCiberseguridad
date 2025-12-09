@@ -95,37 +95,6 @@ public class ServiceTarjetaCredito extends ServiceBase<TarjetaCredito, Integer> 
     });
   }
 
-  // todo: esta logica tendria que hacerse en el ServiceUsuarioCliente
-  public List<TarjetaCredito> consultarTodos(UsuarioCliente usuario) throws ServiceException {
-    return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
-      List<TarjetaCredito> resultado = dao.consultarTodos(usuario);
-      daoEvento.insertar(
-          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, "-1"),
-          contexto);
-      return resultado;
-    });
-  }
-
-  // todo: same here
-  public List<TarjetaCredito> consultarTodosConConsumo(UsuarioCliente usuario) throws ServiceException {
-    return new ServiceTemplate<List<TarjetaCredito>>().execute(() -> {
-      List<TarjetaCredito> tarjetas = dao.consultarTodos(usuario);
-      daoEvento.insertar(
-          new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, "-1"),
-          contexto);
-      for (TarjetaCredito tarjeta : tarjetas) {
-        List<Consumo> consumos = daoConsumo.consultarTodos(tarjeta);
-        daoEvento.insertar(
-            new Evento(TipoEvento.CONSULTA, TipoObjeto.CONSUMO, "-1"),
-            contexto);
-        for (Consumo consumo : consumos) {
-          tarjeta.agregarConsumo(consumo);
-        }
-      }
-      return tarjetas;
-    });
-  }
-
   @Override
   public void eliminar(Integer id) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {

@@ -26,16 +26,19 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import programacion3.trabajo_practico.src.entidades.Moneda;
+import programacion3.trabajo_practico.src.entidades.Tarjeta;
 import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
+import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmTarjetas extends JPanelBase {
   // * Atributos
   UsuarioCliente usuario;
   ServiceTarjetaCredito serviceTarjetaCredito;
+  ServiceUsuarioCliente serviceUsuarioCliente;
   ServiceMoneda serviceMoneda;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
@@ -54,115 +57,127 @@ public class AbmTarjetas extends JPanelBase {
   // * Constructor
   public AbmTarjetas(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
-    iniciar();
+    try {
+      iniciar();
+    } catch (GUIException e) {
+      System.out.println(e);
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   @Override
-  public void iniciar() {
-    String usuarioString = contexto.get("usuario");
-    Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
-    panel.jFrame.setTitle("Tarjetas: " + usuarioString);
+  public void iniciar() throws GUIException {
+    try {
+      String usuarioString = contexto.get("usuario");
+      Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
+      panel.jFrame.setTitle("Tarjetas: " + usuarioString);
 
-    LocalDate fechaActual = LocalDate.now();
+      LocalDate fechaActual = LocalDate.now();
 
-    jPanelLabels = new JPanel();
-    jPanelLabels.setLayout(new GridLayout(1, 5));
+      jPanelLabels = new JPanel();
+      jPanelLabels.setLayout(new GridLayout(1, 5));
 
-    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
-    jLabelId = new JLabel("ID: " + idUsuario);
-    jLabelPeriodo = new JLabel("Periodo: " + fechaActual.getMonthValue() + "/" + fechaActual.getYear());
+      jLabelUsuario = new JLabel("Usuario: " + usuarioString);
+      jLabelId = new JLabel("ID: " + idUsuario);
+      jLabelPeriodo = new JLabel("Periodo: " + fechaActual.getMonthValue() + "/" + fechaActual.getYear());
 
-    jPanelLabels.add(jLabelUsuario);
-    jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
-    jPanelLabels.add(jLabelId);
-    jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
-    jPanelLabels.add(jLabelPeriodo);
-    actualPanel.add(jPanelLabels, BorderLayout.NORTH);
+      jPanelLabels.add(jLabelUsuario);
+      jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
+      jPanelLabels.add(jLabelId);
+      jPanelLabels.add(new JLabel(), BorderLayout.CENTER);
+      jPanelLabels.add(jLabelPeriodo);
+      actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
-    jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 7));
+      jPanelBotones = new JPanel();
+      jPanelBotones.setLayout(new GridLayout(1, 7));
 
-    jButtonVolver = new JButton("Volver");
-    jButtonAgregar = new JButton("Agregar");
-    jButtonAgregarConsumo = new JButton("Agregar Consumo");
-    jButtonVerConsumos = new JButton("Ver Consumos");
-    jButtonModificar = new JButton("Modificar");
-    jButtonEliminar = new JButton("Eliminar");
+      jButtonVolver = new JButton("Volver");
+      jButtonAgregar = new JButton("Agregar");
+      jButtonAgregarConsumo = new JButton("Agregar Consumo");
+      jButtonVerConsumos = new JButton("Ver Consumos");
+      jButtonModificar = new JButton("Modificar");
+      jButtonEliminar = new JButton("Eliminar");
 
-    jPanelBotones.add(jButtonVolver);
-    jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
-    jPanelBotones.add(jButtonAgregar);
-    jPanelBotones.add(jButtonAgregarConsumo);
-    jPanelBotones.add(jButtonVerConsumos);
-    jPanelBotones.add(jButtonModificar);
-    jPanelBotones.add(jButtonEliminar);
-    actualPanel.add(jPanelBotones, BorderLayout.CENTER);
+      jPanelBotones.add(jButtonVolver);
+      jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
+      jPanelBotones.add(jButtonAgregar);
+      jPanelBotones.add(jButtonAgregarConsumo);
+      jPanelBotones.add(jButtonVerConsumos);
+      jPanelBotones.add(jButtonModificar);
+      jPanelBotones.add(jButtonEliminar);
+      actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
-    usuario = new UsuarioCliente(
-        contexto.get("nombre_usuario"),
-        contexto.get("apellido_usuario"),
-        usuarioString,
-        idUsuario);
+      usuario = actualizarUsuario(idUsuario);
 
-    jPanelTabla = new JPanel();
-    jPanelTabla.setLayout(new GridLayout(1, 1));
+      jPanelTabla = new JPanel();
+      jPanelTabla.setLayout(new GridLayout(1, 1));
 
-    jTableTarjetas = new JTable(construirTablaTarjetas());
-    JScrollPane jScrollPane = new JScrollPane(jTableTarjetas);
-    jPanelTabla.add(jScrollPane);
-    actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
+      jTableTarjetas = new JTable(construirTablaTarjetas());
+      JScrollPane jScrollPane = new JScrollPane(jTableTarjetas);
+      jPanelTabla.add(jScrollPane);
+      actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
 
-    jButtonVolver.addActionListener(e -> {
-      int prev = Integer.parseInt(contexto.get("prev"));
-      contexto.put("prev", "3");
-      panel.mostrar(prev, contexto);
-    });
+      jButtonVolver.addActionListener(e -> {
+        int prev = Integer.parseInt(contexto.get("prev"));
+        contexto.put("prev", "3");
+        panel.mostrar(prev, contexto);
+      });
 
-    jButtonAgregar.addActionListener(e -> {
-      agregarTarjeta();
-    });
+      jButtonAgregar.addActionListener(e -> {
+        agregarTarjeta();
+      });
 
-    jButtonAgregarConsumo.addActionListener(e -> {
-      TarjetaCredito tarjeta = getTarjetaSeleccionada();
-      if (tarjeta == null)
-        return;
-      agregarConsumo(tarjeta);
-    });
+      jButtonAgregarConsumo.addActionListener(e -> {
+        TarjetaCredito tarjeta = getTarjetaSeleccionada();
+        if (tarjeta == null)
+          return;
+        agregarConsumo(tarjeta);
+      });
 
-    jButtonVerConsumos.addActionListener(e -> {
-      TarjetaCredito tarjeta = getTarjetaSeleccionada();
-      if (tarjeta == null)
-        return;
-      contexto.put("prev", "6");
-      contexto.put("usuario", usuarioString);
-      contexto.put("id_usuario", String.valueOf(idUsuario));
-      contexto.put("id_tarjeta", String.valueOf(tarjeta.getId()));
-      contexto.put("nro_tarjeta", String.valueOf(tarjeta.getNumero()));
-      panel.mostrar(7, contexto);
-    });
+      jButtonVerConsumos.addActionListener(e -> {
+        TarjetaCredito tarjeta = getTarjetaSeleccionada();
+        if (tarjeta == null)
+          return;
+        contexto.put("prev", "6");
+        contexto.put("usuario", usuarioString);
+        contexto.put("id_usuario", String.valueOf(idUsuario));
+        contexto.put("id_tarjeta", String.valueOf(tarjeta.getId()));
+        contexto.put("nro_tarjeta", String.valueOf(tarjeta.getNumero()));
+        panel.mostrar(7, contexto);
+      });
 
-    jButtonModificar.addActionListener(e -> {
-      TarjetaCredito tarjeta = getTarjetaSeleccionada();
-      if (tarjeta == null)
-        return;
-      modificarTarjeta(tarjeta);
-    });
+      jButtonModificar.addActionListener(e -> {
+        TarjetaCredito tarjeta = getTarjetaSeleccionada();
+        if (tarjeta == null)
+          return;
+        modificarTarjeta(tarjeta);
+      });
 
-    jButtonEliminar.addActionListener(e -> {
-      TarjetaCredito tarjeta = getTarjetaSeleccionada();
-      if (tarjeta == null)
-        return;
-      eliminarTarjeta(tarjeta);
-    });
+      jButtonEliminar.addActionListener(e -> {
+        TarjetaCredito tarjeta = getTarjetaSeleccionada();
+        if (tarjeta == null)
+          return;
+        eliminarTarjeta(tarjeta);
+      });
 
-    setLayout(new BorderLayout());
-    add(actualPanel);
+      setLayout(new BorderLayout());
+      add(actualPanel);
+    } catch (ServiceException e) {
+      throw new GUIException(e.getMessage());
+    }
   }
 
-  // todo: posiblemente, agregar un ComboBox que permita seleccionar
-  // la moneda para calc. el total
+  private UsuarioCliente actualizarUsuario() throws ServiceException {
+    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
+    return serviceUsuarioCliente.consultarCompleto(usuario.getId());
+  }
+
+  private UsuarioCliente actualizarUsuario(Integer idUsuario) throws ServiceException {
+    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
+    return serviceUsuarioCliente.consultarCompleto(idUsuario);
+  }
+
   private DefaultTableModel construirTablaTarjetas() {
-    List<TarjetaCredito> tarjetas = new ArrayList<>();
     Vector<String> columnas = new Vector<>(5);
     columnas.addElement("ID");
     columnas.addElement("Numero"); // Últimos 4 dígitos
@@ -179,20 +194,20 @@ public class AbmTarjetas extends JPanelBase {
     resultado.setColumnIdentifiers(columnas);
 
     try {
-      serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
-      tarjetas = serviceTarjetaCredito.consultarTodosConConsumo(usuario);
-      if (tarjetas == null)
-        return resultado;
+      usuario = actualizarUsuario();
 
-      for (TarjetaCredito t : tarjetas) {
-        String numeroTarjeta = String.valueOf(t.getNumero());
-        resultado.addRow(new Object[] {
-            t.getId(),
-            "**** " + numeroTarjeta.substring(numeroTarjeta.length() - 4),
-            t.getFechaVencimiento(),
-            t.getLimite(),
-            t.getConsumos().stream().mapToDouble(c -> c.getCantidad()).sum()
-        });
+      for (Tarjeta tarjeta : usuario.getTarjetas()) {
+        if (tarjeta instanceof TarjetaCredito) {
+          TarjetaCredito t = (TarjetaCredito) tarjeta;
+          String numeroTarjeta = String.valueOf(t.getNumero());
+          resultado.addRow(new Object[] {
+              t.getId(),
+              "**** " + numeroTarjeta.substring(numeroTarjeta.length() - 4),
+              t.getFechaVencimiento(),
+              t.getLimite(),
+              t.calcularGastos()
+          });
+        }
       }
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

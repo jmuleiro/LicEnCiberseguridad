@@ -82,6 +82,10 @@ public abstract class Tarjeta {
     return this.consumos;
   }
 
+  public void setConsumos(List<Consumo> consumos) {
+    this.consumos = consumos;
+  }
+
   public double getLimite() {
     return this.limite;
   }

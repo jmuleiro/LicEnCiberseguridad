@@ -27,13 +27,16 @@ import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceCuenta;
+import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmCuentas extends JPanelBase {
   // * Atributos
+  UsuarioCliente usuario;
   ServiceCuenta serviceCuenta;
   ServiceMoneda serviceMoneda;
+  ServiceUsuarioCliente serviceUsuarioCliente;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -51,111 +54,126 @@ public class AbmCuentas extends JPanelBase {
   // * Constructor
   public AbmCuentas(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
-    iniciar();
+    try {
+      iniciar();
+    } catch (GUIException e) {
+      System.out.println(e);
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   @Override
-  public void iniciar() {
-    String usuarioString = contexto.get("usuario");
-    Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
-    panel.jFrame.setTitle("Cuentas: " + usuarioString);
+  public void iniciar() throws GUIException {
+    try {
+      String usuarioString = contexto.get("usuario");
+      Integer idUsuario = Integer.valueOf(contexto.get("id_usuario"));
+      panel.jFrame.setTitle("Cuentas: " + usuarioString);
 
-    jPanelLabels = new JPanel();
-    jPanelLabels.setLayout(new GridLayout(1, 3));
+      jPanelLabels = new JPanel();
+      jPanelLabels.setLayout(new GridLayout(1, 3));
 
-    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
-    jLabelId = new JLabel("ID: " + idUsuario);
-    jPanelLabels.add(jLabelUsuario);
-    jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
-    jPanelLabels.add(jLabelId);
-    actualPanel.add(jPanelLabels, BorderLayout.NORTH);
+      jLabelUsuario = new JLabel("Usuario: " + usuarioString);
+      jLabelId = new JLabel("ID: " + idUsuario);
+      jPanelLabels.add(jLabelUsuario);
+      jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
+      jPanelLabels.add(jLabelId);
+      actualPanel.add(jPanelLabels, BorderLayout.NORTH);
 
-    jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 7));
-    jButtonVolver = new JButton("Volver");
-    jButtonExtraer = new JButton("Extraer");
-    jButtonDepositar = new JButton("Depositar");
-    jButtonAgregar = new JButton("Agregar");
-    jButtonVerMovimientos = new JButton("Ver Movimientos");
-    jButtonModificar = new JButton("Modificar");
-    jButtonEliminar = new JButton("Eliminar");
+      jPanelBotones = new JPanel();
+      jPanelBotones.setLayout(new GridLayout(1, 7));
+      jButtonVolver = new JButton("Volver");
+      jButtonExtraer = new JButton("Extraer");
+      jButtonDepositar = new JButton("Depositar");
+      jButtonAgregar = new JButton("Agregar");
+      jButtonVerMovimientos = new JButton("Ver Movimientos");
+      jButtonModificar = new JButton("Modificar");
+      jButtonEliminar = new JButton("Eliminar");
 
-    jPanelBotones.add(jButtonVolver);
-    jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
-    jPanelBotones.add(jButtonExtraer);
-    jPanelBotones.add(jButtonDepositar);
-    jPanelBotones.add(jButtonAgregar);
-    jPanelBotones.add(jButtonVerMovimientos);
-    jPanelBotones.add(jButtonModificar);
-    jPanelBotones.add(jButtonEliminar);
-    actualPanel.add(jPanelBotones, BorderLayout.CENTER);
+      jPanelBotones.add(jButtonVolver);
+      jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
+      jPanelBotones.add(jButtonExtraer);
+      jPanelBotones.add(jButtonDepositar);
+      jPanelBotones.add(jButtonAgregar);
+      jPanelBotones.add(jButtonVerMovimientos);
+      jPanelBotones.add(jButtonModificar);
+      jPanelBotones.add(jButtonEliminar);
+      actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
-    UsuarioCliente usuario = new UsuarioCliente(
-        contexto.get("nombre_usuario"),
-        contexto.get("apellido_usuario"),
-        usuarioString,
-        idUsuario);
+      usuario = actualizarUsuario(idUsuario);
 
-    jPanelTabla = new JPanel();
-    jPanelTabla.setLayout(new GridLayout(1, 1));
+      jPanelTabla = new JPanel();
+      jPanelTabla.setLayout(new GridLayout(1, 1));
 
-    jTableCuentas = new JTable(construirTablaCuentas(usuario));
-    JScrollPane jScrollPane = new JScrollPane(jTableCuentas);
-    jPanelTabla.add(jScrollPane);
-    actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
+      jTableCuentas = new JTable(construirTablaCuentas());
+      JScrollPane jScrollPane = new JScrollPane(jTableCuentas);
+      jPanelTabla.add(jScrollPane);
+      actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
 
-    jButtonVolver.addActionListener(e -> {
-      int prev = Integer.parseInt(contexto.get("prev"));
-      contexto.put("prev", "3");
-      panel.mostrar(prev, contexto);
-    });
+      jButtonVolver.addActionListener(e -> {
+        int prev = Integer.parseInt(contexto.get("prev"));
+        contexto.put("prev", "3");
+        panel.mostrar(prev, contexto);
+      });
 
-    jButtonExtraer.addActionListener(e -> {
-      extraer(getCuentaSeleccionada(), usuario);
-    });
+      jButtonExtraer.addActionListener(e -> {
+        extraer(getCuentaSeleccionada(), usuario);
+      });
 
-    jButtonDepositar.addActionListener(e -> {
-      Cuenta cuenta = getCuentaSeleccionada();
-      if (cuenta == null)
-        return;
-      depositar(cuenta, usuario);
-    });
+      jButtonDepositar.addActionListener(e -> {
+        Cuenta cuenta = getCuentaSeleccionada();
+        if (cuenta == null)
+          return;
+        depositar(cuenta, usuario);
+      });
 
-    jButtonAgregar.addActionListener(e -> {
-      agregarCuenta(usuario);
-    });
+      jButtonAgregar.addActionListener(e -> {
+        agregarCuenta(usuario);
+      });
 
-    jButtonVerMovimientos.addActionListener(e -> {
-      Cuenta cuenta = getCuentaSeleccionada();
-      if (cuenta == null)
-        return;
-      contexto.put("prev", "5");
-      contexto.put("usuario", usuarioString);
-      contexto.put("id_cuenta", Integer.toString(cuenta.getId()));
-      String tipoCuenta = "SAV";
-      if (cuenta instanceof CuentaCorriente) {
-        tipoCuenta = "COR";
-      }
-      contexto.put("tipo_cuenta", tipoCuenta);
-      panel.mostrar(8, contexto);
-    });
+      jButtonVerMovimientos.addActionListener(e -> {
+        Cuenta cuenta = getCuentaSeleccionada();
+        if (cuenta == null)
+          return;
+        contexto.put("prev", "5");
+        contexto.put("usuario", usuarioString);
+        contexto.put("id_cuenta", Integer.toString(cuenta.getId()));
+        String tipoCuenta = "SAV";
+        if (cuenta instanceof CuentaCorriente) {
+          tipoCuenta = "COR";
+        }
+        contexto.put("tipo_cuenta", tipoCuenta);
+        panel.mostrar(8, contexto);
+      });
 
-    jButtonModificar.addActionListener(e -> {
-      Cuenta cuenta = getCuentaSeleccionada();
-      if (cuenta == null)
-        return;
-      modificarCuenta(cuenta, usuario);
-    });
+      jButtonModificar.addActionListener(e -> {
+        Cuenta cuenta = getCuentaSeleccionada();
+        if (cuenta == null)
+          return;
+        modificarCuenta(cuenta, usuario);
+      });
 
-    jButtonEliminar.addActionListener(e -> {
-      Cuenta cuenta = getCuentaSeleccionada();
-      if (cuenta == null)
-        return;
-      eliminarCuenta(cuenta, usuario);
-    });
+      jButtonEliminar.addActionListener(e -> {
+        Cuenta cuenta = getCuentaSeleccionada();
+        if (cuenta == null)
+          return;
+        eliminarCuenta(cuenta, usuario);
+      });
 
-    setLayout(new BorderLayout());
-    add(actualPanel);
+      setLayout(new BorderLayout());
+      add(actualPanel);
+    } catch (ServiceException e) {
+      throw new GUIException(e.getMessage());
+    }
+  }
+
+  private UsuarioCliente actualizarUsuario() throws ServiceException {
+    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
+    return serviceUsuarioCliente.consultarCompleto(usuario.getId());
+  }
+
+  private UsuarioCliente actualizarUsuario(Integer idUsuario) throws ServiceException {
+    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
+    return serviceUsuarioCliente.consultarCompleto(idUsuario);
   }
 
   private Cuenta getCuentaSeleccionada() {
@@ -226,20 +244,19 @@ public class AbmCuentas extends JPanelBase {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogModificar.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
     });
 
     jButtonCancelar.addActionListener(e -> {
       jDialogModificar.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
     });
 
     jDialogModificar.setLocationRelativeTo(null);
     jDialogModificar.setVisible(true);
   }
 
-  private DefaultTableModel construirTablaCuentas(UsuarioCliente usuario) {
-    List<Cuenta> cuentas = new ArrayList<>();
+  private DefaultTableModel construirTablaCuentas() {
     Vector<String> columnas = new Vector<String>(6);
     columnas.addElement("ID");
     columnas.addElement("Tipo");
@@ -256,10 +273,8 @@ public class AbmCuentas extends JPanelBase {
     };
     resultado.setColumnIdentifiers(columnas);
     try {
-      serviceCuenta = new ServiceCuenta(contexto);
-
-      // Alternativa para evitar error de type mismatch por la lista
-      cuentas.addAll(serviceCuenta.consultarTodos(usuario));
+      usuario = actualizarUsuario();
+      List<Cuenta> cuentas = usuario.getCuentas();
 
       for (Cuenta c : cuentas) {
         Object[] fila = new Object[6];
@@ -309,7 +324,7 @@ public class AbmCuentas extends JPanelBase {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogExtraer.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
     });
 
     jButtonCancelar.addActionListener(e -> jDialogExtraer.dispose());
@@ -347,7 +362,7 @@ public class AbmCuentas extends JPanelBase {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogDepositar.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
     });
 
     jButtonCancelar.addActionListener(e -> jDialogDepositar.dispose());
@@ -470,12 +485,12 @@ public class AbmCuentas extends JPanelBase {
           JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
         }
         jDialogFormulario.dispose();
-        jTableCuentas.setModel(construirTablaCuentas(usuario));
+        jTableCuentas.setModel(construirTablaCuentas());
       });
 
       jButtonCancelar.addActionListener(e -> {
         jDialogFormulario.dispose();
-        jTableCuentas.setModel(construirTablaCuentas(usuario));
+        jTableCuentas.setModel(construirTablaCuentas());
       });
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
@@ -509,7 +524,7 @@ public class AbmCuentas extends JPanelBase {
         JOptionPane.showMessageDialog(null, "No se puede eliminar una cuenta con saldo o saldo negativo", "Error",
             JOptionPane.ERROR_MESSAGE);
         jDialogEliminar.dispose();
-        jTableCuentas.setModel(construirTablaCuentas(usuario));
+        jTableCuentas.setModel(construirTablaCuentas());
         return;
       }
 
@@ -520,12 +535,12 @@ public class AbmCuentas extends JPanelBase {
         JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
       jDialogEliminar.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
     });
 
     jButtonCancelar.addActionListener(e -> {
       jDialogEliminar.dispose();
-      jTableCuentas.setModel(construirTablaCuentas(usuario));
+      jTableCuentas.setModel(construirTablaCuentas());
       return;
     });
 
