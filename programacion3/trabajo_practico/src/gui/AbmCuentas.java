@@ -451,25 +451,6 @@ public class AbmCuentas extends JPanelBase {
       });
 
       jButtonAgregar.addActionListener(e -> {
-        if (jTextFieldCbu.getText().isEmpty() ||
-            jTextFieldLimiteOPorcentaje.getText().isEmpty() ||
-            jComboBoxMoneda.getSelectedItem().toString().isEmpty() ||
-            jComboBoxTipo.getSelectedItem().toString().isEmpty()) {
-          JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        if (jTextFieldCbu.getText().length() != 22 || !jTextFieldCbu.getText().matches("\\d+")) {
-          JOptionPane.showMessageDialog(null, "CBU debe ser un número de 22 caracteres", "Error",
-              JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        if (!jTextFieldLimiteOPorcentaje.getText().matches("\\d+")) {
-          JOptionPane.showMessageDialog(null, "Limite debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
         try {
           serviceCuenta = new ServiceCuenta(contexto);
           serviceCuenta.agregarCuenta(
