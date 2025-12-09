@@ -18,12 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
-import programacion3.trabajo_practico.src.entidades.CajaAhorro;
 import programacion3.trabajo_practico.src.entidades.Cuenta;
 import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
-import programacion3.trabajo_practico.src.service.ServiceCajaAhorro;
-import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
+import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
@@ -33,8 +31,7 @@ public class HomeGestionUsuario extends JPanelBase {
   // * Atributos
   ServiceMoneda serviceMoneda;
   ServiceUsuarioCliente serviceUsuarioCliente;
-  ServiceCuentaCorriente serviceCuentaCorriente;
-  ServiceCajaAhorro serviceCajaAhorro;
+  ServiceCuenta serviceCuenta;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JLabel jLabelNombre;
@@ -171,11 +168,9 @@ public class HomeGestionUsuario extends JPanelBase {
       }
 
       List<Cuenta> cuentasUsuario = new ArrayList<>();
-      serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-      serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
+      serviceCuenta = new ServiceCuenta(contexto);
 
-      cuentasUsuario.addAll(serviceCajaAhorro.consultarTodos(usuario));
-      cuentasUsuario.addAll(serviceCuentaCorriente.consultarTodos(usuario));
+      cuentasUsuario.addAll(serviceCuenta.consultarTodos(usuario));
 
       jButtonCancelar.addActionListener(e -> {
         jDialogTransferir.dispose();
@@ -209,14 +204,10 @@ public class HomeGestionUsuario extends JPanelBase {
             return;
           try {
             String[] partes = cuentaSeleccionada.split(" ");
-            Cuenta cuenta;
-            if (partes[0].equals("CA")) {
-              serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-              cuenta = serviceCajaAhorro.consultar(Integer.valueOf(partes[2].strip()));
-            } else {
-              serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-              cuenta = serviceCuentaCorriente.consultar(Integer.valueOf(partes[2].strip()));
-            }
+
+            serviceCuenta = new ServiceCuenta(contexto);
+            Cuenta cuenta = serviceCuenta.consultar(Integer.valueOf(partes[2].strip()));
+
             jLabelDisponible.setText(String.valueOf(cuenta.getSaldo()));
             jTextFieldMonto.setEnabled(true);
             jTextFieldDestino.setEnabled(true);
@@ -253,10 +244,8 @@ public class HomeGestionUsuario extends JPanelBase {
 
           List<Cuenta> cuentas = new ArrayList<>();
           Cuenta cuentaOrigen;
-          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          cuentas.addAll(serviceCajaAhorro.consultarTodos());
-          cuentas.addAll(serviceCuentaCorriente.consultarTodos());
+          serviceCuenta = new ServiceCuenta(contexto);
+          cuentas.addAll(serviceCuenta.consultarTodos());
 
           for (Cuenta cuentaDestino : cuentas) {
             // Seguir hasta encontrar la cuenta
@@ -273,10 +262,7 @@ public class HomeGestionUsuario extends JPanelBase {
 
             Double montoD = Double.valueOf(monto);
             // Encontrar cuenta origen
-            if (partes[0].equals("CA"))
-              cuentaOrigen = serviceCajaAhorro.consultar(Integer.valueOf(partes[2]));
-            else
-              cuentaOrigen = serviceCuentaCorriente.consultar(Integer.valueOf(partes[2]));
+            cuentaOrigen = serviceCuenta.consultar(Integer.valueOf(partes[2]));
             cuentaOrigen.extraer(montoD);
             cuentaDestino.depositar(montoD);
 
@@ -285,16 +271,10 @@ public class HomeGestionUsuario extends JPanelBase {
             cuentaOrigen.agregarTransferencia(transferencia);
 
             // Actualizar cuenta origen en DB y agregar transferencia
-            if (cuentaOrigen instanceof CuentaCorriente)
-              serviceCuentaCorriente.modificarConTransferencia(((CuentaCorriente) cuentaOrigen));
-            else
-              serviceCajaAhorro.modificarConTransferencia(((CajaAhorro) cuentaOrigen));
+            serviceCuenta.modificarConTransferencia(cuentaOrigen);
 
             // Actualizar cuenta destino en DB
-            if (cuentaDestino instanceof CuentaCorriente)
-              serviceCuentaCorriente.modificar(((CuentaCorriente) cuentaDestino));
-            else
-              serviceCajaAhorro.modificar(((CajaAhorro) cuentaDestino));
+            serviceCuenta.modificar(cuentaDestino);
 
             JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
                 JOptionPane.INFORMATION_MESSAGE);

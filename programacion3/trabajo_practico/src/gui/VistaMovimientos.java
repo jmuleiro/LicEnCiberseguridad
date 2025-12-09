@@ -28,17 +28,13 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import programacion3.trabajo_practico.src.service.ServiceException;
-import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
-import programacion3.trabajo_practico.src.service.ServiceCajaAhorro;
+import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.entidades.Cuenta;
-import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
-import programacion3.trabajo_practico.src.entidades.CajaAhorro;
 import programacion3.trabajo_practico.src.entidades.Transferencia;
 
 public class VistaMovimientos extends JPanelBase {
   // * Atributos
-  ServiceCuentaCorriente serviceCuentaCorriente;
-  ServiceCajaAhorro serviceCajaAhorro;
+  ServiceCuenta serviceCuenta;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -99,7 +95,7 @@ public class VistaMovimientos extends JPanelBase {
     jPanelBotones.add(jButtonReporte);
     actualPanel.add(jPanelBotones, BorderLayout.CENTER);
 
-    Cuenta cuenta = traerCuenta(tipoCuentaString, idCuentaString);
+    Cuenta cuenta = traerCuenta(idCuentaString);
     if (cuenta == null)
       throw new GUIException("No se encontró la cuenta");
 
@@ -143,13 +139,8 @@ public class VistaMovimientos extends JPanelBase {
 
         try {
           List<String> lineasReporte = new ArrayList<>();
-          if (tipoCuentaString.equals("COR")) {
-            serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-            lineasReporte = serviceCuentaCorriente.generarReporteMovimientos((CuentaCorriente) cuenta);
-          } else {
-            serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-            lineasReporte = serviceCajaAhorro.generarReporteMovimientos((CajaAhorro) cuenta);
-          }
+          serviceCuenta = new ServiceCuenta(contexto);
+          lineasReporte = serviceCuenta.generarReporteMovimientos(cuenta);
           for (String linea : lineasReporte) {
             Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
                 StandardOpenOption.CREATE);
@@ -206,16 +197,11 @@ public class VistaMovimientos extends JPanelBase {
     return resultado;
   }
 
-  private Cuenta traerCuenta(String tipoCuenta, String idCuenta) throws GUIException {
+  private Cuenta traerCuenta(String idCuenta) throws GUIException {
     Cuenta cuenta = null;
     try {
-      if (tipoCuenta.equals("COR")) {
-        serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-        cuenta = serviceCuentaCorriente.consultarConTransferencia(Integer.parseInt(idCuenta));
-      } else {
-        serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-        cuenta = serviceCajaAhorro.consultarConTransferencia(Integer.parseInt(idCuenta));
-      }
+      serviceCuenta = new ServiceCuenta(contexto);
+      cuenta = serviceCuenta.consultarConTransferencia(Integer.parseInt(idCuenta));
       return cuenta;
     } catch (ServiceException e) {
       throw new GUIException(e.getMessage());

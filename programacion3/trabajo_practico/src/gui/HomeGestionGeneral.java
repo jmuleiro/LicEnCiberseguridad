@@ -10,12 +10,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import programacion3.trabajo_practico.src.service.ServiceCajaAhorro;
+import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.service.ServiceException;
 
 public class HomeGestionGeneral extends JPanelBase {
   // * Atributos
-  ServiceCajaAhorro serviceCajaAhorro;
+  ServiceCuenta serviceCuenta;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JLabel jLabelUsuario;
@@ -61,8 +61,8 @@ public class HomeGestionGeneral extends JPanelBase {
 
     jButtonIntereses.addActionListener(e -> {
       try {
-        serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-        serviceCajaAhorro.aplicarIntereses();
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.aplicarIntereses();
         JOptionPane.showMessageDialog(null, "Intereses aplicados");
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);

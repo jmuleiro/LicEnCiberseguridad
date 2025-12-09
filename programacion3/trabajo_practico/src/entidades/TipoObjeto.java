@@ -2,6 +2,7 @@ package programacion3.trabajo_practico.src.entidades;
 
 public enum TipoObjeto {
   USUARIO("USR"),
+  CUENTA("ACC"),
   CAJA_AHORRO("SAV"),
   CUENTA_CORRIENTE("COR"),
   TARJETA_CREDITO("CAR"),

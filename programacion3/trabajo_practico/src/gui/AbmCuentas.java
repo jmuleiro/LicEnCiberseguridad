@@ -26,15 +26,13 @@ import programacion3.trabajo_practico.src.entidades.CajaAhorro;
 import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
-import programacion3.trabajo_practico.src.service.ServiceCajaAhorro;
-import programacion3.trabajo_practico.src.service.ServiceCuentaCorriente;
+import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmCuentas extends JPanelBase {
   // * Atributos
-  ServiceCuentaCorriente serviceCuentaCorriente;
-  ServiceCajaAhorro serviceCajaAhorro;
+  ServiceCuenta serviceCuenta;
   ServiceMoneda serviceMoneda;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
@@ -168,16 +166,10 @@ public class AbmCuentas extends JPanelBase {
     }
 
     int idCuenta = Integer.valueOf(jTableCuentas.getValueAt(filaSeleccionada, 0).toString());
-    String tipoCuenta = jTableCuentas.getValueAt(filaSeleccionada, 1).toString();
 
     try {
-      if (tipoCuenta.equals(CajaAhorro.class.getSimpleName())) {
-        serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-        return serviceCajaAhorro.consultar(idCuenta);
-      } else {
-        serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-        return serviceCuentaCorriente.consultar(idCuenta);
-      }
+      serviceCuenta = new ServiceCuenta(contexto);
+      return serviceCuenta.consultar(idCuenta);
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -227,19 +219,9 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonGuardar.addActionListener(e -> {
       try {
-        if (cuenta instanceof CajaAhorro) {
-          CajaAhorro cajaAhorro = (CajaAhorro) cuenta;
-          cajaAhorro.setAlias(jTextFieldAlias.getText());
-          cajaAhorro.setPorcentajeInteres(Double.parseDouble(jTextFieldInteresOGiro.getText()));
-          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.modificar(cajaAhorro);
-        } else {
-          CuentaCorriente cuentaCorriente = (CuentaCorriente) cuenta;
-          cuentaCorriente.setAlias(jTextFieldAlias.getText());
-          cuentaCorriente.setLimiteGiro(Double.parseDouble(jTextFieldInteresOGiro.getText()));
-          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.modificar(cuentaCorriente);
-        }
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.modificarCuenta(cuenta, jTextFieldAlias.getText(),
+            jTextFieldInteresOGiro.getText(), jTextFieldInteresOGiro.getText());
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -274,12 +256,10 @@ public class AbmCuentas extends JPanelBase {
     };
     resultado.setColumnIdentifiers(columnas);
     try {
-      serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-      serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
+      serviceCuenta = new ServiceCuenta(contexto);
 
       // Alternativa para evitar error de type mismatch por la lista
-      cuentas.addAll(serviceCajaAhorro.consultarTodos(usuario));
-      cuentas.addAll(serviceCuentaCorriente.consultarTodos(usuario));
+      cuentas.addAll(serviceCuenta.consultarTodos(usuario));
 
       for (Cuenta c : cuentas) {
         Object[] fila = new Object[6];
@@ -323,13 +303,8 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonExtraer.addActionListener(e -> {
       try {
-        if (cuenta instanceof CajaAhorro) {
-          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.extraer((CajaAhorro) cuenta, jTextFieldMonto.getText());
-        } else {
-          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.extraer((CuentaCorriente) cuenta, jTextFieldMonto.getText());
-        }
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.extraer(cuenta, Double.parseDouble(jTextFieldMonto.getText()));
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -366,13 +341,8 @@ public class AbmCuentas extends JPanelBase {
 
     jButtonDepositar.addActionListener(e -> {
       try {
-        if (cuenta instanceof CajaAhorro) {
-          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.depositar((CajaAhorro) cuenta, jTextFieldMonto.getText());
-        } else {
-          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.depositar((CuentaCorriente) cuenta, jTextFieldMonto.getText());
-        }
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.depositar(cuenta, Double.parseDouble(jTextFieldMonto.getText()));
       } catch (ServiceException ex) {
         JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
       }
@@ -486,26 +456,16 @@ public class AbmCuentas extends JPanelBase {
         }
 
         try {
-          Moneda moneda = serviceMoneda.consultar(jComboBoxMoneda.getSelectedItem().toString());
-          if (jComboBoxTipo.getSelectedItem().toString().equals(tipoCajaAhorro)) {
-            serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-            serviceCajaAhorro.insertar(
-                new CajaAhorro(
-                    moneda,
-                    jTextFieldAlias.getText().toString(),
-                    jTextFieldCbu.getText().toString(),
-                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString())),
-                usuario);
-          } else {
-            serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-            serviceCuentaCorriente.insertar(
-                new CuentaCorriente(
-                    moneda,
-                    jTextFieldAlias.getText().toString(),
-                    jTextFieldCbu.getText().toString(),
-                    Double.valueOf(jTextFieldLimiteOPorcentaje.getText().toString())),
-                usuario);
-          }
+          serviceCuenta = new ServiceCuenta(contexto);
+          serviceCuenta.agregarCuenta(
+              usuario,
+              jTextFieldCbu.getText().toString(),
+              jTextFieldLimiteOPorcentaje.getText().toString(),
+              jComboBoxMoneda.getSelectedItem().toString(),
+              jTextFieldAlias.getText().toString(),
+              jComboBoxTipo.getSelectedItem().toString(),
+              tipoCajaAhorro,
+              tipoCuentaCorriente);
         } catch (ServiceException exc) {
           JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -554,13 +514,8 @@ public class AbmCuentas extends JPanelBase {
       }
 
       try {
-        if (cuenta instanceof CajaAhorro) {
-          serviceCajaAhorro = new ServiceCajaAhorro(contexto);
-          serviceCajaAhorro.eliminar(cuenta.getId());
-        } else {
-          serviceCuentaCorriente = new ServiceCuentaCorriente(contexto);
-          serviceCuentaCorriente.eliminar(cuenta.getId());
-        }
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.eliminar(cuenta.getId());
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
       }
