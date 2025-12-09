@@ -5,21 +5,15 @@ import java.util.Map;
 
 import programacion3.trabajo_practico.src.dao.DAOException;
 import programacion3.trabajo_practico.src.dao.DAOMoneda;
-import programacion3.trabajo_practico.src.dao.DAOEvento;
-import programacion3.trabajo_practico.src.entidades.Evento;
-import programacion3.trabajo_practico.src.entidades.TipoEvento;
-import programacion3.trabajo_practico.src.entidades.TipoObjeto;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 
 public class ServiceMoneda extends ServiceBase<Moneda, String> {
   private DAOMoneda dao;
-  private DAOEvento daoEvento;
 
   public ServiceMoneda(Map<String, String> contexto) throws ServiceException {
     super(contexto);
     try {
       dao = new DAOMoneda();
-      daoEvento = new DAOEvento();
     } catch (DAOException e) {
       System.out.println("DAOException: " + e.getMessage());
       throw new ServiceException("Fallo al iniciar DAO en: " + this.getClass().getName());

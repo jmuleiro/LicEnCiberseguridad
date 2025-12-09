@@ -3,11 +3,8 @@ package programacion3.trabajo_practico.src.gui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import java.time.LocalDate;
-
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,7 +22,6 @@ import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
-import programacion3.trabajo_practico.src.entidades.Transferencia;
 
 public class HomeGestionUsuario extends JPanelBase {
   // * Atributos
@@ -217,69 +213,14 @@ public class HomeGestionUsuario extends JPanelBase {
       });
 
       jButtonTransferir.addActionListener(e -> {
-        String cuentaSeleccionada = jComboBoxCuenta.getSelectedItem().toString();
-        if (cuentaSeleccionada.isEmpty())
-          return;
-
-        String monto = jTextFieldMonto.getText();
-        String destino = jTextFieldDestino.getText();
-
-        if (monto.isEmpty() ||
-            destino.isEmpty()) {
-          JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
         try {
-          serviceMoneda = new ServiceMoneda(contexto);
-          String[] partes = cuentaSeleccionada.split(" ");
-          Moneda moneda = serviceMoneda.consultar(partes[1].replace(":", ""));
-          if (moneda == null) {
-            JOptionPane.showMessageDialog(null, "Moneda no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-          }
-
-          List<Cuenta> cuentas = new ArrayList<>();
-          Cuenta cuentaOrigen;
           serviceCuenta = new ServiceCuenta(contexto);
-          cuentas.addAll(serviceCuenta.consultarTodos());
-
-          for (Cuenta cuentaDestino : cuentas) {
-            // Seguir hasta encontrar la cuenta
-            if (!(Integer.toString(cuentaDestino.getId()).equals(destino)
-                || cuentaDestino.getCbu().equals(destino)
-                || cuentaDestino.getAlias().equals(destino)))
-              continue;
-
-            if (!(cuentaDestino.getMoneda().getCodigo().equals(moneda.getCodigo()))) {
-              JOptionPane.showMessageDialog(null, "Las cuentas no son de la misma moneda", "Error",
-                  JOptionPane.ERROR_MESSAGE);
-              return;
-            }
-
-            Double montoD = Double.valueOf(monto);
-            // Encontrar cuenta origen
-            cuentaOrigen = serviceCuenta.consultar(Integer.valueOf(partes[2]));
-            cuentaOrigen.extraer(montoD);
-            cuentaDestino.depositar(montoD);
-
-            Transferencia transferencia = new Transferencia(LocalDate.now(), montoD,
-                moneda, "Transferencia", cuentaDestino, false);
-            cuentaOrigen.agregarTransferencia(transferencia);
-
-            // Actualizar cuenta origen en DB y agregar transferencia
-            serviceCuenta.modificarConTransferencia(cuentaOrigen);
-
-            // Actualizar cuenta destino en DB
-            serviceCuenta.modificar(cuentaDestino);
-
-            JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
-                JOptionPane.INFORMATION_MESSAGE);
-            jDialogTransferir.dispose();
-
-            return;
-          }
-          JOptionPane.showMessageDialog(null, "Cuenta destino no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
+          serviceCuenta.transferir(jComboBoxCuenta.getSelectedItem().toString(), jTextFieldMonto.getText(),
+              jTextFieldDestino.getText());
+          JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
+              JOptionPane.INFORMATION_MESSAGE);
+          jDialogTransferir.dispose();
+          return;
         } catch (ServiceException exc) {
           JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
         }

@@ -1,5 +1,6 @@
 package programacion3.trabajo_practico.src.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -288,6 +289,61 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
           contexto);
     } catch (DAOException e) {
       throw new ServiceException("Fallo al agregar la cuenta en: " + this.getClass().getName());
+    }
+  }
+
+  public void transferir(String cuentaSeleccionadaString, String montoString, String destinoString)
+      throws ServiceException {
+    try {
+      if (cuentaSeleccionadaString.isEmpty() || montoString.isEmpty() || destinoString.isEmpty()) {
+        throw new ServiceException("Debe completar todos los campos");
+      }
+      String[] partes = cuentaSeleccionadaString.split(" ");
+      Moneda moneda = daoMoneda.consultar(partes[1].replace(":", ""));
+      if (moneda == null) {
+        throw new ServiceException("Moneda no encontrada");
+      }
+
+      Double.parseDouble(montoString);
+
+      List<Cuenta> cuentas = this.consultarTodos();
+      Cuenta cuentaOrigen;
+
+      for (Cuenta cuentaDestino : cuentas) {
+        // Seguir hasta encontrar la cuenta
+        if (!(Integer.toString(cuentaDestino.getId()).equals(destinoString)
+            || cuentaDestino.getCbu().equals(destinoString)
+            || cuentaDestino.getAlias().equals(destinoString)))
+          continue;
+
+        if (!(cuentaDestino.getMoneda().getCodigo().equals(moneda.getCodigo()))) {
+          throw new ServiceException("Las cuentas no son de la misma moneda");
+        }
+
+        Double montoD = Double.valueOf(montoString);
+        // Encontrar cuenta origen
+        cuentaOrigen = this.consultar(Integer.valueOf(partes[2]));
+        cuentaOrigen.extraer(montoD);
+        cuentaDestino.depositar(montoD);
+
+        Transferencia transferencia = new Transferencia(LocalDate.now(), montoD,
+            moneda, "Transferencia", cuentaDestino, false);
+        cuentaOrigen.agregarTransferencia(transferencia);
+
+        // Actualizar cuenta origen en DB y agregar transferencia
+        this.modificarConTransferencia(cuentaOrigen);
+
+        // Actualizar cuenta destino en DB
+        this.modificar(cuentaDestino);
+
+        return;
+      }
+
+    } catch (NumberFormatException e) {
+      throw new ServiceException("El monto debe ser un numero");
+    } catch (DAOException e) {
+      System.out.println(e.getMessage());
+      throw new ServiceException("Fallo al transferir en: " + this.getClass().getName());
     }
   }
 
