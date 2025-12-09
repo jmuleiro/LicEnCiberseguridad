@@ -48,101 +48,106 @@ public class VistaConsumos extends JPanelBase {
   // * Constructor
   public VistaConsumos(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
-    iniciar();
+    try {
+      iniciar();
+    } catch (GUIException e) {
+      System.out.println(e);
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   @Override
-  public void iniciar() {
-    String usuarioString = contexto.get("usuario");
-    String nroTarjetaString = contexto.get("nro_tarjeta");
-    String nroTarjetaObfuscadoString = "**** " + nroTarjetaString.substring(12);
-    String tarjetaIdString = contexto.get("id_tarjeta");
-    panel.jFrame.setTitle("Consumos: " + usuarioString + " [" + nroTarjetaObfuscadoString + "]");
-
-    jPanelLabels = new JPanel();
-    jPanelLabels.setLayout(new GridLayout(1, 5));
-
-    jLabelUsuario = new JLabel("Usuario: " + usuarioString);
-    jLabelTarjeta = new JLabel("Tarjeta: " + nroTarjetaObfuscadoString);
-    jLabelPeriodo = new JLabel("Periodo: " + LocalDate.now().getMonthValue() + "/" + LocalDate.now().getYear());
-
-    jPanelLabels.add(jLabelUsuario);
-    jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
-    jPanelLabels.add(jLabelTarjeta);
-    jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
-    jPanelLabels.add(jLabelPeriodo);
-    actualPanel.add(jPanelLabels, BorderLayout.NORTH);
-
-    jPanelBotones = new JPanel();
-    jPanelBotones.setLayout(new GridLayout(1, 3));
-
-    jButtonVolver = new JButton("Volver");
-    jButtonReporte = new JButton("Generar Reporte");
-
-    jPanelBotones.add(jButtonVolver);
-    jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
-    jPanelBotones.add(jButtonReporte);
-    actualPanel.add(jPanelBotones, BorderLayout.CENTER);
-
+  public void iniciar() throws GUIException {
     try {
+      String usuarioString = contexto.get("usuario");
+      String nroTarjetaString = contexto.get("nro_tarjeta");
+      String nroTarjetaObfuscadoString = "**** " + nroTarjetaString.substring(12);
+      String tarjetaIdString = contexto.get("id_tarjeta");
+      panel.jFrame.setTitle("Consumos: " + usuarioString + " [" + nroTarjetaObfuscadoString + "]");
+
+      jPanelLabels = new JPanel();
+      jPanelLabels.setLayout(new GridLayout(1, 5));
+
+      jLabelUsuario = new JLabel("Usuario: " + usuarioString);
+      jLabelTarjeta = new JLabel("Tarjeta: " + nroTarjetaObfuscadoString);
+      jLabelPeriodo = new JLabel("Periodo: " + LocalDate.now().getMonthValue() + "/" + LocalDate.now().getYear());
+
+      jPanelLabels.add(jLabelUsuario);
+      jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
+      jPanelLabels.add(jLabelTarjeta);
+      jPanelLabels.add(new JPanel(), BorderLayout.CENTER);
+      jPanelLabels.add(jLabelPeriodo);
+      actualPanel.add(jPanelLabels, BorderLayout.NORTH);
+
+      jPanelBotones = new JPanel();
+      jPanelBotones.setLayout(new GridLayout(1, 3));
+
+      jButtonVolver = new JButton("Volver");
+      jButtonReporte = new JButton("Generar Reporte");
+
+      jPanelBotones.add(jButtonVolver);
+      jPanelBotones.add(new JPanel(), BorderLayout.CENTER);
+      jPanelBotones.add(jButtonReporte);
+      actualPanel.add(jPanelBotones, BorderLayout.CENTER);
+
       serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
       tarjeta = serviceTarjetaCredito.consultarConConsumo(Integer.parseInt(tarjetaIdString));
+
+      jPanelTabla = new JPanel();
+      jPanelTabla.setLayout(new GridLayout(1, 1));
+
+      jTableConsumos = new JTable(construirTablaConsumos(tarjeta.getConsumos()));
+      JScrollPane jScrollPane = new JScrollPane(jTableConsumos);
+      jPanelTabla.add(jScrollPane);
+      actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
+
+      jButtonVolver.addActionListener(e -> {
+        int prev = Integer.parseInt(contexto.get("prev"));
+        contexto.put("prev", "4");
+        panel.mostrar(prev, contexto);
+      });
+
+      jButtonReporte.addActionListener(e -> {
+        jFileChooser = new JFileChooser();
+        jFileChooser.setDialogTitle("Guardar Reporte");
+        jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        jFileChooser.setFileFilter(new FileNameExtensionFilter("Archivos CSV", "csv"));
+        int respuesta = jFileChooser.showSaveDialog(null);
+        if (respuesta == JFileChooser.APPROVE_OPTION) {
+          File file = jFileChooser.getSelectedFile();
+
+          if (!file.getName().toLowerCase().endsWith(".csv")) {
+            file = new File(file.getAbsolutePath() + ".csv");
+          }
+
+          if (file.exists()) {
+            int respuesta2 = JOptionPane.showConfirmDialog(null,
+                "El archivo ya existe. ¿Desea sobreescribirlo?", "Confirmar", JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+            if (respuesta2 != JOptionPane.YES_OPTION) {
+              return;
+            }
+
+            file.delete();
+          }
+
+          try {
+            serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
+            for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {
+              Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
+                  StandardOpenOption.CREATE);
+            }
+          } catch (ServiceException | IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      });
+
+      setLayout(new BorderLayout());
+      add(actualPanel);
     } catch (ServiceException e) {
-      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      throw new GUIException(e.getMessage());
     }
-
-    jPanelTabla = new JPanel();
-    jPanelTabla.setLayout(new GridLayout(1, 1));
-
-    jTableConsumos = new JTable(construirTablaConsumos(tarjeta.getConsumos()));
-    JScrollPane jScrollPane = new JScrollPane(jTableConsumos);
-    jPanelTabla.add(jScrollPane);
-    actualPanel.add(jPanelTabla, BorderLayout.SOUTH);
-
-    jButtonVolver.addActionListener(e -> {
-      int prev = Integer.parseInt(contexto.get("prev"));
-      contexto.put("prev", "4");
-      panel.mostrar(prev, contexto);
-    });
-
-    jButtonReporte.addActionListener(e -> {
-      jFileChooser = new JFileChooser();
-      jFileChooser.setDialogTitle("Guardar Reporte");
-      jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      jFileChooser.setFileFilter(new FileNameExtensionFilter("Archivos CSV", "csv"));
-      int respuesta = jFileChooser.showSaveDialog(null);
-      if (respuesta == JFileChooser.APPROVE_OPTION) {
-        File file = jFileChooser.getSelectedFile();
-
-        if (!file.getName().toLowerCase().endsWith(".csv")) {
-          file = new File(file.getAbsolutePath() + ".csv");
-        }
-
-        if (file.exists()) {
-          int respuesta2 = JOptionPane.showConfirmDialog(null,
-              "El archivo ya existe. ¿Desea sobreescribirlo?", "Confirmar", JOptionPane.YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE);
-          if (respuesta2 != JOptionPane.YES_OPTION) {
-            return;
-          }
-
-          file.delete();
-        }
-
-        try {
-          serviceTarjetaCredito = new ServiceTarjetaCredito(contexto);
-          for (String linea : serviceTarjetaCredito.generarReporteConsumos(tarjeta)) {
-            Files.writeString(file.toPath(), linea, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
-                StandardOpenOption.CREATE);
-          }
-        } catch (ServiceException | IOException ex) {
-          JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-      }
-    });
-
-    setLayout(new BorderLayout());
-    add(actualPanel);
   }
 
   private DefaultTableModel construirTablaConsumos(List<Consumo> consumos) {

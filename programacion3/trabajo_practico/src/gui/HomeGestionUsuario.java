@@ -88,7 +88,12 @@ public class HomeGestionUsuario extends JPanelBase {
     });
 
     jButtonTransferir.addActionListener(e -> {
-      transferir(usuarioId);
+      try {
+        transferir(usuarioId);
+      } catch (ServiceException exc) {
+        System.out.println(exc);
+        JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+      }
     });
 
     jButtonCuentas.addActionListener(e -> {
@@ -105,129 +110,125 @@ public class HomeGestionUsuario extends JPanelBase {
     add(actualPanel);
   }
 
-  private void transferir(int usuarioId) {
+  private void transferir(int usuarioId) throws ServiceException {
     JDialog jDialogTransferir = new JDialog();
     jDialogTransferir.setTitle("Transferencia");
     jDialogTransferir.setSize(250, 300);
     jDialogTransferir.setLayout(new GridLayout(7, 2));
 
-    try {
-      jDialogTransferir.add(new JLabel("Usuario: "));
-      JLabel jLabelUsuario = new JLabel();
-      jDialogTransferir.add(jLabelUsuario);
+    jDialogTransferir.add(new JLabel("Usuario: "));
+    JLabel jLabelUsuario = new JLabel();
+    jDialogTransferir.add(jLabelUsuario);
 
-      jDialogTransferir.add(new JLabel("Moneda: "));
-      JComboBox<String> jComboBoxMoneda = new JComboBox<>();
-      jComboBoxMoneda.addItem("");
-      jDialogTransferir.add(jComboBoxMoneda);
+    jDialogTransferir.add(new JLabel("Moneda: "));
+    JComboBox<String> jComboBoxMoneda = new JComboBox<>();
+    jComboBoxMoneda.addItem("");
+    jDialogTransferir.add(jComboBoxMoneda);
 
-      jDialogTransferir.add(new JLabel("Cuenta: "));
-      JComboBox<String> jComboBoxCuenta = new JComboBox<>();
+    jDialogTransferir.add(new JLabel("Cuenta: "));
+    JComboBox<String> jComboBoxCuenta = new JComboBox<>();
+    jComboBoxCuenta.addItem("");
+    jComboBoxCuenta.setEnabled(false);
+    jDialogTransferir.add(jComboBoxCuenta);
+
+    jDialogTransferir.add(new JLabel("Destino: "));
+    JTextField jTextFieldDestino = new JTextField();
+    jTextFieldDestino.setEnabled(false);
+    jDialogTransferir.add(jTextFieldDestino);
+
+    jDialogTransferir.add(new JLabel("Disponible: "));
+    JLabel jLabelDisponible = new JLabel();
+    jDialogTransferir.add(jLabelDisponible);
+
+    jDialogTransferir.add(new JLabel("Monto: "));
+    JTextField jTextFieldMonto = new JTextField();
+    jTextFieldMonto.setEnabled(false);
+    jDialogTransferir.add(jTextFieldMonto);
+
+    JButton jButtonTransferir = new JButton("Transferir");
+    jButtonTransferir.setEnabled(false);
+    JButton jButtonCancelar = new JButton("Cancelar");
+
+    jDialogTransferir.add(jButtonTransferir);
+    jDialogTransferir.add(jButtonCancelar);
+
+    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
+    UsuarioCliente usuario = serviceUsuarioCliente.consultarCompleto(usuarioId);
+    if (usuario == null) {
+      JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    jLabelUsuario.setText(usuario.getUsuario());
+
+    serviceMoneda = new ServiceMoneda(contexto);
+    List<Moneda> monedas = serviceMoneda.consultarTodos();
+    for (Moneda m : monedas) {
+      jComboBoxMoneda.addItem(m.getCodigo());
+    }
+
+    List<Cuenta> cuentasUsuario = usuario.getCuentas();
+
+    jButtonCancelar.addActionListener(e -> {
+      jDialogTransferir.dispose();
+    });
+
+    jComboBoxMoneda.addActionListener(e -> {
+      String monedaSeleccionada = jComboBoxMoneda.getSelectedItem().toString();
+      if (monedaSeleccionada.isEmpty())
+        return;
+
+      jComboBoxCuenta.removeAllItems();
       jComboBoxCuenta.addItem("");
-      jComboBoxCuenta.setEnabled(false);
-      jDialogTransferir.add(jComboBoxCuenta);
+      for (Cuenta c : cuentasUsuario) {
+        String identificadorTipoCuenta = "CA";
+        if (c instanceof CuentaCorriente)
+          identificadorTipoCuenta = "CC";
+        String codigoMoneda = c.getMoneda().getCodigo();
+        if (codigoMoneda.equals(monedaSeleccionada))
+          jComboBoxCuenta.addItem(identificadorTipoCuenta + " " + codigoMoneda + ": " + String.valueOf(c.getId()));
+      }
 
-      jDialogTransferir.add(new JLabel("Destino: "));
-      JTextField jTextFieldDestino = new JTextField();
-      jTextFieldDestino.setEnabled(false);
-      jDialogTransferir.add(jTextFieldDestino);
-
-      jDialogTransferir.add(new JLabel("Disponible: "));
-      JLabel jLabelDisponible = new JLabel();
-      jDialogTransferir.add(jLabelDisponible);
-
-      jDialogTransferir.add(new JLabel("Monto: "));
-      JTextField jTextFieldMonto = new JTextField();
-      jTextFieldMonto.setEnabled(false);
-      jDialogTransferir.add(jTextFieldMonto);
-
-      JButton jButtonTransferir = new JButton("Transferir");
-      jButtonTransferir.setEnabled(false);
-      JButton jButtonCancelar = new JButton("Cancelar");
-
-      jDialogTransferir.add(jButtonTransferir);
-      jDialogTransferir.add(jButtonCancelar);
-
-      serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-      UsuarioCliente usuario = serviceUsuarioCliente.consultarCompleto(usuarioId);
-      if (usuario == null) {
-        JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+      if (jComboBoxCuenta.getItemCount() == 1) {
+        JOptionPane.showMessageDialog(null, "El usuario no tiene cuentas disponibles para la moneda seleccionada",
+            "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
 
-      jLabelUsuario.setText(usuario.getUsuario());
-
-      serviceMoneda = new ServiceMoneda(contexto);
-      List<Moneda> monedas = serviceMoneda.consultarTodos();
-      for (Moneda m : monedas) {
-        jComboBoxMoneda.addItem(m.getCodigo());
-      }
-
-      List<Cuenta> cuentasUsuario = usuario.getCuentas();
-
-      jButtonCancelar.addActionListener(e -> {
-        jDialogTransferir.dispose();
-      });
-
-      jComboBoxMoneda.addActionListener(e -> {
-        String monedaSeleccionada = jComboBoxMoneda.getSelectedItem().toString();
-        if (monedaSeleccionada.isEmpty())
+      jComboBoxCuenta.addActionListener(e2 -> {
+        String cuentaSeleccionada = jComboBoxCuenta.getSelectedItem().toString();
+        if (cuentaSeleccionada.isEmpty())
           return;
-
-        jComboBoxCuenta.removeAllItems();
-        jComboBoxCuenta.addItem("");
-        for (Cuenta c : cuentasUsuario) {
-          String identificadorTipoCuenta = "CA";
-          if (c instanceof CuentaCorriente)
-            identificadorTipoCuenta = "CC";
-          String codigoMoneda = c.getMoneda().getCodigo();
-          if (codigoMoneda.equals(monedaSeleccionada))
-            jComboBoxCuenta.addItem(identificadorTipoCuenta + " " + codigoMoneda + ": " + String.valueOf(c.getId()));
-        }
-
-        if (jComboBoxCuenta.getItemCount() == 1) {
-          JOptionPane.showMessageDialog(null, "El usuario no tiene cuentas disponibles para la moneda seleccionada",
-              "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        jComboBoxCuenta.addActionListener(e2 -> {
-          String cuentaSeleccionada = jComboBoxCuenta.getSelectedItem().toString();
-          if (cuentaSeleccionada.isEmpty())
-            return;
-          try {
-            String[] partes = cuentaSeleccionada.split(" ");
-
-            serviceCuenta = new ServiceCuenta(contexto);
-            Cuenta cuenta = serviceCuenta.consultar(Integer.valueOf(partes[2].strip()));
-
-            jLabelDisponible.setText(String.valueOf(cuenta.getSaldo()));
-            jTextFieldMonto.setEnabled(true);
-            jTextFieldDestino.setEnabled(true);
-            jButtonTransferir.setEnabled(true);
-          } catch (ServiceException exc) {
-            JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
-          }
-        });
-        jComboBoxCuenta.setEnabled(true);
-      });
-
-      jButtonTransferir.addActionListener(e -> {
         try {
+          String[] partes = cuentaSeleccionada.split(" ");
+
           serviceCuenta = new ServiceCuenta(contexto);
-          serviceCuenta.transferir(jComboBoxCuenta.getSelectedItem().toString(), jTextFieldMonto.getText(),
-              jTextFieldDestino.getText());
-          JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
-              JOptionPane.INFORMATION_MESSAGE);
-          jDialogTransferir.dispose();
-          return;
+          Cuenta cuenta = serviceCuenta.consultar(Integer.valueOf(partes[2].strip()));
+
+          jLabelDisponible.setText(String.valueOf(cuenta.getSaldo()));
+          jTextFieldMonto.setEnabled(true);
+          jTextFieldDestino.setEnabled(true);
+          jButtonTransferir.setEnabled(true);
         } catch (ServiceException exc) {
           JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
         }
       });
-    } catch (ServiceException e) {
-      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+      jComboBoxCuenta.setEnabled(true);
+    });
+
+    jButtonTransferir.addActionListener(e -> {
+      try {
+        serviceCuenta = new ServiceCuenta(contexto);
+        serviceCuenta.transferir(jComboBoxCuenta.getSelectedItem().toString(), jTextFieldMonto.getText(),
+            jTextFieldDestino.getText());
+        JOptionPane.showMessageDialog(null, "Transferencia realizada con éxito", "Éxito",
+            JOptionPane.INFORMATION_MESSAGE);
+        jDialogTransferir.dispose();
+        return;
+      } catch (ServiceException exc) {
+        JOptionPane.showMessageDialog(null, exc, "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    });
 
     jDialogTransferir.setLocationRelativeTo(null);
     jDialogTransferir.setVisible(true);

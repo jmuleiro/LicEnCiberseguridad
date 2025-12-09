@@ -36,11 +36,16 @@ public class AbmUsuarios extends JPanelBase {
   // * Constructor
   public AbmUsuarios(PanelManager panel, Map<String, String> contexto) {
     super(panel, contexto);
-    iniciar();
+    try {
+      iniciar();
+    } catch (GUIException e) {
+      System.out.println(e);
+      JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   @Override
-  public void iniciar() {
+  public void iniciar() throws GUIException {
     panel.jFrame.setTitle("Usuarios");
 
     jButtonVolver = new JButton("Volver");
