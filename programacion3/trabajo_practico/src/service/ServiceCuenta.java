@@ -269,9 +269,7 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
         throw new ServiceException("CBU debe ser un número de 22 caracteres");
       }
 
-      if (!limiteOPorcentajeString.matches("\\d+")) {
-        throw new ServiceException("Limite debe ser un número");
-      }
+      Double.parseDouble(limiteOPorcentajeString);
 
       Moneda moneda = daoMoneda.consultar(monedaString);
       if (moneda == null) {
@@ -292,6 +290,8 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
           contexto);
     } catch (DAOException e) {
       throw new ServiceException("Fallo al agregar la cuenta en: " + this.getClass().getName());
+    } catch (NumberFormatException e) {
+      throw new ServiceException("El límite o porcentaje de interés deben ser un número");
     }
   }
 
@@ -341,6 +341,7 @@ public class ServiceCuenta extends ServiceBase<Cuenta, Integer> {
 
         return;
       }
+      throw new ServiceException("Cuenta no encontrada");
 
     } catch (NumberFormatException e) {
       throw new ServiceException("El monto debe ser un numero");
