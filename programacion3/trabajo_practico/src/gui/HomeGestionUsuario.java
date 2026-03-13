@@ -21,12 +21,12 @@ import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.service.ServiceCuenta;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 
 public class HomeGestionUsuario extends JPanelBase {
   // * Atributos
   ServiceMoneda serviceMoneda;
-  ServiceUsuarioCliente serviceUsuarioCliente;
+  ServiceUsuario serviceUsuario;
   ServiceCuenta serviceCuenta;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
@@ -152,8 +152,8 @@ public class HomeGestionUsuario extends JPanelBase {
     jDialogTransferir.add(jButtonTransferir);
     jDialogTransferir.add(jButtonCancelar);
 
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    UsuarioCliente usuario = serviceUsuarioCliente.consultarCompleto(usuarioId);
+    serviceUsuario = new ServiceUsuario(contexto);
+    UsuarioCliente usuario = serviceUsuario.consultarCompleto(usuarioId);
     if (usuario == null) {
       JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
       return;

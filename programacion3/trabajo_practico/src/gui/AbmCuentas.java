@@ -27,7 +27,7 @@ import programacion3.trabajo_practico.src.entidades.CuentaCorriente;
 import programacion3.trabajo_practico.src.entidades.Moneda;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceCuenta;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
@@ -36,7 +36,7 @@ public class AbmCuentas extends JPanelBase {
   UsuarioCliente usuario;
   ServiceCuenta serviceCuenta;
   ServiceMoneda serviceMoneda;
-  ServiceUsuarioCliente serviceUsuarioCliente;
+  ServiceUsuario serviceUsuario;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
@@ -167,13 +167,13 @@ public class AbmCuentas extends JPanelBase {
   }
 
   private UsuarioCliente actualizarUsuario() throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(usuario.getId());
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(usuario.getId());
   }
 
   private UsuarioCliente actualizarUsuario(Integer idUsuario) throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(idUsuario);
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(idUsuario);
   }
 
   private Cuenta getCuentaSeleccionada() {
@@ -451,25 +451,6 @@ public class AbmCuentas extends JPanelBase {
       });
 
       jButtonAgregar.addActionListener(e -> {
-        if (jTextFieldCbu.getText().isEmpty() ||
-            jTextFieldLimiteOPorcentaje.getText().isEmpty() ||
-            jComboBoxMoneda.getSelectedItem().toString().isEmpty() ||
-            jComboBoxTipo.getSelectedItem().toString().isEmpty()) {
-          JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        if (jTextFieldCbu.getText().length() != 22 || !jTextFieldCbu.getText().matches("\\d+")) {
-          JOptionPane.showMessageDialog(null, "CBU debe ser un número de 22 caracteres", "Error",
-              JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        if (!jTextFieldLimiteOPorcentaje.getText().matches("\\d+")) {
-          JOptionPane.showMessageDialog(null, "Limite debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
         try {
           serviceCuenta = new ServiceCuenta(contexto);
           serviceCuenta.agregarCuenta(

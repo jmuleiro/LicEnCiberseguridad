@@ -31,14 +31,14 @@ import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.service.ServiceTarjetaCredito;
-import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 import programacion3.trabajo_practico.src.service.ServiceMoneda;
 
 public class AbmTarjetas extends JPanelBase {
   // * Atributos
   UsuarioCliente usuario;
   ServiceTarjetaCredito serviceTarjetaCredito;
-  ServiceUsuarioCliente serviceUsuarioCliente;
+  ServiceUsuario serviceUsuario;
   ServiceMoneda serviceMoneda;
   JPanel jPanelLabels;
   JPanel jPanelBotones;
@@ -168,13 +168,13 @@ public class AbmTarjetas extends JPanelBase {
   }
 
   private UsuarioCliente actualizarUsuario() throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(usuario.getId());
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(usuario.getId());
   }
 
   private UsuarioCliente actualizarUsuario(Integer idUsuario) throws ServiceException {
-    serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-    return serviceUsuarioCliente.consultarCompleto(idUsuario);
+    serviceUsuario = new ServiceUsuario(contexto);
+    return serviceUsuario.consultarCompleto(idUsuario);
   }
 
   private DefaultTableModel construirTablaTarjetas() {

@@ -17,13 +17,13 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import programacion3.trabajo_practico.src.service.ServiceUsuarioCliente;
+import programacion3.trabajo_practico.src.service.ServiceUsuario;
 import programacion3.trabajo_practico.src.service.ServiceException;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
 
 public class AbmUsuarios extends JPanelBase {
   // * Atributos
-  ServiceUsuarioCliente serviceUsuarioCliente;
+  ServiceUsuario serviceUsuario;
   JPanel jPanelBotones;
   JPanel jPanelTabla;
   JButton jButtonVolver;
@@ -143,8 +143,8 @@ public class AbmUsuarios extends JPanelBase {
     };
     resultado.setColumnIdentifiers(columnas);
     try {
-      serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-      usuarios = serviceUsuarioCliente.consultarTodosCompleto();
+      serviceUsuario = new ServiceUsuario(contexto);
+      usuarios = serviceUsuario.consultarTodosCompleto();
 
       if (usuarios == null)
         return resultado;
@@ -194,8 +194,8 @@ public class AbmUsuarios extends JPanelBase {
 
     jButtonAceptar.addActionListener(e -> {
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-        serviceUsuarioCliente.agregarUsuario(
+        serviceUsuario = new ServiceUsuario(contexto);
+        serviceUsuario.agregarUsuario(
             jTextFieldNombre.getText(),
             jTextFieldApellido.getText(),
             jTextFieldUsuario.getText());
@@ -260,8 +260,8 @@ public class AbmUsuarios extends JPanelBase {
 
     jButtonModificar.addActionListener(e -> {
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-        serviceUsuarioCliente.modificarUsuario(
+        serviceUsuario = new ServiceUsuario(contexto);
+        serviceUsuario.modificarUsuario(
             jTextFieldApellido.getText(),
             jTextFieldNombre.getText(),
             jTextFieldUsuario.getText(),
@@ -305,8 +305,8 @@ public class AbmUsuarios extends JPanelBase {
 
     jButtonConfirmar.addActionListener(e -> {
       try {
-        serviceUsuarioCliente = new ServiceUsuarioCliente(contexto);
-        serviceUsuarioCliente.eliminar(usuario.getId());
+        serviceUsuario = new ServiceUsuario(contexto);
+        serviceUsuario.eliminar(usuario.getId());
       } catch (ServiceException exc) {
         JOptionPane.showMessageDialog(null, "Error al insertar: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
       }

@@ -1,10 +1,11 @@
 package programacion3.trabajo_practico.src.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import programacion3.trabajo_practico.src.dao.DAOException;
-import programacion3.trabajo_practico.src.dao.DAOUsuarioCliente;
+import programacion3.trabajo_practico.src.dao.DAOUsuario;
 import programacion3.trabajo_practico.src.dao.DAOTarjetaCredito;
 import programacion3.trabajo_practico.src.dao.DAOCuenta;
 import programacion3.trabajo_practico.src.dao.DAOEvento;
@@ -18,18 +19,20 @@ import programacion3.trabajo_practico.src.entidades.TarjetaCredito;
 import programacion3.trabajo_practico.src.entidades.TipoEvento;
 import programacion3.trabajo_practico.src.entidades.TipoObjeto;
 import programacion3.trabajo_practico.src.entidades.UsuarioCliente;
+import programacion3.trabajo_practico.src.entidades.Usuario;
+import programacion3.trabajo_practico.src.entidades.UsuarioAdmin;
 
-public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer> {
+public class ServiceUsuario extends ServiceBaseS<Usuario, Integer> {
   private DAOEvento daoEvento;
   private DAOTarjetaCredito daoTarjetaCredito;
   private DAOCuenta daoCuenta;
   private DAOConsumo daoConsumo;
   private DAOTransferencia daoTransferencia;
 
-  public ServiceUsuarioCliente(Map<String, String> contexto) throws ServiceException {
+  public ServiceUsuario(Map<String, String> contexto) throws ServiceException {
     super(contexto);
     try {
-      dao = new DAOUsuarioCliente();
+      dao = new DAOUsuario();
       daoEvento = new DAOEvento();
       daoTarjetaCredito = new DAOTarjetaCredito();
       daoCuenta = new DAOCuenta();
@@ -42,17 +45,17 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
   }
 
   @Override
-  public UsuarioCliente consultar(Integer id) throws ServiceException {
-    return new ServiceTemplate<UsuarioCliente>().execute(() -> {
-      UsuarioCliente usuarioCliente = dao.consultar(id);
+  public Usuario consultar(Integer id) throws ServiceException {
+    return new ServiceTemplate<Usuario>().execute(() -> {
+      Usuario usuario = dao.consultar(id);
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, id.toString()), contexto);
-      return usuarioCliente;
+      return usuario;
     });
   }
 
   public UsuarioCliente consultarCompleto(Integer id) throws ServiceException {
     return new ServiceTemplate<UsuarioCliente>().execute(() -> {
-      UsuarioCliente usuarioCliente = dao.consultar(id);
+      UsuarioCliente usuarioCliente = (UsuarioCliente) dao.consultar(id);
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, id.toString()), contexto);
 
       List<TarjetaCredito> tarjetas = daoTarjetaCredito.consultarTodos(usuarioCliente);
@@ -81,7 +84,7 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
 
   public UsuarioCliente consultarCompleto(String username) throws ServiceException {
     return new ServiceTemplate<UsuarioCliente>().execute(() -> {
-      UsuarioCliente usuarioCliente = dao.consultar(username);
+      UsuarioCliente usuarioCliente = (UsuarioCliente) dao.consultar(username);
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, username), contexto);
 
       List<TarjetaCredito> tarjetas = daoTarjetaCredito.consultarTodos(usuarioCliente);
@@ -109,29 +112,36 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
   }
 
   @Override
-  public UsuarioCliente consultar(String username) throws ServiceException {
-    return new ServiceTemplate<UsuarioCliente>().execute(() -> {
-      UsuarioCliente usuarioCliente = dao.consultar(username);
+  public Usuario consultar(String username) throws ServiceException {
+    return new ServiceTemplate<Usuario>().execute(() -> {
+      Usuario usuario = dao.consultar(username);
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, username), contexto);
-      return usuarioCliente;
+      return usuario;
     });
   }
 
   @Override
-  public List<UsuarioCliente> consultarTodos() throws ServiceException {
-    return new ServiceTemplate<List<UsuarioCliente>>().execute(() -> {
-      List<UsuarioCliente> usuarioClientes = dao.consultarTodos();
+  public List<Usuario> consultarTodos() throws ServiceException {
+    return new ServiceTemplate<List<Usuario>>().execute(() -> {
+      List<Usuario> usuarios = dao.consultarTodos();
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, "-1"), contexto);
-      return usuarioClientes;
+      return usuarios;
     });
   }
 
   public List<UsuarioCliente> consultarTodosCompleto() throws ServiceException {
     return new ServiceTemplate<List<UsuarioCliente>>().execute(() -> {
-      List<UsuarioCliente> usuarioClientes = dao.consultarTodos();
+      List<Usuario> usuarios = dao.consultarTodos();
+      List<UsuarioCliente> usuarioClientes = new ArrayList<>();
+
       daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.USUARIO, "-1"), contexto);
 
-      for (UsuarioCliente usuarioCliente : usuarioClientes) {
+      for (Usuario usuario : usuarios) {
+        if (!(usuario instanceof UsuarioCliente)) {
+          continue;
+        }
+        UsuarioCliente usuarioCliente = (UsuarioCliente) usuario;
+        usuarioClientes.add(usuarioCliente);
         List<TarjetaCredito> tarjetas = daoTarjetaCredito.consultarTodos(usuarioCliente);
         daoEvento.insertar(new Evento(TipoEvento.CONSULTA, TipoObjeto.TARJETA_CREDITO, usuarioCliente.getUsuario()),
             contexto);
@@ -153,7 +163,7 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
   }
 
   @Override
-  public void insertar(UsuarioCliente elemento) throws ServiceException {
+  public void insertar(Usuario elemento) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.insertar(elemento);
       daoEvento.insertar(new Evento(TipoEvento.CREACION, TipoObjeto.USUARIO, elemento.getUsuario()), contexto);
@@ -171,7 +181,7 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
   }
 
   @Override
-  public void modificar(UsuarioCliente elemento) throws ServiceException {
+  public void modificar(Usuario elemento) throws ServiceException {
     new ServiceTemplate<Void>().execute(() -> {
       dao.modificar(elemento);
       daoEvento.insertar(new Evento(TipoEvento.MODIFICACION, TipoObjeto.USUARIO, elemento.getUsuario()), contexto);
@@ -208,5 +218,25 @@ public class ServiceUsuarioCliente extends ServiceBaseS<UsuarioCliente, Integer>
             apellidoString,
             usuarioString,
             id));
+  }
+
+  public UsuarioAdmin login(String username, String password) throws ServiceException {
+    return new ServiceTemplate<UsuarioAdmin>().execute(() -> {
+      UsuarioAdmin usuarioAdmin = (UsuarioAdmin) dao.consultar(username);
+      if (usuarioAdmin == null) {
+        daoEvento.insertar(new Evento(TipoEvento.LOGIN, TipoObjeto.USUARIO, username, false));
+        return null;
+      }
+
+      daoEvento.insertar(new Evento(TipoEvento.LOGIN, TipoObjeto.USUARIO, username));
+      return usuarioAdmin;
+    });
+  }
+
+  public void logout(String username) throws ServiceException {
+    new ServiceTemplate<Void>().execute(() -> {
+      daoEvento.insertar(new Evento(TipoEvento.LOGOUT, TipoObjeto.USUARIO, username), contexto);
+      return null;
+    });
   }
 }
