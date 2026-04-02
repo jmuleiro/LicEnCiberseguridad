@@ -1,0 +1,39 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+p {
+  margin: 0;
+}
+
+#formulario>* {
+  display: inline-block;
+}
+
+#estadisticas {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+}
+
+#estadisticas> :nth-child(odd) {
+  color: #001a33;
+  background-color: #e6f2ff;
+}
+
+#estadisticas> :nth-child(even) {
+  color: #000d1a;
+  background-color: #cce4ff;
+}
+
+.item {
+  display: block;
+}
+
+.item>* {
+  display: inline-block;
+}
+
+.item-text {
+  font-weight: bold;
+}
