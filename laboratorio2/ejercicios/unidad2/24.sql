@@ -50,6 +50,10 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Total empleados: ' || R_DEPTOS.TOTAL_EMPLEADOS);
     DBMS_OUTPUT.PUT_LINE('');
   END LOOP;
+
+  IF V_CONTADOR = 0 THEN
+    DBMS_OUTPUT.PUT_LINE('No existen departamentos para el location ID: ' || PI_LOCATION_ID);
+  END IF;
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
     DBMS_OUTPUT.PUT_LINE('No se encontro registro para el LOCATION_ID: ' || PI_LOCATION_iD);
